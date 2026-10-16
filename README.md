@@ -1,6 +1,6 @@
-# 🛡️ DraftClub PRO — SaaS de Gestão para EA FC 26 Pro Clubs (5x5 & 11v11)
+# 🛡️ DraftClub PRO — SaaS de Gestão para EA FC 26 Pro Clubs
 
-> **Experiência Mobile-First App-Like ("Jogueiros PRO" Dark Clean Edition)** para ligas competitivas de **EA Sports FC 26 Pro Clubs** (5x5 Rush/LPF e 11v11 Oficial), combinando **Agendamento Inteligente**, **Súmula por IA (Gemini Vision OCR)** com **Dupla Validação Anti-Fraude**, **Estúdio Criativo Híbrido (Canvas 4:5 + IA Roleplay)** e **ERP Financeiro de Premiações**.
+> **Projeto para ligas competitivas de **EA Sports FC 26 Pro Clubs**, combinando **Agendamento Inteligente**, **Súmula por IA (Gemini Vision OCR)** com **Dupla Validação Anti-Fraude**, **Estúdio Criativo Híbrido (Canvas 4:5 + IA Roleplay)** e **ERP Financeiro de Premiações**.
 
 ---
 
@@ -38,9 +38,6 @@
 - **Gestão de Inscrições (`tournament_finances`):** controle de caixa em tempo real (ex: *8 clubes x R$ 70 = R$ 560*) com toggle rápido de **Inscrição Paga / Pendente**.
 - **Rateio Automático de Premiações:** painel que aponta em tempo real quem está levando os prêmios de **1º Lugar (R$ 300)**, **2º Lugar (R$ 120)**, **3º Lugar (R$ 80)**, **Artilheiro (R$ 30)** e **Garçom (R$ 30)**.
 - **Tribunal de Auditoria:** inspeção de prints em tela cheia para forçar aprovação de súmulas contestadas ou julgar chamados de W.O.
-
-### 6. 🧩 Prancheta Tática Híbrida (Modo 5x5 Rush/LPF & Modo 11v11)
-- Alternância instantânea no Squad Builder entre **Modo 5x5** (5 titulares na arena + slot dedicado para o **6º Jogador Reserva**) e **Modo 11v11 Oficial** com 20 formações táticas do EA FC 26.
 
 ---
 
