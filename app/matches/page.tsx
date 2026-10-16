@@ -16,7 +16,6 @@ import {
   FALLBACK_TEAMS,
   FALLBACK_PLAYERS,
   FALLBACK_INCIDENTS,
-  DEFAULT_TOURNAMENT_ID,
 } from '@/lib/mock-league-data';
 import { DAYS_OF_WEEK, TIME_SLOTS, cn } from '@/lib/utils';
 import {
@@ -26,18 +25,11 @@ import {
   CheckCircle2,
   AlertTriangle,
   ShieldAlert,
-  UploadCloud,
+  Camera,
   UserPlus,
   Send,
-  Flame,
-  RefreshCw,
-  WifiOff,
-  Timer,
-  FileWarning,
   X,
-  Image as ImageIcon,
   Check,
-  Users,
 } from 'lucide-react';
 
 interface StatDraftRow {
@@ -161,20 +153,12 @@ export default function MatchesAndSchedulePage() {
 
   // Cruzamento inteligente de disponibilidade ("Tinder de Horários")
   const availabilityMatches = useMemo(() => {
-    const results: {
-      dayKey: string;
-      dayLabel: string;
-      time: string;
-      homeReady: number;
-      awayReady: number;
-      isIdeal: boolean;
-    }[] = [
+    return [
       { dayKey: 'ter', dayLabel: 'Terça-feira', time: '22:30', homeReady: 5, awayReady: 5, isIdeal: true },
       { dayKey: 'ter', dayLabel: 'Terça-feira', time: '23:00', homeReady: 5, awayReady: 5, isIdeal: true },
       { dayKey: 'qui', dayLabel: 'Quinta-feira', time: '22:00', homeReady: 5, awayReady: 4, isIdeal: false },
       { dayKey: 'seg', dayLabel: 'Segunda-feira', time: '22:30', homeReady: 4, awayReady: 5, isIdeal: false },
     ];
-    return results;
   }, []);
 
   // =========================================================================
@@ -261,24 +245,14 @@ export default function MatchesAndSchedulePage() {
   };
 
   // =========================================================================
-  // HANDLERS ABA 2: OCR IA + LANÇAMENTO E DUPLA VALIDAÇÃO DE SÚMULA
+  // HANDLERS ABA 2: OCR IA (ZERO DIGITAÇÃO) + DUPLA VALIDAÇÃO DE SÚMULA
   // =========================================================================
   const currentSheetMatch = useMemo(
     () => matches.find((m) => m.id === selectedSheetMatchId) || matches[0],
     [matches, selectedSheetMatchId]
   );
 
-  const handleProofUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setProofPreview(reader.result as string);
-    };
-    reader.readAsDataURL(file);
-  };
-
-  const handleRunAiOcr = async () => {
+  const runAiOcrWithImage = async (base64Img?: string) => {
     setOcrLoading(true);
     setNotice(null);
     try {
@@ -287,7 +261,7 @@ export default function MatchesAndSchedulePage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           action: 'ocr_match_sheet',
-          imageBase64: proofPreview || undefined,
+          imageBase64: base64Img || proofPreview || undefined,
           homeTeamName: currentSheetMatch?.home_team?.name || 'Casa',
           awayTeamName: currentSheetMatch?.away_team?.name || 'Fora',
         }),
@@ -325,13 +299,13 @@ export default function MatchesAndSchedulePage() {
         );
 
         setStatRows(mappedRows);
-        if (!proofPreview) {
+        if (!base64Img && !proofPreview) {
           setProofPreview('https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1000&q=80');
         }
 
         setNotice({
           type: 'success',
-          text: `✨ Gemini Vision OCR extraiu o placar (${ocr.home_score} x ${ocr.away_score}) e ${mappedRows.length} jogadores automaticamente! Confira e envie para validação.`,
+          text: `✨ Zero Digitação: Gemini Vision leu a foto e preencheu placar (${ocr.home_score} x ${ocr.away_score}) e ${mappedRows.length} atletas!`,
         });
       }
     } catch (err: any) {
@@ -342,6 +316,19 @@ export default function MatchesAndSchedulePage() {
     } finally {
       setOcrLoading(false);
     }
+  };
+
+  const handleProofUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setProofPreview(base64);
+      // Zero Digitação: dispara o OCR automaticamente assim que o capitão seleciona a foto!
+      runAiOcrWithImage(base64);
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleAddRegisteredPlayerRow = (playerId: string) => {
@@ -475,7 +462,7 @@ export default function MatchesAndSchedulePage() {
     if (decision === 'completed') {
       setNotice({
         type: 'success',
-        text: `✅ Resultado homologado por Dupla Validação (${match.home_team?.name} ${match.home_score} x ${match.away_score} ${match.away_team?.name})! Classificação, saldo de gols e artilharia atualizados!`,
+        text: `✅ Resultado homologado por Dupla Validação (${match.home_team?.name} ${match.home_score} x ${match.away_score} ${match.away_team?.name})! Classificação e artilharia atualizadas!`,
       });
     } else {
       setNotice({
@@ -486,16 +473,18 @@ export default function MatchesAndSchedulePage() {
   };
 
   // =========================================================================
-  // HANDLERS ABA 3: CENTRAL DE W.O. E QUEDAS
+  // HANDLERS ABA 3: CENTRAL DE W.O. E QUEDAS (REGULAMENTO LPF)
   // =========================================================================
   const disconnectRuleInstruction = useMemo(() => {
-    if (incidentType === 'player_disconnect_first_20' || (incidentType === 'player_disconnect_halftime' && minuteOccurred <= 20)) {
+    if (
+      incidentType === 'player_disconnect_first_20' ||
+      (incidentType === 'player_disconnect_halftime' && minuteOccurred <= 20)
+    ) {
       return {
         badge: 'QUEDA ATÉ OS 20 MINUTOS DO 1º TEMPO',
         ruleTitle: 'Reiniciar Partida Completa (90 min) Mantendo Placar e Gols',
         description:
           'Pelo regulamento oficial da Liga: como a desconexão ocorreu até os 20 minutos de jogo, os times devem sair para o lobby, reiniciar uma nova partida completa de 90 minutos e SOMAR o placar/artilharia que já havia ocorrido antes da queda.',
-        color: 'cyan',
       };
     }
     if (incidentType === 'player_disconnect_halftime') {
@@ -504,7 +493,6 @@ export default function MatchesAndSchedulePage() {
         ruleTitle: 'Reiniciar e Jogar Apenas 1 Tempo (45 min) Mantendo Placar',
         description:
           'Pelo regulamento oficial da Liga: quedas após os 20 minutos ou no intervalo exigem reinício imediato jogando APENAS 1 TEMPO (até o apito do intervalo da nova partida), mantendo os gols e cartões registrados anteriormente.',
-        color: 'amber',
       };
     }
     if (incidentType === 'wo_delay') {
@@ -513,7 +501,6 @@ export default function MatchesAndSchedulePage() {
         ruleTitle: 'Solicitação de Vitória por W.O. (3 x 0)',
         description:
           'Obrigatório anexar captura de tela do lobby do EA FC 26 mostrando os 5 jogadores do seu time prontos + horário visível comprovando os 15 minutos de tolerância após o horário agendado.',
-        color: 'rose',
       };
     }
     return {
@@ -521,9 +508,18 @@ export default function MatchesAndSchedulePage() {
       ruleTitle: 'Análise Técnica pela Diretoria da Liga',
       description:
         'Cancelamentos feitos com menos de 60 minutos de antecedência do horário batido geram W.O. automático, salvo se o capitão adversário aceitar remarcar formalmente.',
-      color: 'amber',
     };
   }, [incidentType, minuteOccurred]);
+
+  const handleEvidencePhotoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setEvidencePreview(reader.result as string);
+    };
+    reader.readAsDataURL(file);
+  };
 
   const handleCreateIncident = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -569,31 +565,31 @@ export default function MatchesAndSchedulePage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Topo Clean + Simulador de Capitão A / B */}
-        <div className="p-4 sm:p-5 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-4">
+    <div className="min-h-screen bg-[#F5F6FA] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-4 py-5 pb-28">
+      <div className="max-w-4xl mx-auto space-y-5">
+        {/* Topo Clean Jogueiros + Seletor de Capitão A / B */}
+        <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-cyan-500/10 border border-cyan-500/30 text-cyan-400 text-[11px] font-bold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/10 text-[#7C5CFC] text-[11px] font-extrabold">
               <CalendarCheck2 className="w-3.5 h-3.5" />
-              Matchmaking, Súmula IA & Dupla Validação
-            </div>
-            <h1 className="text-xl sm:text-2xl font-extrabold text-slate-100">
+              Jogos, Súmula por Foto & Regras LPF
+            </span>
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">
               Agenda & Súmula Inteligente
             </h1>
-            <p className="text-xs text-slate-400">
-              Bata horários sem caos no WhatsApp, preencha súmulas por OCR e valide resultados com o capitão adversário.
+            <p className="text-xs text-zinc-500">
+              Bata horários sem caos no WhatsApp e envie apenas a foto da TV para a IA preencher tudo.
             </p>
           </div>
 
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2 bg-slate-950 p-2.5 rounded-xl border border-slate-800">
-            <span className="text-[11px] font-medium text-slate-400 px-1">
-              Operando como Capitão:
+          <div className="flex flex-col gap-1 bg-[#F5F6FA] dark:bg-zinc-800 p-2.5 rounded-2xl border border-zinc-200/70 dark:border-zinc-700 shrink-0">
+            <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 px-1">
+              Simular visão do Capitão:
             </span>
             <select
               value={activeTeamId}
               onChange={(e) => setActiveTeamId(e.target.value)}
-              className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-xs font-bold text-cyan-400 focus:outline-none focus:border-cyan-500"
+              className="px-3 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold text-[#7C5CFC] focus:outline-none"
             >
               {teams.map((t) => (
                 <option key={t.id} value={t.id}>
@@ -606,81 +602,81 @@ export default function MatchesAndSchedulePage() {
 
         {/* ALERTA DE DUPLA VALIDAÇÃO NO TOPO (CAPITÃO B VÊ SÚMULA LANÇADA PELO CAPITÃO A) */}
         {pendingValidationForMe.length > 0 && (
-          <div className="p-4 sm:p-5 rounded-2xl bg-amber-950/30 border-2 border-amber-500/60 space-y-4 shadow-lg">
+          <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border-2 border-[#7C5CFC] shadow-[0_8px_30px_-4px_rgba(124,92,252,0.18)] space-y-4">
             {pendingValidationForMe.map((pm) => (
               <div key={pm.id} className="space-y-4">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center gap-2">
-                    <span className="px-2.5 py-1 rounded-lg bg-amber-500 text-slate-950 font-extrabold text-[11px] uppercase">
-                      Ação Necessária • Dupla Validação
+                    <span className="px-3 py-1 rounded-full bg-[#7C5CFC] text-white font-extrabold text-[11px]">
+                      Validação Dupla Pendente
                     </span>
-                    <span className="text-xs text-amber-200 font-medium">
-                      Rodada #{pm.round_number} • Lançada pelo adversário
+                    <span className="text-xs text-zinc-600 dark:text-zinc-300 font-bold">
+                      Rodada #{pm.round_number} • Lançada pelo Capitão Adversário
                     </span>
                   </div>
-                  <span className="text-[11px] text-amber-300/80 font-mono">
-                    Confira o print da EA antes de aprovar
+                  <span className="text-[11px] text-zinc-500">
+                    Confira a foto oficial da partida antes de aprovar
                   </span>
                 </div>
 
-                <div className="grid md:grid-cols-12 gap-4 items-center bg-slate-950/90 p-4 rounded-xl border border-slate-800">
+                <div className="grid md:grid-cols-12 gap-4 items-center bg-[#F5F6FA] dark:bg-zinc-800/80 p-4 rounded-2xl">
                   <div className="md:col-span-5 flex items-center justify-between gap-3">
-                    <div className="text-left">
-                      <span className="text-xs text-slate-400 block">Mandante</span>
-                      <span className="text-sm sm:text-base font-extrabold text-slate-100">
+                    <div>
+                      <span className="text-[10px] text-zinc-400 font-bold block">Mandante</span>
+                      <span className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">
                         {pm.home_team?.name}
                       </span>
                     </div>
-                    <div className="px-4 py-2 rounded-xl bg-slate-900 border border-amber-500/40 text-xl font-black text-amber-400 font-mono">
+                    <div className="px-4 py-2 rounded-2xl bg-white dark:bg-zinc-900 text-lg font-black text-[#7C5CFC] shadow-sm">
                       {pm.home_score} x {pm.away_score}
                     </div>
                     <div className="text-right">
-                      <span className="text-xs text-slate-400 block">Visitante</span>
-                      <span className="text-sm sm:text-base font-extrabold text-slate-100">
+                      <span className="text-[10px] text-zinc-400 font-bold block">Visitante</span>
+                      <span className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">
                         {pm.away_team?.name}
                       </span>
                     </div>
                   </div>
 
                   {/* Artilheiros e Garçons Lançados */}
-                  <div className="md:col-span-4 border-y md:border-y-0 md:border-x border-slate-800 py-2 md:py-0 md:px-4 space-y-1">
-                    <span className="text-[10px] font-bold uppercase text-slate-400 block">
-                      Estatísticas Anexadas na Súmula:
+                  <div className="md:col-span-4 border-y md:border-y-0 md:border-x border-zinc-200 dark:border-zinc-700 py-2 md:py-0 md:px-4 space-y-1">
+                    <span className="text-[10px] font-extrabold uppercase text-zinc-400 block">
+                      Extraído via IA da Foto:
                     </span>
                     {pm.player_stats && pm.player_stats.length > 0 ? (
                       pm.player_stats.map((st) => (
                         <div
                           key={st.id}
-                          className="flex items-center justify-between text-xs text-slate-200"
+                          className="flex items-center justify-between text-xs text-zinc-800 dark:text-zinc-200"
                         >
-                          <span className="truncate font-medium">
+                          <span className="truncate font-bold">
                             {st.player?.name || st.guest_name || 'Atleta'}
                           </span>
-                          <span className="font-mono text-[11px] text-cyan-400">
-                            ⚽ {st.goals} • 👟 {st.assists} • ⭐ {st.rating}
+                          <span className="text-[11px] font-extrabold text-[#7C5CFC]">
+                            ⚽ {st.goals} • 👟 {st.assists}
                           </span>
                         </div>
                       ))
                     ) : (
-                      <span className="text-xs text-slate-500">Sem marcadores individuais</span>
+                      <span className="text-xs text-zinc-400">Sem marcadores individuais</span>
                     )}
                   </div>
 
                   {/* Print Anexo */}
-                  <div className="md:col-span-3 flex flex-col items-center gap-2">
+                  <div className="md:col-span-3">
                     {pm.proof_image_url && (
                       <a
                         href={pm.proof_image_url}
                         target="_blank"
                         rel="noreferrer"
-                        className="w-full h-20 rounded-lg overflow-hidden border border-slate-700 relative group block"
+                        className="w-full h-20 rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-700 relative block"
                       >
                         <img
                           src={pm.proof_image_url}
                           alt="Print EA"
                           className="w-full h-full object-cover"
                         />
-                        <span className="absolute inset-0 bg-slate-950/60 flex items-center justify-center text-[10px] font-bold text-white">
+                        <span className="absolute inset-0 bg-black/50 flex items-center justify-center text-[10px] font-extrabold text-white">
                           🔍 Ver Print EA
                         </span>
                       </a>
@@ -688,21 +684,23 @@ export default function MatchesAndSchedulePage() {
                   </div>
                 </div>
 
-                {/* Botões Grandes de Validação Dupla */}
+                {/* Botões Grandes de Validação Dupla (Padrão Jogueiros Green) */}
                 <div className="grid sm:grid-cols-2 gap-3">
                   <button
+                    type="button"
                     onClick={() => handleCaptainValidateMatch(pm, 'completed')}
-                    className="min-h-[48px] px-4 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-md"
+                    className="py-3.5 px-4 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2 shadow-sm"
                   >
                     <CheckCircle2 className="w-4 h-4" />
                     ✅ Validar Resultado (Homologar na Tabela)
                   </button>
                   <button
+                    type="button"
                     onClick={() => handleCaptainValidateMatch(pm, 'disputed')}
-                    className="min-h-[48px] px-4 py-3 rounded-xl bg-rose-950/70 hover:bg-rose-900 border border-rose-700 text-rose-200 font-bold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
+                    className="py-3.5 px-4 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-extrabold text-xs sm:text-sm transition-all flex items-center justify-center gap-2"
                   >
-                    <AlertTriangle className="w-4 h-4 text-rose-400" />
-                    ⚠️ Contestar para ADMs (Divergência no Print)
+                    <AlertTriangle className="w-4 h-4" />
+                    ⚠️ Contestar para ADMs
                   </button>
                 </div>
               </div>
@@ -714,236 +712,234 @@ export default function MatchesAndSchedulePage() {
         {notice && (
           <div
             className={cn(
-              'p-4 rounded-xl border text-xs flex items-center justify-between gap-3',
+              'p-4 rounded-2xl border text-xs font-bold flex items-center justify-between gap-3',
               notice.type === 'success' &&
-                'bg-emerald-950/40 border-emerald-800/60 text-emerald-300',
+                'bg-[#38C958]/15 border-[#38C958]/30 text-[#1f8a38] dark:text-[#38C958]',
               notice.type === 'warning' &&
-                'bg-amber-950/40 border-amber-800/60 text-amber-300',
+                'bg-amber-500/15 border-amber-500/30 text-amber-700 dark:text-amber-300',
               notice.type === 'error' &&
-                'bg-rose-950/40 border-rose-800/60 text-rose-300'
+                'bg-rose-500/15 border-rose-500/30 text-rose-600 dark:text-rose-300'
             )}
           >
             <span>{notice.text}</span>
             <button
+              type="button"
               onClick={() => setNotice(null)}
-              className="min-h-[32px] px-2 text-slate-400 hover:text-white"
+              className="px-2 text-zinc-400 hover:text-zinc-800"
             >
               ✕
             </button>
           </div>
         )}
 
-        {/* Navegação entre as 3 Abas do Módulo */}
-        <div className="grid grid-cols-3 gap-2 p-1.5 rounded-2xl bg-slate-900/90 border border-slate-800">
+        {/* Navegação entre as 3 Abas (Segmented Control Estilo Jogueiros) */}
+        <div className="p-1.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/70 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] grid grid-cols-3 gap-1">
           <button
+            type="button"
             onClick={() => setActiveTab('schedule')}
             className={cn(
-              'min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2',
+              'py-2.5 px-3 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'schedule'
-                ? 'bg-cyan-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#7C5CFC] text-white shadow-sm'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
             )}
           >
-            <Clock className="w-4 h-4 shrink-0" />
-            <span className="truncate">1. Tinder de Horários</span>
+            <Clock className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Tinder de Horários</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('sheet')}
             className={cn(
-              'min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2',
+              'py-2.5 px-3 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'sheet'
-                ? 'bg-cyan-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#7C5CFC] text-white shadow-sm'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
             )}
           >
-            <Sparkles className="w-4 h-4 shrink-0" />
-            <span className="truncate">2. Súmula IA & Validação</span>
+            <Camera className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">Súmula por Foto</span>
           </button>
 
           <button
+            type="button"
             onClick={() => setActiveTab('incidents')}
             className={cn(
-              'min-h-[44px] py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-2',
+              'py-2.5 px-3 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'incidents'
-                ? 'bg-amber-500 text-slate-950 shadow-sm'
-                : 'text-slate-400 hover:text-slate-200'
+                ? 'bg-[#7C5CFC] text-white shadow-sm'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
             )}
           >
-            <ShieldAlert className="w-4 h-4 shrink-0" />
-            <span className="truncate">3. Central W.O. & Quedas</span>
+            <ShieldAlert className="w-3.5 h-3.5 shrink-0" />
+            <span className="truncate">W.O. & Quedas</span>
           </button>
         </div>
 
         {/* =================================================================== */}
-        {/* ABA 1: CONFRONTOS & TINDER DE HORÁRIOS */}
+        {/* ABA 1: CONFRONTOS & TINDER DE HORÁRIOS                              */}
         {/* =================================================================== */}
         {activeTab === 'schedule' && (
-          <div className="grid lg:grid-cols-12 gap-6">
+          <div className="grid lg:grid-cols-12 gap-5">
             {/* Lista de Confrontos Flexíveis (7 Colunas) */}
-            <div className="lg:col-span-7 space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h2 className="text-sm font-bold text-slate-100">
-                    Confrontos da Equipe (Rodadas Flexíveis)
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Jogue fora da ordem numérica adiantando rodadas conforme a disponibilidade dos elencos.
-                  </p>
-                </div>
-              </div>
+            <div className="lg:col-span-7 space-y-3.5">
+              {matches.map((m) => {
+                const isHome = m.home_team_id === activeTeamId;
+                const canConfirmProposal =
+                  (isHome && m.schedule_status === 'proposed_by_away') ||
+                  (!isHome && m.schedule_status === 'proposed_by_home');
 
-              <div className="space-y-3">
-                {matches.map((m) => {
-                  const isHome = m.home_team_id === activeTeamId;
-                  const canConfirmProposal =
-                    (isHome && m.schedule_status === 'proposed_by_away') ||
-                    (!isHome && m.schedule_status === 'proposed_by_home');
+                return (
+                  <div
+                    key={m.id}
+                    className={cn(
+                      'p-5 rounded-3xl bg-white dark:bg-zinc-900 border transition-all space-y-3.5 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)]',
+                      selectedScheduleMatchId === m.id
+                        ? 'border-[#7C5CFC] ring-2 ring-[#7C5CFC]/15'
+                        : 'border-zinc-100 dark:border-zinc-800'
+                    )}
+                  >
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span className="px-2.5 py-1 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 text-[11px] font-extrabold text-[#7C5CFC]">
+                          Rodada #{m.round_number || 1}
+                        </span>
+                        <span
+                          className={cn(
+                            'px-2.5 py-1 rounded-full text-[10px] font-extrabold',
+                            m.schedule_status === 'confirmed' &&
+                              'bg-[#38C958]/15 text-[#229a3e] dark:text-[#38C958]',
+                            (m.schedule_status === 'proposed_by_home' ||
+                              m.schedule_status === 'proposed_by_away') &&
+                              'bg-amber-500/15 text-amber-600',
+                            (!m.schedule_status || m.schedule_status === 'unscheduled') &&
+                              'bg-zinc-100 dark:bg-zinc-800 text-zinc-500'
+                          )}
+                        >
+                          {m.schedule_status === 'confirmed' && 'Horário Confirmado'}
+                          {m.schedule_status === 'proposed_by_home' && 'Proposto pelo Mandante'}
+                          {m.schedule_status === 'proposed_by_away' && 'Proposto pelo Visitante'}
+                          {(!m.schedule_status || m.schedule_status === 'unscheduled') &&
+                            'Sem Horário Definido'}
+                        </span>
+                      </div>
 
-                  return (
-                    <div
-                      key={m.id}
-                      className={cn(
-                        'p-4 rounded-2xl bg-slate-900/90 border transition-all space-y-3',
-                        selectedScheduleMatchId === m.id
-                          ? 'border-cyan-500/70'
-                          : 'border-slate-800'
+                      {m.scheduled_at && (
+                        <span className="text-xs font-extrabold text-[#7C5CFC] flex items-center gap-1">
+                          <Clock className="w-3.5 h-3.5" />
+                          {new Date(m.scheduled_at).toLocaleString('pt-BR', {
+                            day: '2-digit',
+                            month: '2-digit',
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </span>
                       )}
-                    >
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span className="px-2.5 py-0.5 rounded-lg bg-slate-950 border border-slate-800 text-[11px] font-mono font-bold text-cyan-400">
-                            Rodada #{m.round_number || 1} (Flexível)
-                          </span>
-                          <span
-                            className={cn(
-                              'px-2.5 py-0.5 rounded-lg text-[10px] font-bold uppercase border',
-                              m.schedule_status === 'confirmed' &&
-                                'bg-emerald-950/50 text-emerald-300 border-emerald-800/60',
-                              (m.schedule_status === 'proposed_by_home' ||
-                                m.schedule_status === 'proposed_by_away') &&
-                                'bg-amber-950/50 text-amber-300 border-amber-800/60',
-                              (!m.schedule_status || m.schedule_status === 'unscheduled') &&
-                                'bg-slate-950 text-slate-400 border-slate-800'
-                            )}
-                          >
-                            {m.schedule_status === 'confirmed' && 'Horário Confirmado'}
-                            {m.schedule_status === 'proposed_by_home' && 'Proposto pelo Mandante'}
-                            {m.schedule_status === 'proposed_by_away' && 'Proposto pelo Visitante'}
-                            {(!m.schedule_status || m.schedule_status === 'unscheduled') &&
-                              'Sem Horário Definido'}
-                          </span>
+                    </div>
+
+                    {/* Confronto */}
+                    <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/80 flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2.5">
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-xs"
+                          style={{ backgroundColor: m.home_team?.primary_color || '#7C5CFC' }}
+                        >
+                          {(m.home_team?.name || 'CA').substring(0, 2).toUpperCase()}
                         </div>
-
-                        {m.scheduled_at && (
-                          <span className="text-xs font-mono text-amber-400 flex items-center gap-1">
-                            <Clock className="w-3.5 h-3.5" />
-                            {new Date(m.scheduled_at).toLocaleString('pt-BR', {
-                              day: '2-digit',
-                              month: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })}
+                        <div>
+                          <span className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 block">
+                            {m.home_team?.name || 'Mandante'}
                           </span>
-                        )}
-                      </div>
-
-                      {/* Confronto */}
-                      <div className="p-3.5 rounded-xl bg-slate-950 border border-slate-800/90 flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2.5">
-                          <div
-                            className="w-3 h-8 rounded-full"
-                            style={{ backgroundColor: m.home_team?.primary_color || '#06b6d4' }}
-                          />
-                          <div>
-                            <span className="text-xs sm:text-sm font-bold text-slate-100 block">
-                              {m.home_team?.name || 'Mandante'}
-                            </span>
-                            <span className="text-[10px] text-slate-500">Casa</span>
-                          </div>
-                        </div>
-
-                        <div className="text-center px-3 py-1 rounded-lg bg-slate-900 border border-slate-800 text-xs font-black text-slate-300 font-mono">
-                          {m.status === 'completed' || m.status === 'approved'
-                            ? `${m.home_score} x ${m.away_score}`
-                            : 'VS'}
-                        </div>
-
-                        <div className="flex items-center gap-2.5 text-right">
-                          <div>
-                            <span className="text-xs sm:text-sm font-bold text-slate-100 block">
-                              {m.away_team?.name || 'Visitante'}
-                            </span>
-                            <span className="text-[10px] text-slate-500">Fora</span>
-                          </div>
-                          <div
-                            className="w-3 h-8 rounded-full"
-                            style={{ backgroundColor: m.away_team?.primary_color || '#ef4444' }}
-                          />
+                          <span className="text-[10px] text-zinc-500">Casa</span>
                         </div>
                       </div>
 
-                      {/* Ações de Agendamento */}
-                      <div className="flex flex-wrap items-center gap-2 pt-1">
-                        <button
-                          onClick={() => setSelectedScheduleMatchId(m.id)}
-                          className="min-h-[44px] flex-1 px-3 py-2 rounded-xl bg-slate-950 hover:bg-slate-800 border border-slate-800 text-xs font-semibold text-cyan-400 transition-colors"
+                      <div className="text-center px-3 py-1 rounded-xl bg-white dark:bg-zinc-900 text-xs font-black text-zinc-800 dark:text-zinc-200 shadow-sm">
+                        {m.status === 'completed' || m.status === 'approved'
+                          ? `${m.home_score} x ${m.away_score}`
+                          : 'VS'}
+                      </div>
+
+                      <div className="flex items-center gap-2.5 text-right">
+                        <div>
+                          <span className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 block">
+                            {m.away_team?.name || 'Visitante'}
+                          </span>
+                          <span className="text-[10px] text-zinc-500">Fora</span>
+                        </div>
+                        <div
+                          className="w-9 h-9 rounded-full flex items-center justify-center text-white font-black text-xs"
+                          style={{ backgroundColor: m.away_team?.primary_color || '#18181B' }}
                         >
-                          ⚡ Ver Match de Horários
-                        </button>
-
-                        {canConfirmProposal && (
-                          <button
-                            onClick={() => handleConfirmSchedule(m)}
-                            className="min-h-[44px] flex-1 px-3 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-extrabold transition-colors flex items-center justify-center gap-1.5"
-                          >
-                            <Check className="w-4 h-4" />
-                            Confirmar Horário Proposto
-                          </button>
-                        )}
-
-                        <button
-                          onClick={() => {
-                            setSelectedSheetMatchId(m.id);
-                            setActiveTab('sheet');
-                          }}
-                          className="min-h-[44px] px-3 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-amber-300 text-xs font-bold transition-colors"
-                        >
-                          Lançar Súmula →
-                        </button>
-
-                        {m.scheduled_at && (
-                          <button
-                            onClick={() => handleCancelMatchCheck(m)}
-                            className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 hover:bg-rose-950/60 border border-slate-800 text-slate-400 hover:text-rose-300 text-xs font-medium transition-colors"
-                            title="Verifica regra de 60 minutos de antecedência"
-                          >
-                            Adiar
-                          </button>
-                        )}
+                          {(m.away_team?.name || 'VI').substring(0, 2).toUpperCase()}
+                        </div>
                       </div>
                     </div>
-                  );
-                })}
-              </div>
+
+                    {/* Ações de Agendamento */}
+                    <div className="flex flex-wrap items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setSelectedScheduleMatchId(m.id)}
+                        className="flex-1 py-2.5 px-3 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 hover:bg-zinc-200/70 text-xs font-extrabold text-[#7C5CFC] transition-colors"
+                      >
+                        ⚡ Ver Match de Horários
+                      </button>
+
+                      {canConfirmProposal && (
+                        <button
+                          type="button"
+                          onClick={() => handleConfirmSchedule(m)}
+                          className="flex-1 py-2.5 px-3 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white text-xs font-extrabold transition-colors flex items-center justify-center gap-1.5"
+                        >
+                          <Check className="w-4 h-4" />
+                          Confirmar Horário
+                        </button>
+                      )}
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedSheetMatchId(m.id);
+                          setActiveTab('sheet');
+                        }}
+                        className="py-2.5 px-3.5 rounded-full bg-[#7C5CFC]/10 hover:bg-[#7C5CFC]/20 text-[#7C5CFC] text-xs font-extrabold transition-colors"
+                      >
+                        Súmula por Foto →
+                      </button>
+
+                      {m.scheduled_at && (
+                        <button
+                          type="button"
+                          onClick={() => handleCancelMatchCheck(m)}
+                          className="py-2.5 px-3 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-rose-500 text-xs font-bold transition-colors"
+                          title="Trava de 60 minutos de antecedência"
+                        >
+                          Adiar
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
 
-            {/* Cruzamento Automático de Disponibilidade ("Tinder de Horários") (5 Colunas) */}
+            {/* Tinder de Horários (5 Colunas) */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
+              <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
                 <div className="space-y-1">
-                  <span className="text-[10px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#38C958]">
                     Cruzamento Automático de Elencos
                   </span>
-                  <h3 className="text-base font-bold text-slate-100">
-                    Tinder de Horários (5v5 / 11v11)
+                  <h3 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
+                    Tinder de Horários (5x5 / 11v11)
                   </h3>
-                  <p className="text-xs text-slate-400">
-                    O sistema cruza a matriz de disponibilidade semanal dos jogadores de ambos os times:
+                  <p className="text-xs text-zinc-500">
+                    Horários em que ambos os elencos possuem quórum completo:
                   </p>
                 </div>
 
-                {/* Slots de Match Ideal */}
                 <div className="space-y-2.5">
                   {availabilityMatches.map((slot, idx) => {
                     const currentMatch =
@@ -952,30 +948,24 @@ export default function MatchesAndSchedulePage() {
                       <div
                         key={idx}
                         className={cn(
-                          'p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3',
+                          'p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3',
                           slot.isIdeal
-                            ? 'bg-emerald-950/30 border-emerald-500/50'
-                            : 'bg-slate-950 border-slate-800'
+                            ? 'bg-[#38C958]/10 border-[#38C958]/30'
+                            : 'bg-[#F5F6FA] dark:bg-zinc-800 border-zinc-200/60 dark:border-zinc-700'
                         )}
                       >
-                        <div className="space-y-0.5">
-                          <div className="flex items-center gap-2">
-                            <span
-                              className={cn(
-                                'text-xs font-extrabold',
-                                slot.isIdeal ? 'text-emerald-300' : 'text-slate-200'
-                              )}
-                            >
-                              {slot.isIdeal ? '🔥 Match Ideal:' : 'Compatível:'} {slot.dayLabel} às{' '}
-                              {slot.time}
-                            </span>
-                          </div>
-                          <span className="text-[11px] text-slate-400 block">
-                            {slot.homeReady}/5 atletas Casa • {slot.awayReady}/5 atletas Fora disponíveis
+                        <div>
+                          <span className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 block">
+                            {slot.isIdeal ? '🔥 Match Ideal:' : 'Compatível:'} {slot.dayLabel} às{' '}
+                            {slot.time}
+                          </span>
+                          <span className="text-[11px] text-zinc-500 block">
+                            {slot.homeReady}/5 Casa • {slot.awayReady}/5 Fora prontos
                           </span>
                         </div>
 
                         <button
+                          type="button"
                           onClick={() =>
                             handleProposeSchedule(
                               currentMatch,
@@ -983,13 +973,13 @@ export default function MatchesAndSchedulePage() {
                             )
                           }
                           className={cn(
-                            'min-h-[44px] px-3 py-2 rounded-xl text-xs font-bold transition-colors shrink-0',
+                            'px-3.5 py-2 rounded-full text-xs font-extrabold transition-colors shrink-0',
                             slot.isIdeal
-                              ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950'
-                              : 'bg-slate-800 hover:bg-slate-700 text-slate-200'
+                              ? 'bg-[#38C958] hover:bg-[#2fb34d] text-white'
+                              : 'bg-[#7C5CFC] text-white'
                           )}
                         >
-                          Propor Horário
+                          Propor
                         </button>
                       </div>
                     );
@@ -997,15 +987,15 @@ export default function MatchesAndSchedulePage() {
                 </div>
 
                 {/* Proposta Customizada */}
-                <div className="pt-3 border-t border-slate-800 space-y-3">
-                  <label className="block text-xs font-bold text-slate-300">
-                    Ou proponha uma data/hora específica:
+                <div className="pt-3 border-t border-zinc-100 dark:border-zinc-800 space-y-3">
+                  <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300">
+                    Ou proponha outro horário:
                   </label>
                   <div className="grid grid-cols-2 gap-2">
                     <select
                       value={proposedDay}
                       onChange={(e) => setProposedDay(e.target.value)}
-                      className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200"
+                      className="px-3 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
                     >
                       {DAYS_OF_WEEK.map((d) => (
                         <option key={d.key} value={d.key}>
@@ -1016,7 +1006,7 @@ export default function MatchesAndSchedulePage() {
                     <select
                       value={proposedTime}
                       onChange={(e) => setProposedTime(e.target.value)}
-                      className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200"
+                      className="px-3 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
                     >
                       {TIME_SLOTS.map((t) => (
                         <option key={t} value={t}>
@@ -1029,18 +1019,19 @@ export default function MatchesAndSchedulePage() {
                     type="datetime-local"
                     value={customDateTime}
                     onChange={(e) => setCustomDateTime(e.target.value)}
-                    className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200"
+                    className="w-full px-3 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
                   />
                   <button
+                    type="button"
                     onClick={() => {
                       const currentMatch =
                         matches.find((m) => m.id === selectedScheduleMatchId) || matches[0];
                       handleProposeSchedule(currentMatch);
                     }}
-                    className="w-full min-h-[44px] py-2.5 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs transition-colors flex items-center justify-center gap-2"
+                    className="w-full py-3 px-4 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-extrabold text-xs transition-colors flex items-center justify-center gap-2 shadow-sm"
                   >
                     <Send className="w-3.5 h-3.5" />
-                    Enviar Proposta para o Capitão Adversário
+                    Enviar Proposta de Jogo
                   </button>
                 </div>
               </div>
@@ -1049,94 +1040,96 @@ export default function MatchesAndSchedulePage() {
         )}
 
         {/* =================================================================== */}
-        {/* ABA 2: LANÇAR / VALIDAR SÚMULA (OCR IA + CONVIDADO AVULSO) */}
+        {/* ABA 2: LANÇAR / VALIDAR SÚMULA (100% POR FOTO - ZERO DIGITAÇÃO)     */}
         {/* =================================================================== */}
         {activeTab === 'sheet' && (
-          <div className="grid lg:grid-cols-12 gap-6">
+          <div className="grid lg:grid-cols-12 gap-5">
             <div className="lg:col-span-7 space-y-4">
               <form
                 onSubmit={handleSubmitMatchSheet}
-                className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-5"
+                className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-5"
               >
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100 dark:border-zinc-800">
                   <div>
-                    <h2 className="text-base font-bold text-slate-100">
-                      Lançar Súmula Oficial da Partida
+                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC]">
+                      Zero Digitação • Gemini Vision OCR
+                    </span>
+                    <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
+                      Cadastrar Resultado por Foto
                     </h2>
-                    <p className="text-xs text-slate-400">
-                      Anexe o print pós-jogo do EA FC 26 e use a leitura automática por IA.
+                    <p className="text-xs text-zinc-500">
+                      Tire uma foto da tela pós-jogo e a IA preenche placar, gols e notas sozinha.
                     </p>
                   </div>
                   <button
                     type="button"
-                    onClick={handleRunAiOcr}
+                    onClick={() => runAiOcrWithImage()}
                     disabled={ocrLoading}
-                    className="min-h-[44px] px-4 py-2 rounded-xl bg-gradient-to-r from-cyan-500 to-amber-500 hover:opacity-95 text-slate-950 font-extrabold text-xs transition-all flex items-center justify-center gap-2 shadow-md"
+                    className="px-4 py-2.5 rounded-full bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-extrabold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm shrink-0"
                   >
                     <Sparkles className="w-4 h-4" />
-                    {ocrLoading
-                      ? 'Lendo Print via Gemini Vision...'
-                      : '✨ Preencher Súmula via IA (OCR)'}
+                    {ocrLoading ? 'Lendo Foto...' : '✨ Ler Súmula por IA'}
                   </button>
                 </div>
 
                 {/* Seletor de Partida */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Partida Realizada (qualquer rodada):
+                  <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                    Confronto Realizado:
                   </label>
                   <select
                     value={selectedSheetMatchId}
                     onChange={(e) => setSelectedSheetMatchId(e.target.value)}
-                    className="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-semibold text-slate-100"
+                    className="w-full px-4 py-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold"
                   >
                     {matches.map((m) => (
                       <option key={m.id} value={m.id}>
-                        Rodada #{m.round_number} — {m.home_team?.name} vs {m.away_team?.name} (
-                        {m.status})
+                        Rodada #{m.round_number} — {m.home_team?.name} vs {m.away_team?.name}
                       </option>
                     ))}
                   </select>
                 </div>
 
-                {/* Upload Print EA FC 26 */}
+                {/* Upload Print EA FC 26 (Dispara OCR ao anexar) */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                    Print de Desempenho EA FC 26 (Prova Anti-Fraude):
+                  <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                    Foto / Print da Tela de Desempenho EA FC 26:
                   </label>
-                  <div className="border-2 border-dashed border-slate-800 hover:border-cyan-500/50 rounded-xl p-4 text-center bg-slate-950/60 transition-colors">
+                  <div className="border-2 border-dashed border-[#7C5CFC]/40 hover:border-[#7C5CFC] rounded-3xl p-5 text-center bg-[#F5F6FA]/70 dark:bg-zinc-800/50 transition-colors">
                     {proofPreview ? (
-                      <div className="space-y-2">
+                      <div className="space-y-3">
                         <img
                           src={proofPreview}
                           alt="Preview Súmula"
-                          className="max-h-48 mx-auto rounded-lg object-contain border border-slate-800"
+                          className="max-h-48 mx-auto rounded-2xl object-contain"
                         />
-                        <div className="flex items-center justify-center gap-3">
+                        <div className="flex items-center justify-center gap-4">
                           <button
                             type="button"
-                            onClick={handleRunAiOcr}
-                            className="text-xs font-bold text-cyan-400 hover:underline"
+                            onClick={() => runAiOcrWithImage(proofPreview)}
+                            className="text-xs font-extrabold text-[#7C5CFC] hover:underline"
                           >
-                            ✨ Extrair Dados deste Print com IA
+                            ✨ Reler Dados da Foto com IA
                           </button>
                           <button
                             type="button"
                             onClick={() => setProofPreview(null)}
-                            className="text-xs text-rose-400 hover:underline"
+                            className="text-xs font-bold text-rose-500 hover:underline"
                           >
-                            Trocar Imagem
+                            Trocar Foto
                           </button>
                         </div>
                       </div>
                     ) : (
                       <label className="cursor-pointer block py-3">
-                        <UploadCloud className="w-8 h-8 text-cyan-400 mx-auto mb-1.5" />
-                        <span className="text-xs font-bold text-cyan-400 block">
-                          Toque para anexar o print da partida (ou clique em Preencher via IA)
+                        <div className="w-12 h-12 rounded-2xl bg-[#7C5CFC]/10 text-[#7C5CFC] flex items-center justify-center mx-auto mb-2">
+                          <Camera className="w-6 h-6" />
+                        </div>
+                        <span className="text-xs font-extrabold text-[#7C5CFC] block">
+                          📸 Enviar Print da Súmula (Leitura Automática IA)
                         </span>
-                        <span className="text-[10px] text-slate-500">
-                          Suporta foto da TV ou screenshot PS5 / Xbox / PC
+                        <span className="text-[11px] text-zinc-500">
+                          Ao selecionar a foto da TV ou PS5/Xbox/PC, o placar e gols são preenchidos na hora
                         </span>
                         <input
                           type="file"
@@ -1150,13 +1143,13 @@ export default function MatchesAndSchedulePage() {
                 </div>
 
                 {/* Placar da Partida */}
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block text-center mb-3">
+                <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-zinc-800/80">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-400 block text-center mb-3">
                     Placar Oficial Extraído
                   </span>
                   <div className="flex items-center justify-center gap-4">
                     <div className="text-center flex-1">
-                      <span className="text-xs font-bold text-slate-200 block mb-1.5 truncate">
+                      <span className="text-xs font-extrabold text-zinc-800 dark:text-zinc-200 block mb-1.5 truncate">
                         {currentSheetMatch?.home_team?.name || 'Mandante'}
                       </span>
                       <input
@@ -1165,12 +1158,12 @@ export default function MatchesAndSchedulePage() {
                         max={30}
                         value={homeScore}
                         onChange={(e) => setHomeScore(parseInt(e.target.value) || 0)}
-                        className="w-20 h-12 text-center text-xl font-black bg-slate-900 border border-slate-700 rounded-xl text-cyan-400 focus:outline-none focus:border-cyan-500"
+                        className="w-20 h-12 text-center text-xl font-black bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl text-[#7C5CFC]"
                       />
                     </div>
-                    <span className="text-lg font-black text-slate-600 mt-5">X</span>
+                    <span className="text-lg font-black text-zinc-400 mt-5">X</span>
                     <div className="text-center flex-1">
-                      <span className="text-xs font-bold text-slate-200 block mb-1.5 truncate">
+                      <span className="text-xs font-extrabold text-zinc-800 dark:text-zinc-200 block mb-1.5 truncate">
                         {currentSheetMatch?.away_team?.name || 'Visitante'}
                       </span>
                       <input
@@ -1179,7 +1172,7 @@ export default function MatchesAndSchedulePage() {
                         max={30}
                         value={awayScore}
                         onChange={(e) => setAwayScore(parseInt(e.target.value) || 0)}
-                        className="w-20 h-12 text-center text-xl font-black bg-slate-900 border border-slate-700 rounded-xl text-amber-400 focus:outline-none focus:border-amber-500"
+                        className="w-20 h-12 text-center text-xl font-black bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-2xl text-[#7C5CFC]"
                       />
                     </div>
                   </div>
@@ -1188,8 +1181,8 @@ export default function MatchesAndSchedulePage() {
                 {/* Gols, Assistências e Convidado Avulso */}
                 <div className="space-y-3">
                   <div className="flex flex-wrap items-center justify-between gap-2">
-                    <label className="text-xs font-bold text-slate-200">
-                      Artilheiros, Garçons & Convidados Avulsos
+                    <label className="text-xs font-extrabold text-zinc-800 dark:text-zinc-200">
+                      Artilheiros, Garçons & Convidado Avulso
                     </label>
                     <select
                       onChange={(e) => {
@@ -1198,9 +1191,9 @@ export default function MatchesAndSchedulePage() {
                           e.target.value = '';
                         }
                       }}
-                      className="min-h-[44px] px-3 py-1.5 rounded-xl bg-slate-950 border border-slate-800 text-xs text-cyan-400 font-semibold"
+                      className="px-3 py-2 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs text-[#7C5CFC] font-extrabold"
                     >
-                      <option value="">+ Adicionar Atleta Cadastrado...</option>
+                      <option value="">+ Atleta do Elenco...</option>
                       {players.map((p) => (
                         <option key={p.id} value={p.id}>
                           {p.name} ({p.primary_position || 'PRO'})
@@ -1209,44 +1202,28 @@ export default function MatchesAndSchedulePage() {
                     </select>
                   </div>
 
-                  {/* Barra de Adicionar Convidado Avulso ("Completou o time na hora") */}
-                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800/90 flex flex-col sm:flex-row gap-2">
+                  {/* Barra de Adicionar Convidado Avulso */}
+                  <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/80 flex flex-col sm:flex-row gap-2">
                     <input
                       type="text"
                       value={guestNameInput}
                       onChange={(e) => setGuestNameInput(e.target.value)}
-                      placeholder="Nome do Convidado Avulso (ex: Amigo_5x5)"
-                      className="min-h-[44px] flex-1 px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-100"
+                      placeholder="Jogador Convidado Avulso (completou o time)"
+                      className="flex-1 px-3 py-2 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold"
                     />
-                    <select
-                      value={guestTeamId || currentSheetMatch?.home_team_id || ''}
-                      onChange={(e) => setGuestTeamId(e.target.value)}
-                      className="min-h-[44px] px-3 py-2 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-300"
-                    >
-                      {currentSheetMatch?.home_team && (
-                        <option value={currentSheetMatch.home_team_id}>
-                          {currentSheetMatch.home_team.name}
-                        </option>
-                      )}
-                      {currentSheetMatch?.away_team && (
-                        <option value={currentSheetMatch.away_team_id}>
-                          {currentSheetMatch.away_team.name}
-                        </option>
-                      )}
-                    </select>
                     <button
                       type="button"
                       onClick={handleAddGuestPlayerRow}
-                      className="min-h-[44px] px-3.5 py-2 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center justify-center gap-1.5 shrink-0"
+                      className="px-3.5 py-2 rounded-xl bg-[#7C5CFC]/15 text-[#7C5CFC] text-xs font-extrabold flex items-center justify-center gap-1.5 shrink-0"
                     >
                       <UserPlus className="w-3.5 h-3.5" />
-                      + Convidado Avulso
+                      + Avulso
                     </button>
                   </div>
 
                   {/* Lista de Jogadores na Súmula */}
                   {statRows.length > 0 && (
-                    <div className="space-y-2 p-3 rounded-xl bg-slate-950 border border-slate-800">
+                    <div className="space-y-2 p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/60">
                       {statRows.map((row, idx) => {
                         const regPlayer = players.find((p) => p.id === row.playerId);
                         const displayName = row.isGuest
@@ -1256,26 +1233,26 @@ export default function MatchesAndSchedulePage() {
                         return (
                           <div
                             key={row.id}
-                            className="flex flex-wrap items-center justify-between gap-2 p-2 rounded-lg bg-slate-900/90 border border-slate-800 text-xs"
+                            className="flex flex-wrap items-center justify-between gap-2 p-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 text-xs"
                           >
-                            <div className="flex items-center gap-2 min-w-[140px]">
+                            <div className="flex items-center gap-2 min-w-[130px]">
                               <span
                                 className={cn(
-                                  'px-1.5 py-0.5 rounded text-[9px] font-bold uppercase',
+                                  'px-2 py-0.5 rounded-full text-[9px] font-extrabold uppercase',
                                   row.isGuest
-                                    ? 'bg-amber-500/20 text-amber-300'
-                                    : 'bg-cyan-500/20 text-cyan-300'
+                                    ? 'bg-amber-500/15 text-amber-600'
+                                    : 'bg-[#7C5CFC]/10 text-[#7C5CFC]'
                                 )}
                               >
                                 {row.isGuest ? 'AVULSO' : 'ELENCO'}
                               </span>
-                              <span className="font-bold text-slate-100 truncate">
+                              <span className="font-extrabold text-zinc-900 dark:text-zinc-100 truncate">
                                 {displayName}
                               </span>
                             </div>
 
                             <div className="flex items-center gap-2">
-                              <label className="flex items-center gap-1 text-[11px] text-slate-400">
+                              <label className="flex items-center gap-1 text-[11px] font-bold text-zinc-500">
                                 ⚽
                                 <input
                                   type="number"
@@ -1289,11 +1266,11 @@ export default function MatchesAndSchedulePage() {
                                       )
                                     );
                                   }}
-                                  className="w-11 h-8 text-center rounded bg-slate-950 border border-slate-700 text-slate-100 font-bold"
+                                  className="w-11 h-8 text-center rounded-lg bg-[#F5F6FA] dark:bg-zinc-800 font-extrabold text-zinc-900 dark:text-zinc-100"
                                 />
                               </label>
 
-                              <label className="flex items-center gap-1 text-[11px] text-slate-400">
+                              <label className="flex items-center gap-1 text-[11px] font-bold text-zinc-500">
                                 👟
                                 <input
                                   type="number"
@@ -1307,27 +1284,7 @@ export default function MatchesAndSchedulePage() {
                                       )
                                     );
                                   }}
-                                  className="w-11 h-8 text-center rounded bg-slate-950 border border-slate-700 text-slate-100 font-bold"
-                                />
-                              </label>
-
-                              <label className="flex items-center gap-1 text-[11px] text-slate-400">
-                                ⭐
-                                <input
-                                  type="number"
-                                  step="0.1"
-                                  min={0}
-                                  max={10}
-                                  value={row.rating}
-                                  onChange={(e) => {
-                                    const val = parseFloat(e.target.value) || 7.0;
-                                    setStatRows((prev) =>
-                                      prev.map((item, i) =>
-                                        i === idx ? { ...item, rating: val } : item
-                                      )
-                                    );
-                                  }}
-                                  className="w-14 h-8 text-center rounded bg-slate-950 border border-slate-700 text-amber-400 font-bold"
+                                  className="w-11 h-8 text-center rounded-lg bg-[#F5F6FA] dark:bg-zinc-800 font-extrabold text-zinc-900 dark:text-zinc-100"
                                 />
                               </label>
 
@@ -1336,7 +1293,7 @@ export default function MatchesAndSchedulePage() {
                                 onClick={() =>
                                   setStatRows((prev) => prev.filter((_, i) => i !== idx))
                                 }
-                                className="p-1.5 text-slate-500 hover:text-rose-400"
+                                className="p-1 text-zinc-400 hover:text-rose-500"
                               >
                                 <X className="w-4 h-4" />
                               </button>
@@ -1351,76 +1308,78 @@ export default function MatchesAndSchedulePage() {
                 <button
                   type="submit"
                   disabled={submittingSheet}
-                  className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 shadow-md"
+                  className="w-full py-3.5 px-5 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-extrabold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   <Send className="w-4 h-4" />
                   {submittingSheet
-                    ? 'Salvando Súmula...'
-                    : 'Salvar Súmula & Enviar para Validação do Capitão Adversário'}
+                    ? 'Enviando Súmula...'
+                    : 'Prosseguir e Enviar para Validação do Adversário'}
                 </button>
               </form>
             </div>
 
             {/* Coluna Direita: Status de Dupla Validação das Partidas (5 Colunas) */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
-                <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider">
+              <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
+                <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">
                   Status das Súmulas (Dupla Validação)
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Dica: Troque o seletor &ldquo;Operando como Capitão&rdquo; no topo da página para testar a visão do Capitão B aprovando na hora!
+                <p className="text-xs text-zinc-500">
+                  Mude o seletor de Capitão no topo da tela para testar a visão do Capitão B aprovando em 1 toque.
                 </p>
 
                 <div className="space-y-3">
                   {matches.map((m) => (
                     <div
                       key={m.id}
-                      className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5"
+                      className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 space-y-2.5"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="text-[11px] font-mono text-slate-400">
+                        <span className="text-[11px] font-bold text-zinc-500">
                           Rodada #{m.round_number}
                         </span>
                         <span
                           className={cn(
-                            'px-2 py-0.5 rounded text-[10px] font-bold uppercase border',
+                            'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold',
                             (m.status === 'completed' || m.status === 'approved') &&
-                              'bg-emerald-950/50 text-emerald-300 border-emerald-800/50',
+                              'bg-[#38C958]/15 text-[#229a3e] dark:text-[#38C958]',
                             m.status === 'pending_validation' &&
-                              'bg-amber-950/50 text-amber-300 border-amber-800/50',
+                              'bg-amber-500/15 text-amber-600',
                             m.status === 'disputed' &&
-                              'bg-rose-950/50 text-rose-300 border-rose-800/50',
+                              'bg-rose-500/15 text-rose-600',
                             m.status === 'scheduled' &&
-                              'bg-slate-900 text-slate-400 border-slate-800'
+                              'bg-zinc-200/70 dark:bg-zinc-700 text-zinc-600 dark:text-zinc-300'
                           )}
                         >
                           {(m.status === 'completed' || m.status === 'approved') &&
-                            '✅ Validada por Ambos'}
+                            '✅ Validada'}
                           {m.status === 'pending_validation' && '⏳ Aguardando Capitão B'}
                           {m.status === 'disputed' && '⚠️ Em Auditoria ADM'}
                           {m.status === 'scheduled' && 'Agendada'}
                         </span>
                       </div>
 
-                      <div className="flex items-center justify-between text-xs font-bold">
-                        <span className="text-slate-200">{m.home_team?.name}</span>
-                        <span className="px-2.5 py-1 rounded bg-slate-900 text-cyan-400 font-mono">
+                      <div className="flex items-center justify-between text-xs font-extrabold">
+                        <span className="truncate">{m.home_team?.name}</span>
+                        <span className="px-2.5 py-1 rounded-xl bg-white dark:bg-zinc-900 text-[#7C5CFC]">
                           {m.home_score} x {m.away_score}
                         </span>
-                        <span className="text-slate-200">{m.away_team?.name}</span>
+                        <span className="truncate">{m.away_team?.name}</span>
                       </div>
 
                       {m.status === 'pending_validation' && (
-                        <div className="pt-2 border-t border-slate-800/80 flex gap-2">
+                        <div className="pt-2 border-t border-zinc-200/70 dark:border-zinc-700 flex gap-2">
                           <button
+                            type="button"
                             onClick={() => handleCaptainValidateMatch(m, 'completed')}
-                            className="min-h-[40px] flex-1 py-1.5 px-2.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px]"
+                            className="flex-1 py-2 px-3 rounded-full bg-[#38C958] text-white font-extrabold text-[11px]"
                           >
                             ✅ Validar Resultado
                           </button>
                           <button
+                            type="button"
                             onClick={() => handleCaptainValidateMatch(m, 'disputed')}
-                            className="min-h-[40px] py-1.5 px-2.5 rounded-lg bg-rose-950 hover:bg-rose-900 text-rose-300 border border-rose-800 font-bold text-[11px]"
+                            className="py-2 px-3 rounded-full bg-rose-500/15 text-rose-600 font-extrabold text-[11px]"
                           >
                             ⚠️ Contestar
                           </button>
@@ -1435,34 +1394,34 @@ export default function MatchesAndSchedulePage() {
         )}
 
         {/* =================================================================== */}
-        {/* ABA 3: CENTRAL DE W.O. E QUEDAS (REGRAS AUTOMATIZADAS) */}
+        {/* ABA 3: CENTRAL DE W.O. E QUEDAS (REGRAS AUTOMATIZADAS LPF)          */}
         {/* =================================================================== */}
         {activeTab === 'incidents' && (
-          <div className="grid lg:grid-cols-12 gap-6">
+          <div className="grid lg:grid-cols-12 gap-5">
             <div className="lg:col-span-7 space-y-4">
               <form
                 onSubmit={handleCreateIncident}
-                className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4"
+                className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4"
               >
-                <div className="pb-3 border-b border-slate-800">
-                  <h2 className="text-base font-bold text-slate-100 flex items-center gap-2">
-                    <ShieldAlert className="w-5 h-5 text-amber-400" />
-                    Acionar Regra Oficial (W.O., Atraso ou Queda de Conexão)
+                <div className="pb-3 border-b border-zinc-100 dark:border-zinc-800">
+                  <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-2">
+                    <ShieldAlert className="w-5 h-5 text-[#7C5CFC]" />
+                    Assistente de Regras LPF (W.O., Atraso ou Queda)
                   </h2>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    Calculadora automática de decisão conforme o livro de regras da Liga.
+                  <p className="text-xs text-zinc-500 mt-0.5">
+                    Cálculo automático de decisão conforme o livro de regras da Liga 5x5 LPF.
                   </p>
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1">
                       Partida Referente:
                     </label>
                     <select
                       value={incidentMatchId}
                       onChange={(e) => setIncidentMatchId(e.target.value)}
-                      className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
+                      className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
                     >
                       {matches.map((m) => (
                         <option key={m.id} value={m.id}>
@@ -1473,16 +1432,16 @@ export default function MatchesAndSchedulePage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Tipo de Ocorrência:
+                    <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1">
+                      Ocorrência:
                     </label>
                     <select
                       value={incidentType}
                       onChange={(e) => setIncidentType(e.target.value as IncidentType)}
-                      className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-amber-400 font-bold"
+                      className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs text-[#7C5CFC] font-extrabold"
                     >
                       <option value="player_disconnect_first_20">
-                        Queda de Jogador (Até 20 min do 1º Tempo)
+                        Queda de Conexão (Até 20 min do 1º Tempo)
                       </option>
                       <option value="player_disconnect_halftime">
                         Queda no Intervalo / 2º Tempo (&gt; 20 min)
@@ -1494,7 +1453,7 @@ export default function MatchesAndSchedulePage() {
                         Cancelamento Tardio (&lt; 60 min antes do jogo)
                       </option>
                       <option value="game_bug">
-                        Bug Crítico do EA FC 26 (Tela Congelada / Uniforme)
+                        Bug do EA FC 26 (Lobby / Congelamento)
                       </option>
                     </select>
                   </div>
@@ -1503,7 +1462,7 @@ export default function MatchesAndSchedulePage() {
                 {/* Minuto e Placar no momento da queda */}
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
+                    <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1">
                       Minuto do Jogo na Queda (0 a 90):
                     </label>
                     <input
@@ -1512,53 +1471,60 @@ export default function MatchesAndSchedulePage() {
                       max={120}
                       value={minuteOccurred}
                       onChange={(e) => setMinuteOccurred(parseInt(e.target.value) || 0)}
-                      className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-100"
+                      className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold"
                     />
                   </div>
                   <div>
-                    <label className="block text-xs font-semibold text-slate-300 mb-1">
-                      Placar no Momento do Incidente:
+                    <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1">
+                      Placar no Momento:
                     </label>
                     <input
                       type="text"
                       value={scoreAtIncident}
                       onChange={(e) => setScoreAtIncident(e.target.value)}
                       placeholder="Ex: 1 x 0"
-                      className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono text-slate-100"
+                      className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold"
                     />
                   </div>
                 </div>
 
                 {/* Card Automático da Regra Aplicável */}
-                <div className="p-4 rounded-xl bg-slate-950 border-2 border-cyan-500/40 space-y-1.5">
-                  <span className="text-[10px] font-mono font-extrabold uppercase tracking-wider text-cyan-400 block">
+                <div className="p-4 rounded-2xl bg-[#7C5CFC]/10 border border-[#7C5CFC]/30 space-y-1.5">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
                     ⚡ {disconnectRuleInstruction.badge}
                   </span>
-                  <h4 className="text-sm font-extrabold text-slate-100">
+                  <h4 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">
                     {disconnectRuleInstruction.ruleTitle}
                   </h4>
-                  <p className="text-xs text-slate-300 leading-relaxed">
+                  <p className="text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
                     {disconnectRuleInstruction.description}
                   </p>
                 </div>
 
-                {/* Evidência (Print do Lobby com Relógio ou Vídeo da Queda) */}
+                {/* Upload de Foto do Lobby com Relógio (Zero Digitação) */}
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Evidência Obrigatória (Print do Lobby + Relógio ou Print da Queda):
+                  <label className="block text-xs font-extrabold text-zinc-700 dark:text-zinc-300 mb-1.5">
+                    Foto do Lobby EA FC 26 com Relógio / Print da Queda:
                   </label>
-                  <input
-                    type="url"
-                    value={evidencePreview || ''}
-                    onChange={(e) => setEvidencePreview(e.target.value)}
-                    placeholder="Cole a URL do print/vídeo ou deixe em branco para anexar captura padrão..."
-                    className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200"
-                  />
+                  <label className="cursor-pointer flex items-center justify-center gap-2 p-3.5 rounded-2xl border-2 border-dashed border-zinc-300 dark:border-zinc-700 hover:border-[#7C5CFC] bg-[#F5F6FA] dark:bg-zinc-800/60 text-xs font-extrabold text-[#7C5CFC]">
+                    <Camera className="w-4 h-4" />
+                    <span>
+                      {evidencePreview
+                        ? '✅ Foto Anexada (Toque para trocar)'
+                        : '📸 Anexar Print do Lobby com Horário'}
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleEvidencePhotoUpload}
+                      className="hidden"
+                    />
+                  </label>
                 </div>
 
                 <button
                   type="submit"
-                  className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-extrabold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2"
+                  className="w-full py-3.5 px-4 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-extrabold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 shadow-sm"
                 >
                   <ShieldAlert className="w-4 h-4" />
                   Protocolar Ocorrência Oficial na Liga
@@ -1568,37 +1534,37 @@ export default function MatchesAndSchedulePage() {
 
             {/* Lista de Incidentes Protocolados */}
             <div className="lg:col-span-5 space-y-4">
-              <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
-                <h3 className="text-sm font-bold text-slate-100 uppercase tracking-wider">
+              <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3">
+                <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">
                   Histórico de Chamados (W.O. & Quedas)
                 </h3>
                 <div className="space-y-3">
                   {incidents.map((inc) => (
                     <div
                       key={inc.id}
-                      className="p-3.5 rounded-xl bg-slate-950 border border-slate-800 space-y-2 text-xs"
+                      className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 space-y-1.5 text-xs"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-amber-400 uppercase text-[10px]">
+                        <span className="font-extrabold text-[#7C5CFC] uppercase text-[10px]">
                           {inc.incident_type.replace(/_/g, ' ')}
                         </span>
                         <span
                           className={cn(
-                            'px-2 py-0.5 rounded text-[10px] font-bold uppercase',
+                            'px-2.5 py-0.5 rounded-full text-[10px] font-extrabold',
                             inc.status === 'resolved'
-                              ? 'bg-emerald-950 text-emerald-300 border border-emerald-800'
-                              : 'bg-amber-950 text-amber-300 border border-amber-800'
+                              ? 'bg-[#38C958]/15 text-[#229a3e]'
+                              : 'bg-amber-500/15 text-amber-600'
                           )}
                         >
                           {inc.status === 'resolved' ? 'Resolvido' : 'Em Análise ADM'}
                         </span>
                       </div>
-                      <p className="text-slate-200 font-semibold">
+                      <p className="text-zinc-900 dark:text-zinc-100 font-bold">
                         Minuto {inc.minute_occurred}&apos; • Placar: {inc.score_at_incident}
                       </p>
                       {inc.admin_resolution_notes && (
-                        <p className="text-[11px] text-slate-400">
-                          Diretriz: {inc.admin_resolution_notes}
+                        <p className="text-[11px] text-zinc-500">
+                          Regra: {inc.admin_resolution_notes}
                         </p>
                       )}
                     </div>

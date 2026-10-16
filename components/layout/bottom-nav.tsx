@@ -5,21 +5,22 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home,
-  CalendarCheck2,
-  Shield,
-  Sparkles,
-  Trophy,
+  Search,
+  CircleDot,
+  Images,
+  User,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-context';
 import { cn } from '@/lib/utils';
 
 export function BottomNav() {
   const pathname = usePathname();
-  const { session, isAdmin } = useAuth();
+  const { session } = useAuth();
 
-  // Define rota inteligente para "Meu Time" e "Liga / Admin"
-  const myTeamHref = session?.role === 'captain' || session?.role === 'admin' ? '/captain' : '/player';
-  const leagueAdminHref = isAdmin ? '/admin' : '/tournaments';
+  const profileHref =
+    session?.role === 'player'
+      ? '/player'
+      : '/captain';
 
   const tabs = [
     {
@@ -27,77 +28,89 @@ export function BottomNav() {
       label: 'Início',
       href: '/',
       icon: Home,
-      matchPrefix: ['/'],
-      exact: true,
+      isActive: pathname === '/' || pathname.startsWith('/rankings') || pathname.startsWith('/tournaments'),
+      isAvatar: false,
+    },
+    {
+      id: 'search',
+      label: 'Buscar',
+      href: '/market',
+      icon: Search,
+      isActive: pathname.startsWith('/market'),
+      isAvatar: false,
     },
     {
       id: 'matches',
-      label: 'Agenda & Súmula',
+      label: 'Jogos',
       href: '/matches',
-      icon: CalendarCheck2,
-      matchPrefix: ['/matches'],
-      exact: false,
-    },
-    {
-      id: 'team',
-      label: 'Meu Time',
-      href: myTeamHref,
-      icon: Shield,
-      matchPrefix: ['/captain', '/player', '/players'],
-      exact: false,
+      icon: CircleDot,
+      isActive: pathname.startsWith('/matches'),
+      isAvatar: false,
     },
     {
       id: 'studio',
-      label: 'Estúdio IA',
+      label: 'Banners',
       href: '/studio',
-      icon: Sparkles,
-      matchPrefix: ['/studio'],
-      exact: false,
+      icon: Images,
+      isActive: pathname.startsWith('/studio'),
+      isAvatar: false,
     },
     {
-      id: 'league',
-      label: isAdmin ? 'Admin ERP' : 'Liga',
-      href: leagueAdminHref,
-      icon: Trophy,
-      matchPrefix: ['/tournaments', '/admin', '/rankings', '/market'],
-      exact: false,
+      id: 'profile',
+      label: 'Perfil',
+      href: profileHref,
+      icon: User,
+      isActive:
+        pathname.startsWith('/captain') ||
+        pathname.startsWith('/player') ||
+        pathname.startsWith('/players') ||
+        pathname.startsWith('/admin'),
+      isAvatar: true,
     },
   ];
 
+  const initials =
+    session?.role === 'player'
+      ? 'JF'
+      : session?.role === 'admin'
+      ? 'LPF'
+      : 'FP';
+
   return (
     <nav
-      aria-label="Navegação Principal Mobile"
-      className="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-slate-950/95 backdrop-blur-md border-t border-slate-800/80 z-50 px-1.5 flex items-center justify-around select-none"
+      aria-label="Navegação Principal Jogueiros"
+      className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md h-16 bg-[#7C5CFC] rounded-full px-3 flex items-center justify-between shadow-xl z-50 select-none"
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;
-        const isActive = tab.exact
-          ? pathname === '/'
-          : tab.matchPrefix.some((prefix) => pathname.startsWith(prefix));
+        const active = tab.isActive;
 
         return (
           <Link
             key={tab.id}
             href={tab.href}
             className={cn(
-              'min-h-[44px] flex-1 flex flex-col items-center justify-center gap-0.5 rounded-xl transition-all px-1 relative',
-              isActive
-                ? 'text-cyan-400 font-bold bg-slate-900/90 border border-slate-800/90'
-                : 'text-slate-400 hover:text-slate-200'
+              active
+                ? 'bg-white text-[#7C5CFC] px-4 py-2 rounded-full flex items-center gap-2 font-bold text-sm shadow-sm transition-all'
+                : 'text-white/90 hover:text-white p-2.5 rounded-full flex items-center justify-center transition-all'
             )}
           >
-            <Icon
-              className={cn(
-                'w-4 h-4 transition-transform',
-                isActive ? 'text-cyan-400 scale-105' : 'text-slate-400'
-              )}
-            />
-            <span className="text-[10px] leading-tight tracking-tight truncate max-w-[68px]">
-              {tab.label}
-            </span>
-            {isActive && (
-              <span className="absolute -top-0.5 w-5 h-0.5 rounded-full bg-cyan-400" />
+            {tab.isAvatar ? (
+              <span
+                className={cn(
+                  'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black border-2 transition-all shrink-0',
+                  active
+                    ? 'bg-[#7C5CFC] text-white border-[#7C5CFC]'
+                    : 'bg-white/20 text-white border-white/70'
+                )}
+              >
+                {initials}
+              </span>
+            ) : (
+              <Icon className="w-5 h-5 shrink-0" />
             )}
+
+            {active && <span className="truncate">{tab.label}</span>}
           </Link>
         );
       })}

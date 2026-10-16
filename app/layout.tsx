@@ -5,9 +5,9 @@ import { BottomNav } from '@/components/layout/bottom-nav';
 import { AuthProvider } from '@/components/auth/auth-context';
 
 export const metadata: Metadata = {
-  title: 'DraftClub PRO • Gestão Inteligente de Ligas EA FC 26 (5x5 & 11v11)',
+  title: 'DraftClub • Jogueiros PRO Edition (EA FC 26 5x5 & 11v11)',
   description:
-    'Plataforma Mobile-First para Ligas de EA FC 26 Pro Clubs: Tinder de Horários, Súmula com IA Gemini Vision OCR, Dupla Validação Anti-Fraude, Estúdio Criativo de Banners e ERP Financeiro.',
+    'Aplicativo de gestão de times e ligas de EA FC 26 Pro Clubs: Súmula por Foto (IA Vision OCR), Tinder de Horários, Banners Automáticos e Caixa do Time.',
 };
 
 export default function RootLayout({
@@ -16,11 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR" className="dark">
-      <body className="bg-slate-950 text-slate-50 antialiased min-h-screen flex flex-col selection:bg-cyan-500 selection:text-slate-950">
+    <html lang="pt-BR">
+      <body className="bg-[#F5F6FA] dark:bg-zinc-950 text-[#18181B] dark:text-zinc-100 antialiased min-h-screen flex flex-col selection:bg-[#7C5CFC] selection:text-white transition-colors">
         <AuthProvider>
           <Header />
-          <div className="flex-1 pb-20 md:pb-6">{children}</div>
+          <div className="flex-1 pb-28">{children}</div>
           <BottomNav />
         </AuthProvider>
       </body>

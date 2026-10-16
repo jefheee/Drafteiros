@@ -19,19 +19,21 @@ import {
 import { cn } from '@/lib/utils';
 import {
   Trophy,
-  CalendarCheck2,
+  Calendar,
   Sparkles,
-  FileCheck2,
+  Camera,
   Flame,
   Award,
   Clock,
-  ArrowRight,
+  ChevronRight,
   Shield,
-  Users,
-  DollarSign,
+  CheckCircle2,
+  SlidersHorizontal,
+  Plus,
 } from 'lucide-react';
 
 export default function HomePage() {
+  const [activeSegment, setActiveSegment] = useState<'matches' | 'standings' | 'rankings'>('matches');
   const [standings, setStandings] = useState<TournamentStanding[]>(FALLBACK_STANDINGS);
   const [scorers, setScorers] = useState<TopScorer[]>(FALLBACK_SCORERS);
   const [assists, setAssists] = useState<TopAssist[]>(FALLBACK_ASSISTS);
@@ -50,14 +52,14 @@ export default function HomePage() {
           .from('vw_top_scorers')
           .select('*')
           .order('rank', { ascending: true })
-          .limit(3);
+          .limit(5);
         if (scData && scData.length > 0) setScorers(scData as any);
 
         const { data: asData } = await supabase
           .from('vw_top_assists')
           .select('*')
           .order('rank', { ascending: true })
-          .limit(3);
+          .limit(5);
         if (asData && asData.length > 0) setAssists(asData as any);
 
         const { data: mData } = await supabase
@@ -71,236 +73,297 @@ export default function HomePage() {
           .limit(6);
         if (mData && mData.length > 0) setMatches(mData as any);
       } catch {
-        // mantém fallback da Liga Argentina 5x5
+        // mantém fallback da Liga Argentina 5x5 LPF
       }
     }
     loadLiveHubData();
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8">
-      <main className="max-w-6xl mx-auto space-y-6">
+    <div className="min-h-screen bg-[#F5F6FA] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-4 py-5 pb-28">
+      <main className="max-w-3xl mx-auto space-y-5">
         {/* ================================================================= */}
-        {/* 1. CARD DE DESTAQUE DA LIGA ATIVA + ATALHOS RÁPIDOS MOBILE-FIRST */}
+        {/* 1. CABEÇALHO ELEGANTE DA LIGA 5x5 LPF (PADRÃO JOGUEIROS CLEAN)    */}
         {/* ================================================================= */}
-        <section className="p-5 sm:p-6 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-5 relative overflow-hidden">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-            <div className="space-y-1.5">
-              <div className="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 text-[11px] font-extrabold uppercase tracking-wider">
-                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
-                Temporada Oficial EA FC 26 • Pro Clubs
+        <section className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="flex items-start gap-3.5">
+              <div className="w-14 h-14 rounded-2xl bg-[#7C5CFC]/10 border border-[#7C5CFC]/20 flex items-center justify-center text-[#7C5CFC] shrink-0">
+                <Trophy className="w-7 h-7" />
               </div>
-              <h1 className="text-2xl sm:text-3xl font-black tracking-tight text-slate-100">
-                {FALLBACK_TOURNAMENT.name}
-              </h1>
-              <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
-                Formato 5x5 (5 Titulares + 1 Reserva) • Agendamento Inteligente, Súmula via Gemini Vision OCR com Dupla Validação de Capitães e Rateio Automático de Premiações.
-              </p>
+              <div className="space-y-1">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#229a3e] dark:text-[#38C958] text-[11px] font-extrabold">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#38C958] animate-pulse" />
+                  Temporada Oficial 5x5 • Zero Digitação
+                </div>
+                <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100">
+                  {FALLBACK_TOURNAMENT.name}
+                </h1>
+                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                  Inscrição R$ 70,00 • 5 Titulares + 1 Reserva • Súmula por Foto (IA)
+                </p>
+              </div>
             </div>
 
-            {/* Pote de Premiação em Destaque */}
-            <div className="flex items-center gap-3 bg-slate-950 p-3.5 rounded-2xl border border-amber-500/40 shrink-0">
-              <div className="w-11 h-11 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400">
-                <Trophy className="w-5 h-5" />
-              </div>
+            {/* Pílula Premiação R$ 560 */}
+            <Link
+              href="/admin"
+              className="flex items-center justify-between sm:justify-start gap-3 px-4 py-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/80 border border-zinc-200/70 dark:border-zinc-700 hover:border-[#7C5CFC]/40 transition-all shrink-0"
+            >
               <div>
-                <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold block">
-                  Premiação Oficial
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                  Premiação Total
                 </span>
-                <span className="text-lg font-black text-slate-100 font-mono">
-                  R$ 560,00 em Jogo
+                <span className="text-base font-black text-zinc-900 dark:text-zinc-100">
+                  R$ 560,00
                 </span>
-                <span className="text-[10px] text-slate-400 block">
-                  1º R$300 • 2º R$120 • 3º R$80 • Art/Gar R$30
+                <span className="text-[10px] text-zinc-500 block">
+                  1º R$300 • 2º R$120 • 3º R$80
                 </span>
               </div>
-            </div>
+              <ChevronRight className="w-4 h-4 text-zinc-400" />
+            </Link>
           </div>
 
-          {/* 3 Atalhos Rápidos Direto ao Ponto */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-slate-800/80">
+          {/* Atalhos Rápidos Estilo Jogueiros */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5 pt-2 border-t border-zinc-100 dark:border-zinc-800">
             <Link
               href="/matches"
-              className="min-h-[48px] p-3.5 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs sm:text-sm transition-all flex items-center justify-between shadow-md group"
+              className="py-3 px-4 rounded-2xl bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-xs flex items-center justify-between shadow-sm transition-all"
             >
-              <div className="flex items-center gap-2.5">
-                <FileCheck2 className="w-5 h-5" />
-                <span>Lançar / Validar Súmula IA</span>
-              </div>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-            </Link>
-
-            <Link
-              href="/matches"
-              className="min-h-[48px] p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-cyan-500/40 text-cyan-400 font-bold text-xs sm:text-sm transition-all flex items-center justify-between group"
-            >
-              <div className="flex items-center gap-2.5">
-                <CalendarCheck2 className="w-5 h-5 text-cyan-400" />
-                <span>Bater Horário (Tinder 5x5)</span>
-              </div>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              <span className="flex items-center gap-2">
+                <Camera className="w-4 h-4 shrink-0" />
+                Lançar Súmula
+              </span>
+              <ChevronRight className="w-4 h-4" />
             </Link>
 
             <Link
               href="/studio"
-              className="min-h-[48px] p-3.5 rounded-xl bg-slate-950 hover:bg-slate-800 border border-amber-500/40 text-amber-400 font-bold text-xs sm:text-sm transition-all flex items-center justify-between group"
+              className="py-3 px-4 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center justify-between shadow-sm transition-all"
             >
-              <div className="flex items-center gap-2.5">
-                <Sparkles className="w-5 h-5 text-amber-400" />
-                <span>Estúdio IA (Banners & Resenha)</span>
-              </div>
-              <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
+              <span className="flex items-center gap-2">
+                <Sparkles className="w-4 h-4 shrink-0" />
+                Criar Banner IA
+              </span>
+              <ChevronRight className="w-4 h-4" />
             </Link>
-          </div>
-        </section>
 
-        {/* ================================================================= */}
-        {/* 2. SEÇÃO "JOGOS DA RODADA" (SWIPEABLE / SCROLL HORIZONTAL MOBILE) */}
-        {/* ================================================================= */}
-        <section className="space-y-3">
-          <div className="flex items-center justify-between px-1">
-            <div>
-              <h2 className="text-sm sm:text-base font-extrabold text-slate-100 flex items-center gap-2">
-                <Clock className="w-4 h-4 text-cyan-400" />
-                Jogos da Rodada & Últimos Resultados
-              </h2>
-              <p className="text-xs text-slate-400">
-                Deslize para o lado para ver os confrontos agendados e súmulas homologadas
-              </p>
-            </div>
             <Link
-              href="/matches"
-              className="text-xs font-bold text-cyan-400 hover:underline flex items-center gap-1"
+              href="/captain"
+              className="col-span-2 sm:col-span-1 py-3 px-4 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 hover:bg-zinc-200/70 text-zinc-800 dark:text-zinc-200 font-bold text-xs flex items-center justify-between transition-all"
             >
-              Ver Todos <ArrowRight className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-2">
+                <Shield className="w-4 h-4 text-[#7C5CFC] shrink-0" />
+                Meu Time (Caixa)
+              </span>
+              <ChevronRight className="w-4 h-4 text-zinc-400" />
             </Link>
-          </div>
-
-          <div className="flex gap-3.5 overflow-x-auto pb-2 snap-x snap-mandatory">
-            {matches.map((m) => {
-              const isCompleted = m.status === 'completed' || m.status === 'approved';
-              const isPendingVal = m.status === 'pending_validation';
-
-              return (
-                <Link
-                  key={m.id}
-                  href="/matches"
-                  className="min-w-[275px] sm:min-w-[310px] snap-start p-4 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-cyan-500/50 transition-all space-y-3 shrink-0"
-                >
-                  <div className="flex items-center justify-between text-[10px]">
-                    <span className="font-mono font-bold text-slate-400">
-                      RODADA #{m.round_number || 1}
-                    </span>
-                    <span
-                      className={cn(
-                        'px-2 py-0.5 rounded font-bold uppercase border',
-                        isCompleted &&
-                          'bg-emerald-950/60 text-emerald-300 border-emerald-800/60',
-                        isPendingVal &&
-                          'bg-amber-950/60 text-amber-300 border-amber-800/60',
-                        !isCompleted &&
-                          !isPendingVal &&
-                          'bg-slate-950 text-cyan-400 border-slate-800'
-                      )}
-                    >
-                      {isCompleted
-                        ? 'Finalizado'
-                        : isPendingVal
-                        ? 'Validação Dupla'
-                        : m.schedule_status === 'confirmed'
-                        ? 'Confirmado'
-                        : 'Bater Horário'}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center justify-between gap-2 py-1">
-                    <div className="flex items-center gap-2 flex-1 min-w-0">
-                      <span
-                        className="w-2.5 h-7 rounded-full shrink-0"
-                        style={{ backgroundColor: m.home_team?.primary_color || '#38bdf8' }}
-                      />
-                      <span className="text-xs font-extrabold text-slate-100 truncate">
-                        {m.home_team?.name || 'Time Casa'}
-                      </span>
-                    </div>
-
-                    <div className="px-3 py-1 rounded-xl bg-slate-950 border border-slate-800 text-sm font-black font-mono text-amber-400 shrink-0">
-                      {isCompleted || isPendingVal
-                        ? `${m.home_score} - ${m.away_score}`
-                        : 'VS'}
-                    </div>
-
-                    <div className="flex items-center justify-end gap-2 flex-1 min-w-0 text-right">
-                      <span className="text-xs font-extrabold text-slate-100 truncate">
-                        {m.away_team?.name || 'Time Fora'}
-                      </span>
-                      <span
-                        className="w-2.5 h-7 rounded-full shrink-0"
-                        style={{ backgroundColor: m.away_team?.primary_color || '#eab308' }}
-                      />
-                    </div>
-                  </div>
-
-                  <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-[11px] text-slate-400">
-                    <span>
-                      {m.scheduled_at
-                        ? new Date(m.scheduled_at).toLocaleString('pt-BR', {
-                            day: '2-digit',
-                            month: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                          })
-                        : 'Horário em aberto'}
-                    </span>
-                    <span className="text-cyan-400 font-semibold">Abrir Súmula →</span>
-                  </div>
-                </Link>
-              );
-            })}
           </div>
         </section>
 
         {/* ================================================================= */}
-        {/* 3. TABELA DE CLASSIFICAÇÃO (DESTAQUE G4 CIANO) + TOP 3 LADO A LADO */}
+        {/* 2. SELETOR SEGMENTADO (SEGMENTED CONTROL LIMPO ESTILO JOGUEIROS)  */}
         {/* ================================================================= */}
-        <section className="grid lg:grid-cols-12 gap-6 items-start">
-          {/* Tabela de Classificação Limpa (7 Colunas) */}
-          <div className="lg:col-span-7 p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between">
+        <div className="p-1.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/70 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] grid grid-cols-3 gap-1">
+          <button
+            type="button"
+            onClick={() => setActiveSegment('matches')}
+            className={cn(
+              'py-2.5 px-3 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
+              activeSegment === 'matches'
+                ? 'bg-[#7C5CFC] text-white shadow-sm'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+            )}
+          >
+            <Calendar className="w-3.5 h-3.5" />
+            <span>Jogos da Rodada</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveSegment('standings')}
+            className={cn(
+              'py-2.5 px-3 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
+              activeSegment === 'standings'
+                ? 'bg-[#7C5CFC] text-white shadow-sm'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+            )}
+          >
+            <Trophy className="w-3.5 h-3.5" />
+            <span>Classificação (G4)</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => setActiveSegment('rankings')}
+            className={cn(
+              'py-2.5 px-3 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
+              activeSegment === 'rankings'
+                ? 'bg-[#7C5CFC] text-white shadow-sm'
+                : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900'
+            )}
+          >
+            <Flame className="w-3.5 h-3.5" />
+            <span>Rankings</span>
+          </button>
+        </div>
+
+        {/* ================================================================= */}
+        {/* ABA SEGMENTADA 1: JOGOS DA RODADA                                 */}
+        {/* ================================================================= */}
+        {activeSegment === 'matches' && (
+          <section className="space-y-3.5">
+            <div className="flex items-center justify-between px-1">
               <div>
-                <h2 className="text-base font-extrabold text-slate-100 flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-cyan-400" />
-                  Classificação Oficial — Liga 5x5
+                <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
+                  Confrontos da Rodada
                 </h2>
-                <p className="text-xs text-slate-400">
-                  Os <span className="text-cyan-400 font-bold">4 primeiros (G4)</span> avançam direto para as Semifinais
+                <p className="text-xs text-zinc-500">
+                  Toque em qualquer partida para bater horário ou validar a súmula por foto
                 </p>
               </div>
               <Link
-                href="/rankings"
-                className="text-xs font-bold text-cyan-400 hover:underline"
+                href="/matches"
+                className="px-3.5 py-1.5 rounded-full bg-[#7C5CFC] text-white text-xs font-bold flex items-center gap-1 shadow-sm"
               >
-                Tabela Completa →
+                <Plus className="w-3.5 h-3.5" />
+                Novo Jogo
               </Link>
+            </div>
+
+            <div className="space-y-3">
+              {matches.map((m) => {
+                const isCompleted = m.status === 'completed' || m.status === 'approved';
+                const isPendingVal = m.status === 'pending_validation';
+
+                return (
+                  <Link
+                    key={m.id}
+                    href="/matches"
+                    className="block p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] hover:border-[#7C5CFC]/40 transition-all space-y-3.5"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="text-[11px] font-bold text-zinc-500 flex items-center gap-1.5">
+                        <Clock className="w-3.5 h-3.5 text-[#7C5CFC]" />
+                        {m.scheduled_at
+                          ? new Date(m.scheduled_at).toLocaleString('pt-BR', {
+                              weekday: 'short',
+                              day: '2-digit',
+                              month: '2-digit',
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })
+                          : `Rodada #${m.round_number || 1} • Horário flexível`}
+                      </span>
+
+                      <span
+                        className={cn(
+                          'px-2.5 py-1 rounded-full text-[10px] font-extrabold',
+                          isCompleted && 'bg-[#38C958]/15 text-[#229a3e] dark:text-[#38C958]',
+                          isPendingVal && 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
+                          !isCompleted && !isPendingVal && 'bg-[#7C5CFC]/10 text-[#7C5CFC]'
+                        )}
+                      >
+                        {isCompleted
+                          ? 'Súmula Validada'
+                          : isPendingVal
+                          ? 'Aguardando Capitão B'
+                          : m.schedule_status === 'confirmed'
+                          ? 'Horário Confirmado'
+                          : 'Bater Horário'}
+                      </span>
+                    </div>
+
+                    {/* Placar Estilo Jogueiros (Escudo Circular + X + Escudo Circular) */}
+                    <div className="flex items-center justify-between gap-2 py-1">
+                      <div className="flex items-center gap-2.5 flex-1 min-w-0">
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0 shadow-sm"
+                          style={{ backgroundColor: m.home_team?.primary_color || '#7C5CFC' }}
+                        >
+                          {(m.home_team?.name || 'CA').substring(0, 2).toUpperCase()}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 block truncate">
+                            {m.home_team?.name || 'Mandante'}
+                          </span>
+                          <span className="text-[10px] text-zinc-400">Mandante</span>
+                        </div>
+                      </div>
+
+                      <div className="px-3.5 py-1.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 text-sm sm:text-base font-black text-zinc-900 dark:text-zinc-100 shrink-0">
+                        {isCompleted || isPendingVal
+                          ? `${m.home_score}  x  ${m.away_score}`
+                          : 'VS'}
+                      </div>
+
+                      <div className="flex items-center justify-end gap-2.5 flex-1 min-w-0 text-right">
+                        <div className="min-w-0">
+                          <span className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 block truncate">
+                            {m.away_team?.name || 'Visitante'}
+                          </span>
+                          <span className="text-[10px] text-zinc-400">Visitante</span>
+                        </div>
+                        <div
+                          className="w-10 h-10 rounded-full flex items-center justify-center text-white font-black text-xs shrink-0 shadow-sm"
+                          style={{ backgroundColor: m.away_team?.primary_color || '#18181B' }}
+                        >
+                          {(m.away_team?.name || 'VI').substring(0, 2).toUpperCase()}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2.5 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between text-[11px]">
+                      <span className="text-zinc-500">
+                        Rodada #{m.round_number || 1} • Futebol 5x5 (EA FC 26)
+                      </span>
+                      <span className="font-extrabold text-[#7C5CFC] flex items-center gap-1">
+                        {isPendingVal ? 'Validar Resultado' : 'Abrir Súmula'}
+                        <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        )}
+
+        {/* ================================================================= */}
+        {/* ABA SEGMENTADA 2: TABELA DE CLASSIFICAÇÃO (G4 DESTACADO)          */}
+        {/* ================================================================= */}
+        {activeSegment === 'standings' && (
+          <section className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
+                  Tabela Oficial — Liga 5x5 LPF
+                </h2>
+                <p className="text-xs text-zinc-500">
+                  Os <span className="text-[#38C958] font-extrabold">4 primeiros (G4)</span> classificam para as Semifinais
+                </p>
+              </div>
+              <span className="px-2.5 py-1 rounded-full bg-[#38C958]/15 text-[#229a3e] text-[10px] font-extrabold">
+                G4 Semifinal
+              </span>
             </div>
 
             <div className="overflow-x-auto">
               <table className="w-full text-xs text-left">
-                <thead className="text-[10px] text-slate-400 uppercase bg-slate-950 border-y border-slate-800">
+                <thead className="text-[10px] text-zinc-400 uppercase border-b border-zinc-100 dark:border-zinc-800">
                   <tr>
-                    <th className="py-2.5 px-2.5">#</th>
-                    <th className="py-2.5 px-2.5">Clube</th>
-                    <th className="py-2.5 px-2 text-center">J</th>
-                    <th className="py-2.5 px-2 text-center">V</th>
-                    <th className="py-2.5 px-2 text-center">E</th>
-                    <th className="py-2.5 px-2 text-center">D</th>
-                    <th className="py-2.5 px-2 text-center">SG</th>
-                    <th className="py-2.5 px-2.5 text-right font-extrabold text-cyan-400">
-                      PTS
-                    </th>
+                    <th className="py-2.5 px-2">#</th>
+                    <th className="py-2.5 px-2">Time</th>
+                    <th className="py-2.5 px-1.5 text-center">J</th>
+                    <th className="py-2.5 px-1.5 text-center text-[#38C958]">V</th>
+                    <th className="py-2.5 px-1.5 text-center text-amber-500">E</th>
+                    <th className="py-2.5 px-1.5 text-center text-rose-500">D</th>
+                    <th className="py-2.5 px-1.5 text-center">SG</th>
+                    <th className="py-2.5 px-2 text-right font-extrabold text-[#7C5CFC]">PTS</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 font-mono">
+                <tbody className="divide-y divide-zinc-100 dark:divide-zinc-800">
                   {standings.map((team, idx) => {
                     const isG4 = idx < 4;
                     return (
@@ -308,43 +371,45 @@ export default function HomePage() {
                         key={team.team_id}
                         className={cn(
                           'transition-colors',
-                          isG4
-                            ? 'bg-cyan-950/15 hover:bg-cyan-950/25'
-                            : 'hover:bg-slate-950/40'
+                          isG4 ? 'bg-[#38C958]/[0.04]' : 'hover:bg-zinc-50 dark:hover:bg-zinc-800/40'
                         )}
                       >
-                        <td className="py-3 px-2.5 font-bold">
+                        <td className="py-3 px-2">
                           <span
                             className={cn(
-                              'inline-flex items-center justify-center w-6 h-6 rounded-lg text-[11px]',
+                              'inline-flex items-center justify-center w-6 h-6 rounded-full text-[11px] font-extrabold',
                               isG4
-                                ? 'bg-cyan-500 text-slate-950 font-black'
-                                : 'bg-slate-950 text-slate-400 border border-slate-800'
+                                ? 'bg-[#38C958] text-white'
+                                : 'bg-[#F5F6FA] dark:bg-zinc-800 text-zinc-500'
                             )}
                           >
                             {team.position}
                           </span>
                         </td>
-                        <td className="py-3 px-2.5 font-sans font-bold text-slate-100">
+                        <td className="py-3 px-2 font-extrabold text-zinc-900 dark:text-zinc-100">
                           <div className="flex items-center gap-2">
                             <span className="truncate">{team.team_name}</span>
                             {isG4 && (
-                              <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 uppercase">
+                              <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#229a3e] font-extrabold uppercase">
                                 G4
                               </span>
                             )}
                           </div>
                         </td>
-                        <td className="py-3 px-2 text-center text-slate-400">{team.played}</td>
-                        <td className="py-3 px-2 text-center text-slate-300">{team.won}</td>
-                        <td className="py-3 px-2 text-center text-slate-400">{team.drawn}</td>
-                        <td className="py-3 px-2 text-center text-slate-400">{team.lost}</td>
-                        <td className="py-3 px-2 text-center text-slate-300">
+                        <td className="py-3 px-1.5 text-center text-zinc-500 font-semibold">
+                          {team.played}
+                        </td>
+                        <td className="py-3 px-1.5 text-center font-bold text-zinc-700 dark:text-zinc-300">
+                          {team.won}
+                        </td>
+                        <td className="py-3 px-1.5 text-center text-zinc-500">{team.drawn}</td>
+                        <td className="py-3 px-1.5 text-center text-zinc-500">{team.lost}</td>
+                        <td className="py-3 px-1.5 text-center text-zinc-600 dark:text-zinc-400 font-semibold">
                           {team.goal_difference > 0
                             ? `+${team.goal_difference}`
                             : team.goal_difference}
                         </td>
-                        <td className="py-3 px-2.5 text-right font-black text-sm text-cyan-400">
+                        <td className="py-3 px-2 text-right font-black text-sm text-[#7C5CFC]">
                           {team.points}
                         </td>
                       </tr>
@@ -353,47 +418,54 @@ export default function HomePage() {
                 </tbody>
               </table>
             </div>
-          </div>
+          </section>
+        )}
 
-          {/* Top 3 Artilheiros e Top 3 Garçons Lado a Lado (5 Colunas) */}
-          <div className="lg:col-span-5 grid sm:grid-cols-2 lg:grid-cols-1 gap-4">
-            {/* Top 3 Artilheiros */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+        {/* ================================================================= */}
+        {/* ABA SEGMENTADA 3: RANKINGS (ARTILHEIROS E GARÇONS)                */}
+        {/* ================================================================= */}
+        {activeSegment === 'rankings' && (
+          <section className="grid sm:grid-cols-2 gap-4">
+            {/* Artilheiros */}
+            <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-100 flex items-center gap-2">
-                  <Flame className="w-4 h-4 text-amber-400" />
-                  Top 3 Artilheiros (Prêmio R$ 30)
-                </h3>
-                <span className="text-[10px] font-mono text-amber-400 uppercase font-bold">
+                <div>
+                  <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <Flame className="w-4 h-4 text-[#7C5CFC]" />
+                    Artilheiros da Liga
+                  </h3>
+                  <p className="text-[11px] text-zinc-500">Prêmio Oficial: R$ 30,00</p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-[#7C5CFC]/10 text-[#7C5CFC] text-[10px] font-extrabold">
                   ⚽ Gols
                 </span>
               </div>
 
-              <div className="space-y-2">
-                {scorers.slice(0, 3).map((sc, i) => (
+              <div className="space-y-2.5">
+                {scorers.map((sc, i) => (
                   <div
                     key={sc.player_id}
-                    className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between"
+                    className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2.5">
                       <span
                         className={cn(
-                          'w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black font-mono',
+                          'w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold',
                           i === 0
-                            ? 'bg-amber-500 text-slate-950'
-                            : 'bg-slate-900 text-slate-400 border border-slate-800'
+                            ? 'bg-[#7C5CFC] text-white'
+                            : 'bg-white dark:bg-zinc-900 text-zinc-500'
                         )}
                       >
                         {i + 1}
                       </span>
                       <div>
-                        <span className="text-xs font-bold text-slate-100 block">
+                        <span className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 block">
                           {sc.player_name}
                         </span>
-                        <span className="text-[10px] text-slate-400">{sc.team_name}</span>
+                        <span className="text-[10px] text-zinc-500">{sc.team_name}</span>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 font-mono font-black text-xs">
+                    <span className="px-3 py-1 rounded-full bg-white dark:bg-zinc-900 text-[#7C5CFC] font-black text-xs shadow-sm">
                       {sc.goals_count} ⚽
                     </span>
                   </div>
@@ -401,51 +473,54 @@ export default function HomePage() {
               </div>
             </div>
 
-            {/* Top 3 Garçons */}
-            <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-3">
+            {/* Garçons */}
+            <div className="p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-extrabold text-slate-100 flex items-center gap-2">
-                  <Award className="w-4 h-4 text-emerald-400" />
-                  Top 3 Garçons (Prêmio R$ 30)
-                </h3>
-                <span className="text-[10px] font-mono text-emerald-400 uppercase font-bold">
+                <div>
+                  <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100 flex items-center gap-1.5">
+                    <Award className="w-4 h-4 text-[#38C958]" />
+                    Líderes de Assistência
+                  </h3>
+                  <p className="text-[11px] text-zinc-500">Prêmio Oficial: R$ 30,00</p>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-[#38C958]/15 text-[#229a3e] text-[10px] font-extrabold">
                   👟 Assists
                 </span>
               </div>
 
-              <div className="space-y-2">
-                {assists.slice(0, 3).map((asst, i) => (
+              <div className="space-y-2.5">
+                {assists.map((asst, i) => (
                   <div
                     key={asst.player_id}
-                    className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between"
+                    className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 flex items-center justify-between"
                   >
                     <div className="flex items-center gap-2.5">
                       <span
                         className={cn(
-                          'w-6 h-6 rounded-lg flex items-center justify-center text-xs font-black font-mono',
+                          'w-6 h-6 rounded-full flex items-center justify-center text-xs font-extrabold',
                           i === 0
-                            ? 'bg-emerald-500 text-slate-950'
-                            : 'bg-slate-900 text-slate-400 border border-slate-800'
+                            ? 'bg-[#38C958] text-white'
+                            : 'bg-white dark:bg-zinc-900 text-zinc-500'
                         )}
                       >
                         {i + 1}
                       </span>
                       <div>
-                        <span className="text-xs font-bold text-slate-100 block">
+                        <span className="text-xs font-extrabold text-zinc-900 dark:text-zinc-100 block">
                           {asst.player_name}
                         </span>
-                        <span className="text-[10px] text-slate-400">{asst.team_name}</span>
+                        <span className="text-[10px] text-zinc-500">{asst.team_name}</span>
                       </div>
                     </div>
-                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-mono font-black text-xs">
+                    <span className="px-3 py-1 rounded-full bg-white dark:bg-zinc-900 text-[#229a3e] dark:text-[#38C958] font-black text-xs shadow-sm">
                       {asst.assists_count} 👟
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-          </div>
-        </section>
+          </section>
+        )}
       </main>
     </div>
   );

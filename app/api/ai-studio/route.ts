@@ -7,13 +7,28 @@ import {
   RoleplayType,
 } from '@/lib/gemini';
 
+// Limite de segurança de payload (4.2 MB) para compatibilidade com Vercel Serverless Functions
+const MAX_PAYLOAD_BYTES = 4.2 * 1024 * 1024;
+
 export async function POST(request: Request) {
   try {
-    const body = await request.json();
+    const rawBody = await request.text();
+    if (rawBody.length > MAX_PAYLOAD_BYTES) {
+      return NextResponse.json(
+        {
+          ok: false,
+          error:
+            'A imagem enviada excede o limite de 4MB da Vercel. Envie um print mais leve ou recortado.',
+        },
+        { status: 413 }
+      );
+    }
+
+    const body = rawBody ? JSON.parse(rawBody) : {};
     const { action } = body;
 
     // =========================================================================
-    // AÇÃO 1: OCR DE SÚMULA DO EA FC 26 (ocr_match_sheet)
+    // AÇÃO 1: OCR DE SÚMULA DO EA FC 26 POR FOTO (ocr_match_sheet)
     // =========================================================================
     if (action === 'ocr_match_sheet') {
       const { imageBase64, mimeType, homeTeamName, awayTeamName } = body;
@@ -38,7 +53,7 @@ Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo d
   ]
 }`;
 
-      const userPrompt = `Analise este print pós-jogo do EA FC 26 Pro Clubs entre "${homeTeamName || 'Time Casa'}" e "${awayTeamName || 'Time Fora'}". Extraia o placar exato e a lista de jogadores detectados na tela com gols, assistências e nota da partida (0.0 a 10.0).`;
+      const userPrompt = `Analise este print pós-jogo do EA FC 26 Pro Clubs entre "${homeTeamName || 'Furia del Plata'}" e "${awayTeamName || 'Boca Juniors FC'}". Extraia o placar exato e a lista de jogadores detectados na tela com gols, assistências e nota da partida (0.0 a 10.0).`;
 
       const aiResponse = await callGeminiWithRotation({
         systemInstruction,
@@ -64,60 +79,54 @@ Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo d
       return NextResponse.json({
         ok: true,
         data: getMockOcrMatchSheet(),
-        meta: { model: 'proclubs-vision-fallback', keyIndex: 0 },
+        meta: { model: 'gemini-vision-fallback', keyIndex: 0 },
       });
     }
 
     // =========================================================================
-    // AÇÃO 2: GERADOR DE ROLEPLAY / RESENHA DE PRO CLUBS (generate_roleplay)
+    // AÇÃO 2: GERADOR DE ROLEPLAY / COMUNICADOS OFICIAIS MULTIMODAL (generate_roleplay)
     // =========================================================================
     if (action === 'generate_roleplay') {
       const {
-        roleplayType = 'entrevista_pos_jogo',
+        roleplayType = 'nota_repudio',
         playerName,
         teamName,
         rivalName,
         scoreContext,
         customContext,
+        avatarImageBase64,
+        kitImageBase64,
+        mimeType,
       } = body;
 
-      const systemInstruction = `Você é um redator criativo e especialista na cultura de comunidades brasileiras e sul-americanas de EA FC 26 Pro Clubs.
-Crie textos imersivos de Roleplay (resenha competitiva, entrevistas de zona mista, notas de repúdio bem-humoradas ou anúncios estilo Fabrizio Romano) prontos para colar no grupo de WhatsApp da Liga ou legendar no Instagram.
+      const systemInstruction = `Você é um redator criativo e diretor de comunicação de clubes de EA FC 26 Pro Clubs (estilo aplicativo Jogueiros).
+Se imagens do boneco ou do escudo/uniforme forem anexadas, observe os detalhes visuais (cores da camisa, estilo do jogador) para enriquecer o texto.
 Retorne ESTRITAMENTE um JSON no formato:
 {
   "title": string,
   "whatsapp_text": string,
   "instagram_caption": string,
+  "comunicado_graphic_text": string,
   "hashtags": string[]
 }`;
 
-      const userPrompt = `Gere um texto do tipo "${roleplayType}".
-Atleta/Capitão: ${playerName || 'Capitão'}
-Clube: ${teamName || 'Meu Clube'}
-Adversário: ${rivalName || 'Rival'}
+      const userPrompt = `Gere um comunicado/roleplay do tipo "${roleplayType}".
+Atleta/Capitão: ${playerName || 'Jefhe'}
+Clube: ${teamName || 'Furia del Plata'}
+Adversário: ${rivalName || 'Boca Juniors FC'}
 Placar/Último Jogo: ${scoreContext || '3 x 1'}
-Contexto Adicional: ${customContext || 'Jogo disputado na Liga 5x5'}`;
+Contexto Adicional: ${customContext || 'Jogo decisivo pela Liga 5x5 LPF'}`;
 
       const aiResponse = await callGeminiWithRotation({
         systemInstruction,
         userPrompt,
+        inlineImageBase64: avatarImageBase64,
+        secondaryImageBase64: kitImageBase64,
+        mimeType: mimeType || 'image/jpeg',
         responseJson: true,
       });
 
-      if (aiResponse?.text) {
-        try {
-          const parsed = JSON.parse(aiResponse.text);
-          return NextResponse.json({
-            ok: true,
-            data: { ...parsed, used_mock: false },
-            meta: { model: aiResponse.modelUsed, keyIndex: aiResponse.keyIndexUsed },
-          });
-        } catch {
-          // fallback
-        }
-      }
-
-      const mock = getMockRoleplay({
+      const baseMock = getMockRoleplay({
         roleplayType: roleplayType as RoleplayType,
         playerName,
         teamName,
@@ -126,15 +135,28 @@ Contexto Adicional: ${customContext || 'Jogo disputado na Liga 5x5'}`;
         customContext,
       });
 
+      if (aiResponse?.text) {
+        try {
+          const parsed = JSON.parse(aiResponse.text);
+          return NextResponse.json({
+            ok: true,
+            data: { ...baseMock, ...parsed, used_mock: false },
+            meta: { model: aiResponse.modelUsed, keyIndex: aiResponse.keyIndexUsed },
+          });
+        } catch {
+          // fallback
+        }
+      }
+
       return NextResponse.json({
         ok: true,
-        data: mock,
-        meta: { model: 'proclubs-roleplay-engine', keyIndex: 0 },
+        data: baseMock,
+        meta: { model: 'jogueiros-roleplay-engine', keyIndex: 0 },
       });
     }
 
     // =========================================================================
-    // AÇÃO 3: GERADOR DE PROMPT DE PERSONAGEM 8K (generate_character_prompt)
+    // AÇÃO 3: GERADOR MULTIMODAL DE IMAGEM/PROMPT PELA FOTO DO BONECO (Zero Digitação)
     // =========================================================================
     if (action === 'generate_character_prompt') {
       const {
@@ -143,31 +165,32 @@ Contexto Adicional: ${customContext || 'Jogo disputado na Liga 5x5'}`;
         teamName,
         primaryColor,
         secondaryColor,
-        kitDescription,
-        visualTraits,
+        avatarImageBase64,
+        kitImageBase64,
+        mimeType,
       } = body;
 
-      const systemInstruction = `Você é um Diretor de Arte de E-Sports e Engenheiro de Prompts especialista no motor Frostbite do EA Sports FC 26.
-Sua tarefa é converter a ideia de cena do jogador + os atributos visuais do boneco dele (visual_traits) + a descrição do uniforme do clube (kit_description) em um Prompt Mestre hiper-realista (em Inglês e Português) no estilo fotografia de transmissão esportiva noturna em 8K.
+      const systemInstruction = `Você é um Diretor de Arte de E-Sports e Visão Computacional especialista no motor Frostbite do EA Sports FC 26.
+FILOSOFIA ZERO DIGITAÇÃO: O jogador NÃO digitou características físicas. Você DEVE inspecionar visualmente a foto anexada do personagem no EA FC (rosto, tom de pele, corte e cor do cabelo, barba, acessórios) e a foto do escudo/uniforme do time, combinando o que você enxerga nas fotos com a cena pedida pelo usuário para gerar um Prompt Mestre hiper-realista em 8K.
 Retorne ESTRITAMENTE um JSON com:
 {
   "prompt_en": string,
   "prompt_pt": string,
+  "detected_visual_summary": string,
   "negative_prompt": string,
   "camera_settings": string,
   "style_tags": string[]
 }`;
 
-      const userPrompt = `Crie o Prompt Mestre para a seguinte cena: "${sceneIdea || 'Comemorando título com o troféu na chuva'}".
-Nome do Atleta: ${playerName || 'Buzz'}
-Clube: ${teamName || 'Racing Club Digital'}
-Cores do Clube: Primária ${primaryColor || '#38bdf8'}, Secundária ${secondaryColor || '#ffffff'}
-Descrição do Uniforme: ${kitDescription || 'Listrado azul claro e branco estilo Racing com patrocínio Betsson'}
-Características Visuais do Boneco: ${JSON.stringify(visualTraits || {})}`;
+      const userPrompt = `Analise visualmente a(s) foto(s) anexada(s) do boneco do jogador "${playerName || 'Jefhe'}" e do uniforme do time "${teamName || 'Furia del Plata'}" (Cores: ${primaryColor || '#7C5CFC'} e ${secondaryColor || '#38C958'}).
+Crie a descrição visual e o Prompt Mestre 8K para a cena: "${sceneIdea || 'Comemorando gol na chuva provocando a torcida rival'}".`;
 
       const aiResponse = await callGeminiWithRotation({
         systemInstruction,
         userPrompt,
+        inlineImageBase64: avatarImageBase64,
+        secondaryImageBase64: kitImageBase64,
+        mimeType: mimeType || 'image/jpeg',
         responseJson: true,
       });
 
@@ -177,8 +200,8 @@ Características Visuais do Boneco: ${JSON.stringify(visualTraits || {})}`;
         teamName,
         primaryColor,
         secondaryColor,
-        kitDescription,
-        visualTraits,
+        hasUploadedAvatar: Boolean(avatarImageBase64),
+        hasUploadedKit: Boolean(kitImageBase64),
       });
 
       if (aiResponse?.text) {
@@ -201,7 +224,7 @@ Características Visuais do Boneco: ${JSON.stringify(visualTraits || {})}`;
       return NextResponse.json({
         ok: true,
         data: baseMock,
-        meta: { model: 'frostbite-prompt-architect', keyIndex: 0 },
+        meta: { model: 'gemini-2.5-flash-vision', keyIndex: 0 },
       });
     }
 
@@ -211,7 +234,10 @@ Características Visuais do Boneco: ${JSON.stringify(visualTraits || {})}`;
     );
   } catch (error: any) {
     return NextResponse.json(
-      { ok: false, error: error?.message || 'Erro interno no AI Studio.' },
+      {
+        ok: false,
+        error: error?.message || 'Erro seguro no processamento server-side do AI Studio.',
+      },
       { status: 500 }
     );
   }

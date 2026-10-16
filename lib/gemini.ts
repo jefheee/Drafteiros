@@ -1,7 +1,7 @@
 /**
- * Gerenciador de IA Gemini com Rotação de Chaves (Round-Robin + Failover Automático)
- * Suporta múltiplas chaves em GEMINI_API_KEYS (separadas por vírgula) ou GEMINI_API_KEY.
- * Caso nenhuma chave esteja configurada, retorna mocks hiper-realistas do universo EA FC 26 Pro Clubs.
+ * Gerenciador Server-Side de IA Gemini Vision (Zero Digitação + Rotação de Chaves Round-Robin + Failover)
+ * NUNCA expõe chaves no client-side. Lê exclusivamente variáveis de ambiente de servidor:
+ * GEMINI_API_KEYS (separadas por vírgula) ou GEMINI_API_KEY.
  */
 
 export interface OcrMatchPlayer {
@@ -34,6 +34,7 @@ export interface RoleplayResult {
   title: string;
   whatsapp_text: string;
   instagram_caption: string;
+  comunicado_graphic_text: string;
   hashtags: string[];
   used_mock?: boolean;
 }
@@ -41,6 +42,7 @@ export interface RoleplayResult {
 export interface CharacterPromptResult {
   prompt_en: string;
   prompt_pt: string;
+  detected_visual_summary: string;
   negative_prompt: string;
   camera_settings: string;
   style_tags: string[];
@@ -49,7 +51,6 @@ export interface CharacterPromptResult {
   used_mock?: boolean;
 }
 
-// Estado global de Round-Robin no processo Node
 let currentKeyIndex = 0;
 
 export function getGeminiApiKeys(): string[] {
@@ -57,18 +58,23 @@ export function getGeminiApiKeys(): string[] {
   return rawKeys
     .split(',')
     .map((k) => k.trim())
-    .filter((k) => k.length > 10 && !k.includes('placeholder'));
+    .filter(
+      (k) =>
+        k.length > 12 &&
+        !k.includes('placeholder') &&
+        !k.includes('COLE_SUA_KEY')
+    );
 }
 
 /**
- * Executa uma chamada à REST API do Google Gemini com Round-Robin entre chaves
- * e fallback automático de modelo (gemini-2.5-flash -> gemini-1.5-flash)
- * em caso de erro 429 (Quota Exceeded) ou 503 (Service Unavailable).
+ * Executa chamada multimodal à REST API do Google Gemini (gemini-2.5-flash -> gemini-1.5-flash)
+ * com rotação Round-Robin entre chaves e suporte a imagens Base64 inline (Avatar do Boneco / Uniforme / Súmula).
  */
 export async function callGeminiWithRotation(params: {
   systemInstruction: string;
   userPrompt: string;
   inlineImageBase64?: string;
+  secondaryImageBase64?: string;
   mimeType?: string;
   responseJson?: boolean;
 }): Promise<{ text: string; keyIndexUsed: number; modelUsed: string } | null> {
@@ -90,12 +96,28 @@ export async function callGeminiWithRotation(params: {
 
         const parts: Record<string, unknown>[] = [{ text: params.userPrompt }];
 
-        if (params.inlineImageBase64) {
-          const cleanBase64 = params.inlineImageBase64.replace(/^data:image\/[a-zA-Z0-9+.-]+;base64,/, '');
+        if (params.inlineImageBase64 && params.inlineImageBase64.includes('base64')) {
+          const cleanBase64 = params.inlineImageBase64.replace(
+            /^data:image\/[a-zA-Z0-9+.-]+;base64,/,
+            ''
+          );
           parts.push({
             inline_data: {
               mime_type: params.mimeType || 'image/jpeg',
               data: cleanBase64,
+            },
+          });
+        }
+
+        if (params.secondaryImageBase64 && params.secondaryImageBase64.includes('base64')) {
+          const cleanSecBase64 = params.secondaryImageBase64.replace(
+            /^data:image\/[a-zA-Z0-9+.-]+;base64,/,
+            ''
+          );
+          parts.push({
+            inline_data: {
+              mime_type: params.mimeType || 'image/jpeg',
+              data: cleanSecBase64,
             },
           });
         }
@@ -123,12 +145,13 @@ export async function callGeminiWithRotation(params: {
         });
 
         if (res.status === 429 || res.status === 503) {
-          console.warn(`[Gemini Rotation] Chave #${keyIdx + 1} (${model}) retornou ${res.status}. Tentando failover...`);
+          console.warn(
+            `[Gemini Rotation] Chave #${keyIdx + 1} (${model}) retornou ${res.status}. Rotacionando...`
+          );
           continue;
         }
 
         if (!res.ok) {
-          console.warn(`[Gemini Rotation] Erro HTTP ${res.status} no modelo ${model}.`);
           continue;
         }
 
@@ -144,7 +167,7 @@ export async function callGeminiWithRotation(params: {
           };
         }
       } catch (err) {
-        console.warn(`[Gemini Rotation] Exceção na chave #${keyIdx + 1} (${model}):`, err);
+        console.warn(`[Gemini Rotation] Falha na chave #${keyIdx + 1} (${model}):`, err);
       }
     }
   }
@@ -152,22 +175,20 @@ export async function callGeminiWithRotation(params: {
   return null;
 }
 
-/**
- * Mocks Hiper-Realistas do Universo EA FC 26 Pro Clubs para Desenvolvimento / Fallback
- */
 export function getMockOcrMatchSheet(): OcrMatchSheetResult {
   return {
     home_score: 3,
     away_score: 1,
-    motm_name: 'Buzz_ProClubs',
-    confidence: 98.4,
-    summary_note: 'Vitória dominante por 3x1 extraída via leitura óptica da tela de desempenho EA FC 26.',
+    motm_name: 'Jefhe',
+    confidence: 99.1,
+    summary_note:
+      'Placar 3x1 e estatísticas individuais extraídos automaticamente por visão computacional da foto da partida EA FC 26.',
     players: [
-      { name: 'Buzz_ProClubs', team: 'home', goals: 2, assists: 1, rating: 9.6, is_motm: true },
-      { name: 'Deivy_10', team: 'home', goals: 1, assists: 1, rating: 8.8, is_motm: false },
-      { name: 'Andrei_VOL', team: 'home', goals: 0, assists: 1, rating: 8.4, is_motm: false },
-      { name: 'Muralha_GK', team: 'home', goals: 0, assists: 0, rating: 8.1, is_motm: false },
-      { name: 'Nacho_9', team: 'away', goals: 1, assists: 0, rating: 7.5, is_motm: false },
+      { name: 'Jefhe', team: 'home', goals: 2, assists: 1, rating: 9.6, is_motm: true },
+      { name: 'Andrei_VOL', team: 'home', goals: 1, assists: 1, rating: 8.9, is_motm: false },
+      { name: 'Enzo_Maestro', team: 'home', goals: 0, assists: 1, rating: 8.5, is_motm: false },
+      { name: 'Muralha_GK', team: 'home', goals: 0, assists: 0, rating: 8.3, is_motm: false },
+      { name: 'Buzz_ProClubs', team: 'away', goals: 1, assists: 0, rating: 7.8, is_motm: false },
     ],
     used_mock: true,
   };
@@ -181,55 +202,60 @@ export function getMockRoleplay(params: {
   scoreContext?: string;
   customContext?: string;
 }): RoleplayResult {
-  const player = params.playerName || 'Buzz_ProClubs';
-  const team = params.teamName || 'Racing Club Digital';
-  const rival = params.rivalName || 'River Plate eSports';
+  const player = params.playerName || 'Jefhe';
+  const team = params.teamName || 'Furia del Plata';
+  const rival = params.rivalName || 'Boca Juniors FC';
   const score = params.scoreContext || '3 x 1';
   const extra = params.customContext ? ` (${params.customContext})` : '';
 
   switch (params.roleplayType) {
     case 'nota_repudio':
       return {
-        title: `NOTA DE REPÚDIO OFICIAL — ${team.toUpperCase()}`,
-        whatsapp_text: `🚨 *NOTA DE REPÚDIO OFICIAL - ${team.toUpperCase()}* 🚨\n\nA diretoria do *${team}*, em conjunto com seu capitão *${player}*, vem a público manifestar total indignação com os acontecimentos bizarros na partida contra o *${rival}* (${score})${extra}.\n\nAlém do servidor da EA rodando a 98ms com delay de 2 segundos no botão de passe, presenciamos lances que desafiam a física do EA FC 26! Exigimos abertura imediata de sindicância pelos ADMs da Liga!\n\n📌 *Assinado:* Diretoria Executiva ${team} 🛡️`,
-        instagram_caption: `NOTA DE REPÚDIO! 🚨 A diretoria do ${team} não vai se calar diante do que aconteceu hoje em campo contra o ${rival}. Contra tudo, contra o handicap e contra todos! Seguimos gigantes! ⚔️🔥`,
-        hashtags: ['#ProClubs26', '#NotaDeRepudio', '#EAFC26', '#LigaArgentina5x5', '#SemHandicap'],
+        title: `COMUNICADO IMPORTANTE — ${team.toUpperCase()}`,
+        whatsapp_text: `🚨 *NOTA DE REPÚDIO OFICIAL - ${team.toUpperCase()}* 🚨\n\nA diretoria do *${team}*, em conjunto com seu camisa 10 *${player}*, vem a público manifestar total indignação com os acontecimentos na partida contra o *${rival}* (${score})${extra}.\n\nMesmo com servidor oscilando e cera no final, mostramos força dentro de campo. Exigimos providências imediatas da organização da Liga LPF 5x5!\n\n📌 *Diretoria Executiva — ${team}* 🛡️`,
+        instagram_caption: `COMUNICADO IMPORTANTE! 🚨 A diretoria do ${team} não vai se calar diante do que aconteceu hoje em campo contra o ${rival}. Contra tudo e contra todos! ⚔️🔥`,
+        comunicado_graphic_text: `A diretoria do ${team}, representada por ${player}, manifesta repúdio oficial aos fatos ocorridos no confronto diante do ${rival} (${score}). Seguimos firmes em busca do título da Liga 5x5 LPF contra tudo e contra todos!`,
+        hashtags: ['#ProClubs26', '#ComunicadoImportante', '#EAFC26', '#LigaLPF5x5', '#JogueirosPRO'],
         used_mock: true,
       };
 
     case 'provocacao_rival':
       return {
-        title: `CLIMA QUENTE PRÉ-JOGO — ${team} vs ${rival}`,
-        whatsapp_text: `👀 *AVISO AOS NAVEGANTES DO ${rival.toUpperCase()}!* 👀\n\nFalaram muito no grupo a semana inteira, mas hoje às 22h30 o papo é no gramado! O *${player}* já engraxou a chuteira e o *${team}* vem completo${extra}.\n\nJá separem o print do lobby porque esconder o time no vestiário não vai salvar vocês da roda de bobo! 🤫🔥\n\n📍 *Hoje tem aula de Pro Clubs!*`,
-        instagram_caption: `Dia de clássico na Liga! Hoje o ${team} entra em campo pra mostrar quem manda no servidor. Prepara o colete, ${rival}! 🤫⚽🔥`,
-        hashtags: ['#DiaDeJogo', '#Matchday', '#ProClubsBrasil', '#EAFC26', '#ClimaDeClassico'],
+        title: `CLIMA DE CLÁSSICO — ${team} vs ${rival}`,
+        whatsapp_text: `👀 *AVISO AO ${rival.toUpperCase()}!* 👀\n\nFalaram a semana inteira no grupo da Liga, mas hoje às 22h30 o papo é dentro das quatro linhas! O *${player}* já subiu a foto do boneco e o *${team}* vem completo${extra}.\n\nSeparem o print do lobby porque hoje tem baile! 🤫🔥`,
+        instagram_caption: `Hoje o ${team} entra em campo pra mostrar quem manda na Liga 5x5! Prepara o colete, ${rival}! 🤫⚽🔥`,
+        comunicado_graphic_text: `HOJE TEM CLÁSSICO! O ${team} convoca sua torcida para o duelo decisivo diante do ${rival}. Com ${player} confirmado, entramos em campo para buscar mais 3 pontos no G4!`,
+        hashtags: ['#DiaDeJogo', '#Matchday', '#ProClubsBrasil', '#EAFC26'],
         used_mock: true,
       };
 
     case 'nota_oficial_clube':
       return {
-        title: `COMUNICADO OFICIAL DE IMPRENSA — ${team.toUpperCase()}`,
-        whatsapp_text: `📋 *COMUNICADO OFICIAL — ${team.toUpperCase()}*\n\nInformamos à imprensa e aos torcedores que o elenco fechou a preparação tática para a sequência da Liga (${score})${extra}.\n\nSob liderança de *${player}*, o clube reafirma o foco total na classificação para o G4 e na busca pelo título e pela premiação máxima da temporada.\n\n🎙️ *Assessoria de Comunicação — ${team}*`,
-        instagram_caption: `Comunicado Oficial: foco 100% na classificação para os playoffs! O ${team} segue firme no projeto. 🛡️⚡`,
-        hashtags: ['#ComunicadoOficial', '#ProClubs', '#EAFC26', '#FocoNoTitulo'],
+        title: `COMUNICADO OFICIAL — ${team.toUpperCase()}`,
+        whatsapp_text: `📋 *COMUNICADO OFICIAL — ${team.toUpperCase()}*\n\nInformamos à imprensa e aos torcedores que o elenco fechou a preparação para a sequência da Liga 5x5 LPF (${score})${extra}.\n\nSob comando de *${player}*, o clube reafirma o foco total na classificação para o G4 e na premiação máxima da temporada.\n\n🎙️ *Assessoria — ${team}*`,
+        instagram_caption: `Comunicado Oficial: foco 100% na classificação para as semifinais! O ${team} segue firme no projeto. 🛡️⚡`,
+        comunicado_graphic_text: `A presidência do ${team} informa que o elenco concluiu a preparação tática para a rodada decisiva da Liga 5x5 LPF. Sob liderança de ${player}, buscamos a liderança isolada da temporada.`,
+        hashtags: ['#ComunicadoOficial', '#ProClubs', '#EAFC26', '#FuriaDelPlata'],
         used_mock: true,
       };
 
     case 'anuncio_contratacao':
       return {
-        title: `HERE WE GO! NOVO REFORÇO NO ${team.toUpperCase()}`,
-        whatsapp_text: `🚨 *HERE WE GO! CONTRATAÇÃO OFICIAL!* 🚨\n\nAcabou a novela no Mercadão! *${player}* é o novo reforço oficial do *${team}* para a temporada do EA FC 26${extra}!\n\nMulticampeão, especialista na leitura de espaço e com 92 de precisão no passe, o craque já teve o BID liberado pelos ADMs e estreia hoje mesmo!\n\n✍️ *"Vim pra fazer história e buscar esse troféu!"* — ${player}`,
-        instagram_caption: `BEM-VINDO AO GIGANTE! ✍️🔥 ${player} chega para reforçar o elenco do ${team} na disputa pelo título da Liga! Here we go! 🚀⚽`,
-        hashtags: ['#HereWeGo', '#MercadaoProClubs', '#NovoReforco', '#EAFC26'],
+        title: `BEM-VINDO AO CLUBE — ${player.toUpperCase()}`,
+        whatsapp_text: `🚨 *HERE WE GO! CONTRATAÇÃO OFICIAL!* 🚨\n\nAcabou a novela no Mercadão! *${player}* é o novo reforço oficial do *${team}* para a temporada do EA FC 26${extra}!\n\nO craque já teve o registro liberado na Liga LPF 5x5 e estreia hoje mesmo!\n\n✍️ *"Vim pra fazer história e buscar esse troféu!"* — ${player}`,
+        instagram_caption: `CONTRATADO! ✍️🔥 ${player} chega para reforçar o elenco do ${team} na disputa pelo título da Liga 5x5! 🚀⚽`,
+        comunicado_graphic_text: `CONTRATAÇÃO OFICIAL! O ${team} anuncia a chegada de ${player} para a disputa da Liga 5x5 LPF no EA FC 26. Bem-vindo ao gigante!`,
+        hashtags: ['#Contratado', '#MercadaoProClubs', '#NovoReforco', '#EAFC26'],
         used_mock: true,
       };
 
     case 'entrevista_pos_jogo':
     default:
       return {
-        title: `ZONA MISTA PÓS-JOGO — ${player.toUpperCase()}`,
-        whatsapp_text: `🎙️ *ZONA MISTA EA FC 26 — ENTREVISTA PÓS-JOGO*\n\n⚽ *Placar Final:* ${team} ${score} ${rival}\n⭐ *Destaque na bancada:* ${player}\n\n💬 *"Sabíamos que o jogo contra o ${rival} seria decidido nos detalhes${extra}. Nossa linha de passe no 5x5 encaixou perfeito, respeitamos a tática do capitão e saímos com os 3 pontos. Quem trabalha e treina calado colhe resultado na tabela!"*\n\n🔥 *${team} segue subindo rumo ao topo!*`,
-        instagram_caption: `Fala, Craque! 🎙️⭐ Vitória gigante no clássico (${score}) e palavras de quem decidiu dentro das quatro linhas. Seguimos, ${team}! ⚽🏆`,
+        title: `FALA, CRAQUE! — ${player.toUpperCase()}`,
+        whatsapp_text: `🎙️ *ZONA MISTA EA FC 26 — ENTREVISTA PÓS-JOGO*\n\n⚽ *Placar Final:* ${team} ${score} ${rival}\n⭐ *Craque da Partida:* ${player}\n\n💬 *"Sabíamos que o jogo contra o ${rival} seria decidido nos detalhes${extra}. Nossa tabela curta no 5x5 encaixou perfeito e saímos com os 3 pontos!"*`,
+        instagram_caption: `Fala, Craque! 🎙️⭐ Vitória gigante no clássico (${score}) e palavras de quem decidiu em campo pelo ${team}! ⚽🏆`,
+        comunicado_graphic_text: `"Nossa equipe mostrou maturidade tática do início ao fim diante do ${rival} (${score}). Esses 3 pontos colocam o ${team} no topo da Liga 5x5 LPF!" — ${player}, Craque da Partida.`,
         hashtags: ['#ZonaMista', '#CraqueDoJogo', '#MOTM', '#EAFC26', '#ProClubs'],
         used_mock: true,
       };
@@ -242,46 +268,53 @@ export function getMockCharacterPrompt(params: {
   teamName?: string;
   primaryColor?: string;
   secondaryColor?: string;
-  kitDescription?: string;
-  visualTraits?: {
-    skin_tone?: string;
-    hair_style?: string;
-    hair_color?: string;
-    facial_hair?: string;
-    accessories?: string[];
-    shirt_number?: number;
-    celebration?: string;
-  };
+  hasUploadedAvatar?: boolean;
+  hasUploadedKit?: boolean;
 }): CharacterPromptResult {
-  const player = params.playerName || 'Buzz';
-  const team = params.teamName || 'Racing Club Digital';
-  const kit = params.kitDescription || 'vertical light blue and white stripes esports jersey with Betsson chest sponsor';
-  const primary = params.primaryColor || '#38bdf8';
-  const traits = params.visualTraits || {};
-  const skin = traits.skin_tone || 'medium olive skin tone';
-  const hair = `${traits.hair_style || 'modern low fade with braided top'} (${traits.hair_color || 'platinum blonde'})`;
-  const beard = traits.facial_hair || 'full trimmed goatee beard';
-  const acc = traits.accessories?.length ? traits.accessories.join(', ') : 'white athletic headband and wristbands';
-  const number = traits.shirt_number || 10;
-  const celebration = traits.celebration || 'pointing to the club crest and cupping ear to the crowd';
-  const idea = params.sceneIdea || 'Segurando o troféu sob chuva intensa no estádio lotado';
+  const player = params.playerName || 'Jefhe';
+  const team = params.teamName || 'Furia del Plata';
+  const primary = params.primaryColor || '#7C5CFC';
+  const secondary = params.secondaryColor || '#38C958';
+  const idea = params.sceneIdea || 'Comemorando gol na chuva apontando para o escudo do clube';
 
-  const prompt_en = `Hyper-realistic 8K sports broadcast photography of an EA Sports FC 26 Pro Clubs e-sports athlete named "${player}" (#${number}) playing for "${team}". Physical traits: ${skin}, ${hair}, ${beard}, wearing ${acc}. Kit design: ${kit}, accents in hex ${primary}, jersey number ${number} clearly visible. Action & Scene: ${idea}, performing signature celebration (${celebration}). Environment: Packed South American night stadium under heavy dramatic rain, volumetric floodlights, wet grass particles flying in slow motion, confetti in club colors, shot on Canon EOS R3 with 400mm f/2.8 telephoto lens, shallow depth of field, Unreal Engine 5 Frostbite Frost-level skin pores and fabric sweat texture, UEFA Champions League & Copa Libertadores broadcast grading.`;
+  const detected_visual_summary = params.hasUploadedAvatar
+    ? 'Traços faciais, corte de cabelo, barba e uniforme lidos automaticamente pela IA Vision a partir da foto enviada do seu boneco e escudo.'
+    : 'Leitura visual baseada no avatar do atleta e nas cores do uniforme do clube salvos no perfil.';
 
-  const prompt_pt = `Fotografia hiper-realista de transmissão esportiva em 8K de um atleta de EA Sports FC 26 Pro Clubs chamado "${player}" (Camisa #${number}) atuando pelo "${team}". Características físicas do boneco: pele ${skin}, cabelo ${hair}, barba estilo ${beard}, usando ${acc}. Uniforme: ${kit} com detalhes em ${primary}. Cena e ação principal: ${idea}, executando a comemoração característica (${celebration}). Ambiente: Estádio sul-americano noturno lotado sob chuva dramática, refletores volumétricos, gotas de chuva e grama molhada em câmera lenta, lente teleobjetiva 400mm f/2.8, textura de suor no tecido e poros da pele estilo motor Frostbite EA FC 26.`;
+  const prompt_en = `Hyper-realistic 8K sports broadcast photography of EA Sports FC 26 Pro Clubs athlete "${player}" (#10) playing for "${team}". Visual appearance extracted directly from the player's uploaded EA FC avatar photo and club kit reference (primary hex ${primary}, secondary hex ${secondary}). Action & Scene: ${idea}. Environment: Packed South American stadium at night under heavy dramatic rain, volumetric floodlights, wet grass droplets in slow motion, Canon EOS R3 400mm f/2.8L telephoto lens, Frostbite Engine skin pores and wet jersey fabric realism, Copa Libertadores broadcast color grading.`;
+
+  const prompt_pt = `Fotografia hiper-realista em 8K de transmissão esportiva do atleta "${player}" (#10) atuando pelo "${team}" no EA Sports FC 26 Pro Clubs. Rosto, corte de cabelo, chuteira e uniforme extraídos diretamente por Visão Computacional da foto enviada do boneco e do escudo do time (cores ${primary} e ${secondary}). Cena em campo: ${idea}. Ambiente: Estádio lotado à noite sob chuva intensa, refletores volumétricos, lente teleobjetiva 400mm f/2.8, textura hiper-realista de suor e tecido molhado motor Frostbite.`;
 
   return {
     prompt_en,
     prompt_pt,
-    negative_prompt: 'cartoon, anime, lowres, blurry face, deformed hands, extra fingers, watermark, text overlay, bad anatomy, plastic skin, PS2 graphics',
+    detected_visual_summary,
+    negative_prompt:
+      'cartoon, anime, lowres, blurry face, deformed hands, extra fingers, watermark, text overlay, plastic skin',
     camera_settings: 'Canon EOS R3 • 400mm f/2.8L IS III • ISO 800 • 1/2000s • Broadcast HDR',
-    style_tags: ['EA FC 26 Frostbite', '8K Sports Broadcast', 'Night Stadium Rain', 'Pro Clubs Avatar', 'Telephoto f/2.8'],
+    style_tags: [
+      'Gemini Vision Multimodal',
+      'Zero Digitação',
+      'EA FC 26 Frostbite 8K',
+      'Night Stadium Rain',
+    ],
     generated_image_url: null,
     external_generators: [
-      { name: 'Bing Image Creator (DALL-E 3 Grátis)', url: 'https://www.bing.com/images/create', badge: 'Recomendado • Grátis' },
-      { name: 'Google ImageFX (Imagen 3)', url: 'https://aitestkitchen.withgoogle.com/tools/image-fx', badge: 'Ultra Realista' },
-      { name: 'Leonardo.ai', url: 'https://app.leonardo.ai/', badge: 'Iluminação Gamer' },
-      { name: 'ChatGPT Plus / Midjourney', url: 'https://chatgpt.com/', badge: 'Fidelidade de Uniforme' },
+      {
+        name: 'Bing Image Creator (DALL-E 3)',
+        url: 'https://www.bing.com/images/create',
+        badge: 'Grátis • 1 Clique',
+      },
+      {
+        name: 'Google ImageFX (Imagen 3)',
+        url: 'https://aitestkitchen.withgoogle.com/tools/image-fx',
+        badge: 'Ultra Realista',
+      },
+      {
+        name: 'ChatGPT / Midjourney',
+        url: 'https://chatgpt.com/',
+        badge: 'Anexar Foto + Prompt',
+      },
     ],
     used_mock: true,
   };

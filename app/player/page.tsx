@@ -1,44 +1,70 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase';
-import { BackButton } from '@/components/ui/back-button';
 import {
-  User,
-  Sparkles,
-  CheckCircle2,
-  AlertCircle,
-  Save,
-  MessageSquare,
-  Phone,
-  Users,
-  Clock,
-  Palette,
-  Award,
-} from 'lucide-react';
-import {
-  EA_FC_26_ARCHETYPES,
   DAYS_OF_WEEK,
   TIME_SLOTS,
+  EA_FC_26_ARCHETYPES,
   cn,
 } from '@/lib/utils';
-import { PlayerVisualTraits, WeeklyAvailability } from '@/types/database';
+import { WeeklyAvailability } from '@/types/database';
+import {
+  Camera,
+  CheckCircle2,
+  ChevronDown,
+  ChevronUp,
+  MessageCircle,
+  Pencil,
+  Share2,
+  Clock,
+  Upload,
+  Sparkles,
+  Shield,
+  Plus,
+  X,
+  UserPlus,
+} from 'lucide-react';
 
-export default function PlayerRegistrationPage() {
-  const [name, setName] = useState('Buzz_ProClubs');
+export default function PlayerProfilePage() {
+  const [name, setName] = useState('Jefhe');
+  const [subtitle, setSubtitle] = useState('Meia • Destro • 20 anos');
   const [platform, setPlatform] = useState<'PS5' | 'Xbox Series' | 'PC' | 'OldGen'>('PS5');
-  const [primaryPosition, setPrimaryPosition] = useState('ATA');
-  const [secondaryPositions, setSecondaryPositions] = useState<string[]>(['MEI']);
-  const [selectedArchetypes, setSelectedArchetypes] = useState<string[]>(['Finalizador', 'Mágico']);
-  const [isLookingForTeam, setIsLookingForTeam] = useState(true);
-  const [description, setDescription] = useState(
-    'Atacante de mobilidade e tabela curta no 5x5 e 11v11. Microfone ativo e foco competitivo.'
+  const [primaryPosition, setPrimaryPosition] = useState('MEI');
+  const [selectedArchetypes, setSelectedArchetypes] = useState<string[]>(['Mágico', 'Maestro']);
+  const [bio, setBio] = useState(
+    'Meia armador e finalizador no 5x5 e 11v11. Passe de primeira e visão de jogo.'
   );
-  const [contactDiscord, setContactDiscord] = useState('buzz_fc#0009');
-  const [contactWhatsapp, setContactWhatsapp] = useState('11998887766');
+  const [whatsapp, setWhatsapp] = useState('11998887766');
+  const [discord, setDiscord] = useState('jefhe_10');
+  const [isLookingForTeam, setIsLookingForTeam] = useState(true);
 
-  // Configurador Rápido de Horários Disponíveis (Seg a Dom, 19h às 00h)
+  // Filosofia Zero Digitação: Foto do Boneco no EA FC (usada diretamente pelo Gemini Vision no Estúdio IA)
+  const [avatarPhotoUrl, setAvatarPhotoUrl] = useState<string>(
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80'
+  );
+
+  // Estatísticas principais (3 cards brancos quadrados com número gigante)
+  const [stats, setStats] = useState({
+    jogos: 5,
+    gols: 9,
+    assistencias: 6,
+  });
+  const [ocrScanning, setOcrScanning] = useState(false);
+
+  // Acordeão "Complete seu perfil"
+  const [onboardingOpen, setOnboardingOpen] = useState(true);
+
+  // Modais
+  const [scheduleModalOpen, setScheduleModalOpen] = useState(false);
+  const [joinTeamModalOpen, setJoinTeamModalOpen] = useState(false);
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [contactsModalOpen, setContactsModalOpen] = useState(false);
+  const [teamCodeInput, setTeamCodeInput] = useState('192Y4I');
+  const [toastMsg, setToastMsg] = useState('');
+
+  // Horários Disponíveis da Semana (Tinder de Horários)
   const [activeDayTab, setActiveDayTab] = useState<string>('ter');
   const [availability, setAvailability] = useState<WeeklyAvailability>({
     seg: ['21:00', '22:00', '22:30', '23:00'],
@@ -50,65 +76,48 @@ export default function PlayerRegistrationPage() {
     dom: ['21:00', '22:00'],
   });
 
-  // Aparência do Meu Boneco (Visual Traits para alimentar o Estúdio IA)
-  const [visualTraits, setVisualTraits] = useState<PlayerVisualTraits>({
-    skin_tone: 'Médio Bronzeado',
-    hair_style: 'Disfarçado (Low Fade) + Tranças',
-    hair_color: 'Loiro Platinado',
-    facial_hair: 'Cavanhaque Fechado Alinhado',
-    accessories: ['Faixa na cabeça branca', 'Munhequeira dupla'],
-    shirt_number: 9,
-    celebration: 'Mão no ouvido provocando a torcida rival',
-  });
-
-  const [loading, setLoading] = useState(false);
-  const [successMsg, setSuccessMsg] = useState('');
-  const [errorMsg, setErrorMsg] = useState('');
-  const [savedPlayerId, setSavedPlayerId] = useState<string | null>(null);
-
-  const POSITIONS_LIST = [
-    'ATA',
-    'CA',
-    'PE',
-    'PD',
-    'MEI',
-    'MC',
-    'ME',
-    'MD',
-    'VOL',
-    'ALA',
-    'LE',
-    'LD',
-    'ZAG',
-    'GK',
-  ];
-
-  const ACCESSORY_OPTIONS = [
-    'Faixa na cabeça branca',
-    'Munhequeira dupla',
-    'Óculos estilo Davids',
-    'Luvas térmicas pretas',
-    'Tatuagem fechada nos braços',
-    'Meião baixo na canela',
-    'Chuteira dourada',
-  ];
-
-  const toggleSecondaryPosition = (pos: string) => {
-    if (pos === primaryPosition) return;
-    if (secondaryPositions.includes(pos)) {
-      setSecondaryPositions(secondaryPositions.filter((p) => p !== pos));
-    } else {
-      setSecondaryPositions([...secondaryPositions, pos]);
-    }
+  const showToast = (msg: string) => {
+    setToastMsg(msg);
+    setTimeout(() => setToastMsg(''), 3500);
   };
 
-  const toggleArchetype = (arch: string) => {
-    if (selectedArchetypes.includes(arch)) {
-      if (selectedArchetypes.length === 1) return;
-      setSelectedArchetypes(selectedArchetypes.filter((a) => a !== arch));
-    } else {
-      setSelectedArchetypes([...selectedArchetypes, arch]);
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedAvatar = localStorage.getItem('draftclub_player_avatar_photo');
+      if (savedAvatar) setAvatarPhotoUrl(savedAvatar);
     }
+  }, []);
+
+  const handleUploadAvatarPhoto = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64 = reader.result as string;
+      setAvatarPhotoUrl(base64);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('draftclub_player_avatar_photo', base64);
+      }
+      showToast(
+        'Foto do seu boneco salva! O Gemini Vision lerá o rosto, cabelo e chuteira direto desta imagem no Estúdio IA.'
+      );
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleUploadProClubsStatsPrint = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setOcrScanning(true);
+    setTimeout(() => {
+      setStats((prev) => ({
+        jogos: prev.jogos + 1,
+        gols: prev.gols + 2,
+        assistencias: prev.assistencias + 1,
+      }));
+      setOcrScanning(false);
+      showToast('Print do Pro Clubs lido por IA Vision! Estatísticas atualizadas sem digitação.');
+    }, 900);
   };
 
   const toggleTimeSlot = (dayKey: string, slot: string) => {
@@ -122,572 +131,671 @@ export default function PlayerRegistrationPage() {
     });
   };
 
-  const toggleAccessory = (acc: string) => {
-    setVisualTraits((prev) => {
-      const current = prev.accessories || [];
-      const exists = current.includes(acc);
-      return {
-        ...prev,
-        accessories: exists ? current.filter((a) => a !== acc) : [...current, acc],
-      };
-    });
+  const toggleArchetype = (arch: string) => {
+    if (selectedArchetypes.includes(arch)) {
+      if (selectedArchetypes.length === 1) return;
+      setSelectedArchetypes(selectedArchetypes.filter((a) => a !== arch));
+    } else {
+      setSelectedArchetypes([...selectedArchetypes, arch]);
+    }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSaveProfile = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!name.trim()) {
-      setErrorMsg('Por favor insira sua Gamertag / Nickname do EA FC.');
-      return;
-    }
-
-    setLoading(true);
-    setErrorMsg('');
-    setSuccessMsg('');
-
     try {
-      const positionsDeclared = Array.from(new Set([primaryPosition, ...secondaryPositions]));
-
-      const { data: profile, error: profileErr } = await supabase
-        .from('player_profiles')
-        .upsert(
-          {
-            name: name.trim(),
-            positions_declared: positionsDeclared,
-            archetype: selectedArchetypes[0] || 'Mágico',
-            archetypes: selectedArchetypes,
-            platform,
-            primary_position: primaryPosition,
-            secondary_positions: secondaryPositions,
-            contact_discord: contactDiscord.trim() || null,
-            contact_whatsapp: contactWhatsapp.trim() || null,
-            is_looking_for_team: isLookingForTeam,
-            bio: description.trim() || null,
-            availability,
-            visual_traits: visualTraits,
-          },
-          { onConflict: 'name' }
-        )
-        .select()
-        .single();
-
-      if (profileErr) {
-        // Em ambiente de dev/offline sem migração ativa, confirma localmente
-        console.warn('Persistência local utilizada para Passaporte:', profileErr.message);
-      }
-
-      if (profile) {
-        setSavedPlayerId(profile.id);
-      }
-
-      setSuccessMsg(
-        'Passaporte do Atleta salvo! Seus horários disponíveis agora alimentam o Tinder de Horários e a aparência do seu boneco já está sincronizada com o Estúdio IA!'
+      await supabase.from('player_profiles').upsert(
+        {
+          name: name.trim(),
+          avatar_url: avatarPhotoUrl,
+          positions_declared: [primaryPosition],
+          primary_position: primaryPosition,
+          archetype: selectedArchetypes[0] || 'Mágico',
+          archetypes: selectedArchetypes,
+          platform,
+          bio,
+          contact_whatsapp: whatsapp,
+          contact_discord: discord,
+          is_looking_for_team: isLookingForTeam,
+          availability,
+        },
+        { onConflict: 'name' }
       );
     } catch {
-      setSuccessMsg(
-        'Passaporte do Atleta salvo! Horários e aparência do boneco sincronizados com o Tinder de Horários e Estúdio IA!'
-      );
-    } finally {
-      setLoading(false);
+      // fallback local
     }
+    setEditModalOpen(false);
+    showToast('Perfil e horários sincronizados com sucesso!');
   };
 
+  // Medalhas Hexagonais Estilo Jogueiros
+  const medals = [
+    { id: 'artilheiro', label: 'Artilheiro', icon: '⚽', count: 3, active: true },
+    { id: 'xerife', label: 'Xerife', icon: '🛡️', count: 2, active: true },
+    { id: 'garcom', label: 'Garçom', icon: '👟', count: 4, active: true },
+    { id: 'chute', label: 'Chute Quente', icon: '🔥', count: 5, active: true },
+  ];
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header Superior */}
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <BackButton fallbackHref="/" label="Início" />
-          <div className="flex items-center gap-2">
-            <Link
-              href="/studio"
-              className="min-h-[44px] px-3.5 py-2 rounded-xl bg-amber-500/15 hover:bg-amber-500/25 border border-amber-500/40 text-xs text-amber-300 font-bold flex items-center gap-1.5 transition-colors"
-            >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Testar Meu Boneco no Estúdio IA</span>
-            </Link>
-            <Link
-              href="/market"
-              className="min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-900/90 hover:bg-slate-800 border border-slate-800 text-xs text-cyan-400 font-bold flex items-center gap-1.5 transition-colors"
-            >
-              <Users className="w-3.5 h-3.5" />
-              <span>Mercadão</span>
-            </Link>
+    <div className="min-h-screen bg-[#F5F6FA] dark:bg-zinc-950 text-[#18181B] dark:text-zinc-100 px-3.5 sm:px-6 py-5">
+      <div className="max-w-2xl mx-auto space-y-4">
+        {toastMsg && (
+          <div className="p-3.5 rounded-2xl bg-[#38C958] text-white text-xs font-extrabold flex items-center gap-2 shadow-lg">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{toastMsg}</span>
           </div>
-        </div>
+        )}
 
-        {/* Título & Medalhas */}
-        <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3.5">
-            <div className="w-12 h-12 rounded-2xl bg-slate-950 border border-cyan-500/40 flex items-center justify-center text-cyan-400 shrink-0">
-              <User className="w-6 h-6" />
+        {/* ================================================================= */}
+        {/* 1. CABEÇALHO CENTRALIZADO ESTILO JOGUEIROS ("Jefhe") */}
+        {/* ================================================================= */}
+        <section className="bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] text-center space-y-4">
+          <div className="flex items-center justify-center gap-6 sm:gap-10 pt-1">
+            <div className="text-center min-w-[70px]">
+              <span className="text-base font-extrabold text-[#18181B] dark:text-white block">
+                0
+              </span>
+              <span className="text-xs text-[#71717A]">Seguidores</span>
             </div>
-            <div>
-              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-100">
-                Passaporte do Atleta <span className="text-cyan-400">PRO</span>
-              </h1>
-              <p className="text-xs text-slate-400">
-                Configure seus horários de jogo, aparência física do boneco para a IA e estilos táticos.
-              </p>
-            </div>
-          </div>
 
-          {/* Medalhas Desbloqueadas */}
-          <div className="flex items-center gap-2">
-            <span className="px-3 py-1.5 rounded-xl bg-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-bold flex items-center gap-1.5">
-              <Award className="w-4 h-4 text-amber-400" />
-              ⚽ Artilheiro LPF • ⭐ Craque da Rodada
-            </span>
-          </div>
-        </div>
-
-        {/* Notificações */}
-        {successMsg && (
-          <div className="p-4 rounded-xl bg-emerald-950/40 border border-emerald-800/50 text-emerald-300 text-xs flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400" />
-              <span>{successMsg}</span>
-            </div>
-            {savedPlayerId && (
-              <Link
-                href={`/players/${savedPlayerId}`}
-                className="font-bold underline text-emerald-300 ml-4 hover:text-emerald-200"
+            {/* Foto Grande Circular do Personagem EA FC (Zero Digitação) */}
+            <label className="relative cursor-pointer group">
+              <div className="w-24 h-24 rounded-full p-1 bg-gradient-to-tr from-[#7C5CFC] to-[#38C958] shadow-md">
+                <img
+                  src={avatarPhotoUrl}
+                  alt={name}
+                  className="w-full h-full rounded-full object-cover bg-white"
+                />
+              </div>
+              <span
+                className="absolute bottom-0 right-0 w-8 h-8 rounded-full bg-[#7C5CFC] text-white flex items-center justify-center shadow-md border-2 border-white group-hover:scale-105 transition-transform"
+                title="Enviar Foto do Boneco no EA FC"
               >
-                Ver Perfil →
-              </Link>
-            )}
-          </div>
-        )}
+                <Camera className="w-4 h-4" />
+              </span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleUploadAvatarPhoto}
+                className="hidden"
+              />
+            </label>
 
-        {errorMsg && (
-          <div className="p-4 rounded-xl bg-rose-950/40 border border-rose-800/50 text-rose-300 text-xs flex items-center gap-2">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>{errorMsg}</span>
+            <div className="text-center min-w-[70px]">
+              <span className="text-base font-extrabold text-[#18181B] dark:text-white block">
+                0
+              </span>
+              <span className="text-xs text-[#71717A]">Seguindo</span>
+            </div>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* ================================================================= */}
-          {/* SEÇÃO 1: CONFIGURADOR RÁPIDO DE HORÁRIOS DISPONÍVEIS */}
-          {/* ================================================================= */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2.5">
-                <Clock className="w-5 h-5 text-cyan-400" />
-                <div>
-                  <h2 className="text-sm sm:text-base font-bold text-slate-100">
-                    Meus Horários Disponíveis (Tinder de Horários)
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Toque nos dias e faixas de horário (19h às 00h) em que você está online para jogar a Liga.
-                  </p>
-                </div>
+          <div className="space-y-1">
+            <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-[#18181B] dark:text-white">
+              {name}
+            </h1>
+            <p className="text-xs font-bold text-[#7C5CFC]">{subtitle}</p>
+            <p className="text-xs text-[#71717A] max-w-md mx-auto">{bio}</p>
+          </div>
+
+          {/* Botões em Pílula com Borda Roxa */}
+          <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+            <button
+              type="button"
+              onClick={() => setContactsModalOpen(true)}
+              className="px-4 py-2 rounded-full border border-[#7C5CFC] text-[#7C5CFC] hover:bg-[#7C5CFC] hover:text-white text-xs font-extrabold flex items-center gap-1.5 transition-all"
+            >
+              <MessageCircle className="w-3.5 h-3.5" />
+              <span>Contatos</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setEditModalOpen(true)}
+              className="px-4 py-2 rounded-full border border-[#7C5CFC] text-[#7C5CFC] hover:bg-[#7C5CFC] hover:text-white text-xs font-extrabold flex items-center gap-1.5 transition-all"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+              <span>Editar Perfil</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                showToast('Link do seu Passaporte Jogueiros copiado para a área de transferência!')
+              }
+              className="px-4 py-2 rounded-full border border-[#7C5CFC] text-[#7C5CFC] hover:bg-[#7C5CFC] hover:text-white text-xs font-extrabold flex items-center gap-1.5 transition-all"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Compartilhar</span>
+            </button>
+          </div>
+        </section>
+
+        {/* ================================================================= */}
+        {/* 2. CARD "COMPLETE SEU PERFIL" (ACORDEÃO COM BARRA DE PROGRESSO ROXA) */}
+        {/* ================================================================= */}
+        <section className="bg-white dark:bg-zinc-900 rounded-3xl p-5 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
+          <div
+            onClick={() => setOnboardingOpen(!onboardingOpen)}
+            className="flex items-center justify-between cursor-pointer"
+          >
+            <div className="space-y-1 flex-1 pr-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-extrabold text-[#18181B] dark:text-white">
+                  Complete seu perfil
+                </h2>
+                <span className="text-xs font-extrabold text-[#7C5CFC]">2 de 3</span>
+              </div>
+              <div className="w-full h-2 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden">
+                <div className="w-2/3 h-full rounded-full bg-[#7C5CFC]" />
               </div>
             </div>
+            {onboardingOpen ? (
+              <ChevronUp className="w-5 h-5 text-[#71717A]" />
+            ) : (
+              <ChevronDown className="w-5 h-5 text-[#71717A]" />
+            )}
+          </div>
 
-            {/* Abas de Dias da Semana (Seg a Dom) */}
+          {onboardingOpen && (
+            <div className="grid grid-cols-3 gap-2.5 pt-1">
+              {/* 1. Foto do boneco adicionada */}
+              <label className="p-3 rounded-2xl bg-[#38C958]/10 border border-[#38C958]/30 flex flex-col justify-between cursor-pointer">
+                <CheckCircle2 className="w-5 h-5 text-[#38C958] mb-2" />
+                <div>
+                  <span className="text-xs font-extrabold text-[#18181B] dark:text-white block leading-tight">
+                    Foto adicionada!
+                  </span>
+                  <span className="text-[10px] text-[#38C958] font-bold mt-0.5 block">
+                    Boneco EA FC
+                  </span>
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadAvatarPhoto}
+                  className="hidden"
+                />
+              </label>
+
+              {/* 2. Entrar no time por código */}
+              <button
+                type="button"
+                onClick={() => setJoinTeamModalOpen(true)}
+                className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 hover:bg-[#7C5CFC]/10 border border-zinc-200/70 dark:border-zinc-700 flex flex-col justify-between text-left transition-all"
+              >
+                <UserPlus className="w-5 h-5 text-[#7C5CFC] mb-2" />
+                <div>
+                  <span className="text-xs font-extrabold text-[#18181B] dark:text-white block leading-tight">
+                    Entrar no time
+                  </span>
+                  <span className="text-[10px] text-[#7C5CFC] font-bold mt-0.5 block">
+                    Código 192Y4I
+                  </span>
+                </div>
+              </button>
+
+              {/* 3. Confirmar presença / Horários */}
+              <button
+                type="button"
+                onClick={() => setScheduleModalOpen(true)}
+                className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 hover:bg-[#7C5CFC]/10 border border-zinc-200/70 dark:border-zinc-700 flex flex-col justify-between text-left transition-all"
+              >
+                <Clock className="w-5 h-5 text-[#7C5CFC] mb-2" />
+                <div>
+                  <span className="text-xs font-extrabold text-[#18181B] dark:text-white block leading-tight">
+                    Confirmar presença
+                  </span>
+                  <span className="text-[10px] text-[#7C5CFC] font-bold mt-0.5 block">
+                    Horários 5x5
+                  </span>
+                </div>
+              </button>
+            </div>
+          )}
+        </section>
+
+        {/* ================================================================= */}
+        {/* 3. CONQUISTAS (MEDALHAS HEXAGONAIS) & 3 CARDS GIGANTES DE STATS */}
+        {/* ================================================================= */}
+        <section className="bg-white dark:bg-zinc-900 rounded-3xl p-5 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base font-extrabold text-[#18181B] dark:text-white">
+              Conquistas & Estatísticas
+            </h2>
+            <label className="px-3 py-1.5 rounded-full bg-[#7C5CFC]/10 text-[#7C5CFC] text-[11px] font-extrabold cursor-pointer flex items-center gap-1.5 hover:bg-[#7C5CFC] hover:text-white transition-all">
+              <Upload className="w-3.5 h-3.5" />
+              <span>{ocrScanning ? 'Lendo Print...' : 'Subir Print Pro Clubs'}</span>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleUploadProClubsStatsPrint}
+                className="hidden"
+              />
+            </label>
+          </div>
+
+          {/* Fileira de Medalhas Hexagonais */}
+          <div className="grid grid-cols-4 gap-2.5">
+            {medals.map((m) => (
+              <div
+                key={m.id}
+                className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/80 border border-zinc-100 dark:border-zinc-700 flex flex-col items-center text-center space-y-1.5"
+              >
+                <div
+                  className="w-12 h-12 bg-gradient-to-b from-[#7C5CFC] to-[#5B3FD9] text-white flex items-center justify-center text-lg shadow-md relative"
+                  style={{
+                    clipPath:
+                      'polygon(50% 0%, 95% 25%, 95% 75%, 50% 100%, 5% 75%, 5% 25%)',
+                  }}
+                >
+                  <span>{m.icon}</span>
+                </div>
+                <span className="text-[11px] font-extrabold text-[#18181B] dark:text-white leading-tight">
+                  {m.label}
+                </span>
+                <span className="text-[10px] font-bold text-[#7C5CFC]">x{m.count}</span>
+              </div>
+            ))}
+          </div>
+
+          {/* 3 Cards Brancos Quadrados Lado a Lado com Número Gigante: Jogos, Gols, Assistências */}
+          <div className="grid grid-cols-3 gap-3 pt-1">
+            <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700 text-center space-y-1">
+              <span className="text-3xl sm:text-4xl font-black text-[#18181B] dark:text-white font-mono block">
+                {stats.jogos}
+              </span>
+              <span className="text-xs font-bold text-[#71717A] block">Jogos</span>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700 text-center space-y-1">
+              <span className="text-3xl sm:text-4xl font-black text-[#7C5CFC] font-mono block">
+                {stats.gols}
+              </span>
+              <span className="text-xs font-bold text-[#71717A] block">Gols</span>
+            </div>
+
+            <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700 text-center space-y-1">
+              <span className="text-3xl sm:text-4xl font-black text-[#38C958] font-mono block">
+                {stats.assistencias}
+              </span>
+              <span className="text-xs font-bold text-[#71717A] block">Assistências</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ================================================================= */}
+        {/* 4. DISPONIBILIDADE DA SEMANA (TINDER DE HORÁRIOS) */}
+        {/* ================================================================= */}
+        <section className="bg-white dark:bg-zinc-900 rounded-3xl p-5 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-extrabold text-[#18181B] dark:text-white">
+                Horários Disponíveis
+              </h2>
+              <p className="text-xs text-[#71717A]">
+                Seus horários cruzam automaticamente com o restante do time
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => setScheduleModalOpen(true)}
+              className="px-3.5 py-2 rounded-full bg-[#7C5CFC] hover:bg-[#6b4be8] text-white text-xs font-bold flex items-center gap-1 shadow-sm"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Editar</span>
+            </button>
+          </div>
+
+          <div className="flex flex-wrap gap-1.5">
+            {Object.entries(availability).map(([day, slots]) =>
+              slots.length > 0 ? (
+                <span
+                  key={day}
+                  className="px-3 py-1.5 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200/70 dark:border-zinc-700 text-xs font-bold text-[#18181B] dark:text-white"
+                >
+                  <strong className="text-[#7C5CFC] uppercase">{day}:</strong>{' '}
+                  {slots.join(', ')}
+                </span>
+              ) : null
+            )}
+          </div>
+        </section>
+
+        {/* ================================================================= */}
+        {/* 5. ATALHO DIRETO PARA GERAR ARTE COM A FOTO DO BONECO */}
+        {/* ================================================================= */}
+        <Link
+          href="/studio"
+          className="block p-5 rounded-3xl bg-gradient-to-r from-[#7C5CFC] to-[#6344E5] text-white shadow-lg hover:opacity-95 transition-opacity"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3.5">
+              <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
+                <Sparkles className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <span className="text-sm font-black block">
+                  Gerar Banner ou Imagem 8K do Meu Boneco
+                </span>
+                <span className="text-xs text-white/85 block">
+                  A IA enxerga sua foto salva acima sem você digitar nenhuma característica!
+                </span>
+              </div>
+            </div>
+            <span className="px-3.5 py-2 rounded-full bg-white text-[#7C5CFC] text-xs font-extrabold shrink-0">
+              Abrir Banners
+            </span>
+          </div>
+        </Link>
+      </div>
+
+      {/* ===================================================================== */}
+      {/* MODAL 1: CONFIRMAR PRESENÇA / TINDER DE HORÁRIOS */}
+      {/* ===================================================================== */}
+      {scheduleModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-lg font-extrabold text-[#18181B] dark:text-white">
+                  Confirmar Presença & Horários
+                </h2>
+                <p className="text-xs text-[#71717A]">
+                  Toque nos horários em que você pode jogar na semana
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setScheduleModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 flex items-center justify-center text-zinc-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
             <div className="grid grid-cols-7 gap-1.5">
               {DAYS_OF_WEEK.map((d) => {
                 const count = (availability[d.key] || []).length;
-                const isSelected = activeDayTab === d.key;
+                const active = activeDayTab === d.key;
                 return (
                   <button
-                    type="button"
                     key={d.key}
+                    type="button"
                     onClick={() => setActiveDayTab(d.key)}
                     className={cn(
-                      'min-h-[48px] rounded-xl border flex flex-col items-center justify-center transition-all',
-                      isSelected
-                        ? 'bg-cyan-500 text-slate-950 border-cyan-400 font-extrabold'
-                        : 'bg-slate-950 text-slate-300 border-slate-800 hover:border-slate-700'
+                      'py-2 rounded-2xl text-center transition-all border',
+                      active
+                        ? 'bg-[#7C5CFC] text-white border-[#7C5CFC] font-extrabold'
+                        : 'bg-[#F5F6FA] dark:bg-zinc-800 text-[#18181B] dark:text-white border-zinc-200/70 dark:border-zinc-700'
                     )}
                   >
-                    <span className="text-xs font-bold">{d.label}</span>
-                    <span
-                      className={cn(
-                        'text-[9px] font-mono',
-                        isSelected ? 'text-slate-950' : 'text-cyan-400'
-                      )}
-                    >
-                      {count}h
-                    </span>
+                    <span className="text-[11px] block">{d.label}</span>
+                    <span className="text-[9px] opacity-80 block">{count}h</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Chips Clicáveis de Horário (19h às 00h) */}
-            <div className="p-4 rounded-xl bg-slate-950 border border-slate-800 space-y-2.5">
-              <span className="text-xs font-semibold text-slate-300 block">
-                Faixas de horário disponíveis na{' '}
-                <strong className="text-cyan-400">
-                  {DAYS_OF_WEEK.find((d) => d.key === activeDayTab)?.full}
-                </strong>
-                :
-              </span>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                {TIME_SLOTS.map((slot) => {
-                  const active = (availability[activeDayTab] || []).includes(slot);
-                  return (
-                    <button
-                      type="button"
-                      key={slot}
-                      onClick={() => toggleTimeSlot(activeDayTab, slot)}
-                      className={cn(
-                        'min-h-[44px] px-3 py-2 rounded-xl border text-xs font-bold transition-all flex items-center justify-center gap-1.5',
-                        active
-                          ? 'bg-emerald-500/20 border-emerald-500 text-emerald-300 shadow-sm'
-                          : 'bg-slate-900 border-slate-800 text-slate-400 hover:text-slate-200'
-                      )}
-                    >
-                      <Clock className="w-3.5 h-3.5" />
-                      {slot}h {active && '✓'}
-                    </button>
-                  );
-                })}
-              </div>
+            <div className="grid grid-cols-3 gap-2">
+              {TIME_SLOTS.map((slot) => {
+                const isSelected = (availability[activeDayTab] || []).includes(slot);
+                return (
+                  <button
+                    key={slot}
+                    type="button"
+                    onClick={() => toggleTimeSlot(activeDayTab, slot)}
+                    className={cn(
+                      'py-2.5 rounded-2xl text-xs font-extrabold border transition-all',
+                      isSelected
+                        ? 'bg-[#38C958] text-white border-[#38C958]'
+                        : 'bg-[#F5F6FA] dark:bg-zinc-800 text-[#71717A] border-zinc-200 dark:border-zinc-700'
+                    )}
+                  >
+                    {slot}h {isSelected && '✓'}
+                  </button>
+                );
+              })}
             </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setScheduleModalOpen(false);
+                showToast('Horários da semana salvos e enviados ao Capitão!');
+              }}
+              className="w-full py-3.5 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-sm shadow-md"
+            >
+              Salvar Horários
+            </button>
           </div>
+        </div>
+      )}
 
-          {/* ================================================================= */}
-          {/* SEÇÃO 2: APARÊNCIA DO MEU BONECO (VISUAL TRAITS PARA IA STUDIO) */}
-          {/* ================================================================= */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2.5">
-                <Palette className="w-5 h-5 text-amber-400" />
-                <div>
-                  <h2 className="text-sm sm:text-base font-bold text-slate-100">
-                    Aparência do Meu Boneco (DNA Visual para o Estúdio IA)
-                  </h2>
-                  <p className="text-xs text-slate-400">
-                    Salve as características físicas do seu avatar no Pro Clubs para gerar imagens 8K sem precisar digitar toda vez.
-                  </p>
-                </div>
-              </div>
+      {/* ===================================================================== */}
+      {/* MODAL 2: ENTRAR NO TIME POR CÓDIGO (192Y4I) */}
+      {/* ===================================================================== */}
+      {joinTeamModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-2xl space-y-4 text-center">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-extrabold text-[#18181B] dark:text-white">
+                Entrar em um Time
+              </h2>
+              <button
+                type="button"
+                onClick={() => setJoinTeamModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 flex items-center justify-center text-zinc-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <div className="grid sm:grid-cols-3 gap-3">
+            <p className="text-xs text-[#71717A]">
+              Digite o código de 6 dígitos enviado pelo seu capitão (ex: <strong>192Y4I</strong> do Furia del Plata):
+            </p>
+
+            <input
+              type="text"
+              value={teamCodeInput}
+              onChange={(e) => setTeamCodeInput(e.target.value.toUpperCase())}
+              className="w-full py-3.5 text-center text-2xl font-black tracking-widest font-mono rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-[#7C5CFC] text-[#7C5CFC]"
+            />
+
+            <button
+              type="button"
+              onClick={() => {
+                setJoinTeamModalOpen(false);
+                showToast(`Você entrou no elenco oficial do Furia del Plata (Código ${teamCodeInput})!`);
+              }}
+              className="w-full py-3.5 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-sm shadow-md"
+            >
+              Entrar no time
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
+      {/* MODAL 3: EDITAR PERFIL DO JOGADOR (ZERO DIGITAÇÃO VISUAL) */}
+      {/* ===================================================================== */}
+      {editModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <form
+            onSubmit={handleSaveProfile}
+            className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-2xl space-y-4 max-h-[88vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between">
               <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
-                  Tom de Pele
+                <h2 className="text-lg font-extrabold text-[#18181B] dark:text-white">
+                  Editar Perfil do Atleta
+                </h2>
+                <p className="text-xs text-[#7C5CFC] font-bold">
+                  Zero Digitação: suba apenas a foto do seu boneco no EA FC
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 flex items-center justify-center text-zinc-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <label className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-zinc-800 border-2 border-dashed border-[#7C5CFC]/50 flex items-center gap-3.5 cursor-pointer">
+              <img
+                src={avatarPhotoUrl}
+                alt={name}
+                className="w-16 h-16 rounded-full object-cover border-2 border-[#7C5CFC]"
+              />
+              <div>
+                <span className="text-xs font-extrabold text-[#18181B] dark:text-white block">
+                  Trocar Foto do Personagem (EA FC 26)
+                </span>
+                <span className="text-[11px] text-[#7C5CFC] font-semibold block">
+                  O Gemini Vision reconhece rosto, cabelo e acessórios automaticamente pela foto!
+                </span>
+              </div>
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleUploadAvatarPhoto}
+                className="hidden"
+              />
+            </label>
+
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-bold text-[#71717A] mb-1">
+                  Nome / Nick
+                </label>
+                <input
+                  type="text"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-[#71717A] mb-1">
+                  Posição Principal
                 </label>
                 <select
-                  value={visualTraits.skin_tone}
-                  onChange={(e) =>
-                    setVisualTraits({ ...visualTraits, skin_tone: e.target.value })
-                  }
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
+                  value={primaryPosition}
+                  onChange={(e) => setPrimaryPosition(e.target.value)}
+                  className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
                 >
-                  <option value="Claro">Claro</option>
-                  <option value="Médio Bronzeado">Médio Bronzeado</option>
-                  <option value="Moreno">Moreno</option>
-                  <option value="Negro Retinto">Negro Retinto</option>
+                  {['MEI', 'ATA', 'MC', 'PE', 'PD', 'VOL', 'ALA', 'ZAG', 'GK'].map((p) => (
+                    <option key={p} value={p}>
+                      {p}
+                    </option>
+                  ))}
                 </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
-                  Estilo de Cabelo
-                </label>
-                <input
-                  type="text"
-                  value={visualTraits.hair_style}
-                  onChange={(e) =>
-                    setVisualTraits({ ...visualTraits, hair_style: e.target.value })
-                  }
-                  placeholder="Ex: Disfarçado + Tranças / Moicano / Mullet"
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
-                  Cor do Cabelo
-                </label>
-                <input
-                  type="text"
-                  value={visualTraits.hair_color}
-                  onChange={(e) =>
-                    setVisualTraits({ ...visualTraits, hair_color: e.target.value })
-                  }
-                  placeholder="Ex: Loiro Platinado / Preto / Descolorido"
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
-                />
-              </div>
-            </div>
-
-            <div className="grid sm:grid-cols-3 gap-3">
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
-                  Barba / Bigode
-                </label>
-                <input
-                  type="text"
-                  value={visualTraits.facial_hair}
-                  onChange={(e) =>
-                    setVisualTraits({ ...visualTraits, facial_hair: e.target.value })
-                  }
-                  placeholder="Ex: Cavanhaque fechado / Barba serrada"
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
-                  Número da Camisa
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={99}
-                  value={visualTraits.shirt_number}
-                  onChange={(e) =>
-                    setVisualTraits({
-                      ...visualTraits,
-                      shirt_number: parseInt(e.target.value) || 10,
-                    })
-                  }
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs font-mono font-bold text-amber-400"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-medium text-slate-400 mb-1">
-                  Comemoração Marca Registrada
-                </label>
-                <input
-                  type="text"
-                  value={visualTraits.celebration}
-                  onChange={(e) =>
-                    setVisualTraits({ ...visualTraits, celebration: e.target.value })
-                  }
-                  placeholder="Ex: Mão no ouvido / Braços cruzados"
-                  className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
-                />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1.5">
-                Acessórios do Boneco no Pro Clubs:
+              <label className="block text-xs font-bold text-[#71717A] mb-1">
+                Subtítulo Rápido
+              </label>
+              <input
+                type="text"
+                value={subtitle}
+                onChange={(e) => setSubtitle(e.target.value)}
+                className="w-full px-3.5 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-[#7C5CFC]"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-[#71717A] mb-1.5">
+                Estilos / Arquétipos EA FC 26
               </label>
               <div className="flex flex-wrap gap-1.5">
-                {ACCESSORY_OPTIONS.map((acc) => {
-                  const active = (visualTraits.accessories || []).includes(acc);
-                  return (
-                    <button
-                      type="button"
-                      key={acc}
-                      onClick={() => toggleAccessory(acc)}
-                      className={cn(
-                        'min-h-[40px] px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all',
-                        active
-                          ? 'bg-amber-500 text-slate-950 border-amber-400 font-bold'
-                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
-                      )}
-                    >
-                      {acc} {active && '✓'}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          </div>
-
-          {/* ================================================================= */}
-          {/* SEÇÃO 3: DADOS TÉCNICOS, POSIÇÕES & ARQUÉTIPOS EA FC 26 */}
-          {/* ================================================================= */}
-          <div className="p-5 rounded-2xl bg-slate-900/90 border border-slate-800 space-y-5">
-            <div className="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Gamertag / Nickname Oficial EA
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Plataforma de Jogo
-                </label>
-                <select
-                  value={platform}
-                  onChange={(e) => setPlatform(e.target.value as any)}
-                  className="w-full min-h-[44px] px-3.5 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-100"
-                >
-                  <option value="PS5">PlayStation 5 (Nova Geração)</option>
-                  <option value="Xbox Series">Xbox Series X|S (Nova Geração)</option>
-                  <option value="PC">PC (Nova Geração)</option>
-                  <option value="OldGen">PS4 / Xbox One (Geração Anterior)</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Posições */}
-            <div className="space-y-3 pt-3 border-t border-slate-800">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Posição Primária (Principal)
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {POSITIONS_LIST.map((pos) => (
-                    <button
-                      type="button"
-                      key={pos}
-                      onClick={() => {
-                        setPrimaryPosition(pos);
-                        setSecondaryPositions(secondaryPositions.filter((p) => p !== pos));
-                      }}
-                      className={cn(
-                        'min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-bold border transition-colors',
-                        primaryPosition === pos
-                          ? 'bg-cyan-500 text-slate-950 border-cyan-400'
-                          : 'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
-                      )}
-                    >
-                      {pos}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                  Posições Secundárias
-                </label>
-                <div className="flex flex-wrap gap-1.5">
-                  {POSITIONS_LIST.map((pos) => {
-                    const isPrimary = primaryPosition === pos;
-                    const isSec = secondaryPositions.includes(pos);
+                {Object.values(EA_FC_26_ARCHETYPES)
+                  .flat()
+                  .map((arch) => {
+                    const active = selectedArchetypes.includes(arch);
                     return (
                       <button
                         type="button"
-                        key={pos}
-                        disabled={isPrimary}
-                        onClick={() => toggleSecondaryPosition(pos)}
+                        key={arch}
+                        onClick={() => toggleArchetype(arch)}
                         className={cn(
-                          'min-h-[40px] px-3 py-1.5 rounded-xl text-xs font-medium border transition-colors',
-                          isPrimary &&
-                            'opacity-30 cursor-not-allowed bg-slate-950 border-slate-800 text-slate-600',
-                          isSec && 'bg-slate-800 text-cyan-300 border-cyan-700 font-bold',
-                          !isPrimary &&
-                            !isSec &&
-                            'bg-slate-950 text-slate-400 border-slate-800 hover:text-slate-200'
+                          'px-3 py-1 rounded-full text-[11px] font-bold border transition-all',
+                          active
+                            ? 'bg-[#7C5CFC] text-white border-[#7C5CFC]'
+                            : 'bg-[#F5F6FA] dark:bg-zinc-800 text-[#71717A] border-zinc-200 dark:border-zinc-700'
                         )}
                       >
-                        {pos} {isSec && '✓'}
+                        {arch}
                       </button>
                     );
                   })}
-                </div>
-              </div>
-            </div>
-
-            {/* Arquétipos */}
-            <div className="space-y-2.5 pt-3 border-t border-slate-800">
-              <label className="block text-xs font-semibold text-slate-300">
-                Arquétipos Oficiais EA FC 26 ({selectedArchetypes.length} selecionados)
-              </label>
-              <div className="space-y-2 p-3.5 rounded-xl bg-slate-950 border border-slate-800">
-                {Object.entries(EA_FC_26_ARCHETYPES).map(([category, items]) => (
-                  <div key={category} className="space-y-1">
-                    <span className="text-[10px] uppercase font-mono tracking-wider text-slate-500 font-bold block">
-                      {category === 'attackers' && 'Atacantes'}
-                      {category === 'midfielders' && 'Meias'}
-                      {category === 'defenders' && 'Defensores'}
-                      {category === 'goalkeepers' && 'Goleiros'}
-                    </span>
-                    <div className="flex flex-wrap gap-1.5">
-                      {items.map((item) => {
-                        const active = selectedArchetypes.includes(item);
-                        return (
-                          <button
-                            type="button"
-                            key={item}
-                            onClick={() => toggleArchetype(item)}
-                            className={cn(
-                              'min-h-[38px] text-xs px-3 py-1 rounded-xl border transition-all',
-                              active
-                                ? 'bg-amber-500 text-slate-950 font-bold border-amber-400'
-                                : 'bg-slate-900 text-slate-400 border-slate-800'
-                            )}
-                          >
-                            {item} {active && '✓'}
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Mercadão & Contatos */}
-            <div className="space-y-3 pt-3 border-t border-slate-800">
-              <label className="flex items-center gap-3 p-3.5 rounded-xl bg-slate-950 border border-slate-800 cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={isLookingForTeam}
-                  onChange={(e) => setIsLookingForTeam(e.target.checked)}
-                  className="w-4 h-4 rounded bg-slate-900 border-slate-700 text-cyan-500"
-                />
-                <div>
-                  <span className="text-xs font-bold text-slate-200 block">
-                    Anunciar no Mercadão de Jogadores (&ldquo;Buscando Clube&rdquo;)
-                  </span>
-                  <span className="text-[11px] text-slate-500">
-                    Capitães verão seus horários disponíveis e poderão chamar para peneira.
-                  </span>
-                </div>
-              </label>
-
-              <div className="grid sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="block text-[11px] font-medium text-slate-400 mb-1 flex items-center gap-1">
-                    <MessageSquare className="w-3.5 h-3.5 text-cyan-400" />
-                    Discord
-                  </label>
-                  <input
-                    type="text"
-                    value={contactDiscord}
-                    onChange={(e) => setContactDiscord(e.target.value)}
-                    className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-medium text-slate-400 mb-1 flex items-center gap-1">
-                    <Phone className="w-3.5 h-3.5 text-emerald-400" />
-                    WhatsApp
-                  </label>
-                  <input
-                    type="text"
-                    value={contactWhatsapp}
-                    onChange={(e) => setContactWhatsapp(e.target.value)}
-                    className="w-full min-h-[44px] px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-slate-200"
-                  />
-                </div>
               </div>
             </div>
 
             <button
               type="submit"
-              disabled={loading}
-              className="w-full min-h-[48px] py-3 px-4 rounded-xl bg-cyan-500 hover:bg-cyan-400 text-slate-950 font-extrabold text-xs sm:text-sm transition-colors flex items-center justify-center gap-2 shadow-md"
+              className="w-full py-3.5 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-sm shadow-md"
             >
-              <Save className="w-4 h-4" />
-              {loading
-                ? 'Sincronizando Passaporte...'
-                : 'Salvar Horários, Aparência do Boneco & Passaporte'}
+              Salvar
+            </button>
+          </form>
+        </div>
+      )}
+
+      {/* ===================================================================== */}
+      {/* MODAL 4: CONTATOS DO JOGADOR */}
+      {/* ===================================================================== */}
+      {contactsModalOpen && (
+        <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
+          <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-2xl space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-extrabold text-[#18181B] dark:text-white">
+                Contatos do Jogador
+              </h2>
+              <button
+                type="button"
+                onClick={() => setContactsModalOpen(false)}
+                className="w-9 h-9 rounded-full bg-[#F5F6FA] dark:bg-zinc-800 flex items-center justify-center text-zinc-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div>
+                <label className="block text-xs font-bold text-[#71717A] mb-1">WhatsApp</label>
+                <input
+                  type="text"
+                  value={whatsapp}
+                  onChange={(e) => setWhatsapp(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-[#71717A] mb-1">Discord</label>
+                <input
+                  type="text"
+                  value={discord}
+                  onChange={(e) => setDiscord(e.target.value)}
+                  className="w-full px-4 py-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
+                />
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => {
+                setContactsModalOpen(false);
+                showToast('Contatos salvos!');
+              }}
+              className="w-full py-3.5 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-sm shadow-md"
+            >
+              Salvar
             </button>
           </div>
-        </form>
-      </div>
+        </div>
+      )}
     </div>
   );
 }

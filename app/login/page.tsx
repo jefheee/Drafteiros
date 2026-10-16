@@ -2,9 +2,21 @@
 
 import React, { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/components/auth/auth-context';
-import { Shield, KeyRound, UserCheck, AlertCircle, ArrowRight, Sparkles, LogOut, Loader2 } from 'lucide-react';
-import { BackButton } from '@/components/ui/back-button';
+import {
+  Shield,
+  Crown,
+  User,
+  AlertCircle,
+  ArrowRight,
+  LogOut,
+  Loader2,
+  CheckCircle2,
+  Sparkles,
+  Lock,
+  Mail,
+} from 'lucide-react';
 
 function LoginFormContent() {
   const searchParams = useSearchParams();
@@ -12,222 +24,262 @@ function LoginFormContent() {
 
   const { session, loginAsDemo, loginWithSupabase, logout } = useAuth();
 
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('capitao@draftclub.pro');
+  const [password, setPassword] = useState('123456');
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
 
-  const handleSupabaseSubmit = async (e: React.FormEvent) => {
+  const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email || !password) {
-      setErrorMsg('Por favor preencha email e senha.');
+      setErrorMsg('Preencha seu e-mail e senha para continuar.');
       return;
     }
     setErrorMsg('');
     setLoading(true);
 
-    const res = await loginWithSupabase(email, password);
+    const res = await loginWithSupabase(email, password, redirectPath || undefined);
     setLoading(false);
     if (res.error) {
       setErrorMsg(res.error);
     }
   };
 
-  return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-100 flex flex-col items-center justify-center p-4">
-      <div className="max-w-md w-full space-y-6">
-        <div className="flex items-center justify-between">
-          <BackButton fallbackHref="/" label="Voltar ao Início" />
-          <span className="text-xs font-mono text-zinc-500 uppercase tracking-widest">
-            Autenticação & RBAC
-          </span>
-        </div>
+  const handleQuickCredentialClick = async (
+    targetEmail: string,
+    demoKey: 'captain' | 'admin' | 'player'
+  ) => {
+    setEmail(targetEmail);
+    setPassword('123456');
+    loginAsDemo(demoKey, redirectPath || undefined);
+  };
 
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-zinc-900 border border-zinc-800 flex items-center justify-center mx-auto text-emerald-400">
-            <Shield className="w-6 h-6" />
+  return (
+    <div className="min-h-screen bg-[#F5F6FA] dark:bg-zinc-950 text-[#18181B] dark:text-zinc-100 flex flex-col items-center justify-center p-4 pb-28">
+      <div className="max-w-md w-full space-y-5">
+        {/* Hero Card Estilo Jogueiros ("Você também tem um time?") */}
+        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] text-center space-y-3">
+          <div className="w-16 h-16 rounded-full bg-[#7C5CFC]/10 border-2 border-[#7C5CFC]/20 flex items-center justify-center mx-auto text-[#7C5CFC]">
+            <Shield className="w-8 h-8" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-zinc-100">
-            Acesso ao <span className="text-emerald-400">DraftClub</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7C5CFC]/10 text-[#7C5CFC] text-[11px] font-extrabold uppercase tracking-wide">
+            <Sparkles className="w-3.5 h-3.5" />
+            EA FC 26 • Liga 5x5 & 11v11
+          </div>
+          <h1 className="text-2xl font-extrabold tracking-tight text-[#18181B] dark:text-white">
+            Você também tem um time?
           </h1>
-          <p className="text-xs text-zinc-400">
-            Painel exclusivo para Administradores de Ligas e Capitães de Equipe.
+          <p className="text-xs text-[#71717A] dark:text-zinc-400 leading-relaxed">
+            Gerencie seu clube no Pro Clubs, escale no 5x5 ou 11v11, aprove súmulas por foto e crie banners automáticos em segundos.
           </p>
         </div>
 
-        {/* Notificação se foi redirecionado */}
+        {/* Aviso de Redirecionamento */}
         {redirectPath && (
-          <div className="flex items-center gap-2 p-3 rounded-xl bg-amber-950/40 border border-amber-800/50 text-amber-300 text-xs">
-            <AlertCircle className="w-4 h-4 shrink-0" />
-            <span>Você precisa estar autenticado com o cargo apropriado para acessar <code>{redirectPath}</code>.</span>
+          <div className="flex items-center gap-2.5 p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-amber-800 dark:text-amber-300 text-xs font-medium">
+            <AlertCircle className="w-4 h-4 shrink-0 text-amber-600" />
+            <span>
+              Escolha uma conta abaixo para acessar <strong>{redirectPath}</strong> imediatamente.
+            </span>
           </div>
         )}
 
-        {/* Sessão Ativa Atual (se já logado) */}
-        {session && (
-          <div className="p-4 rounded-xl bg-zinc-900/80 border border-zinc-800 space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span className="text-xs text-zinc-400">Conectado atualmente como:</span>
+        {/* Acesso Rápido em 1 Toque (Credenciais Oficiais de Teste) */}
+        <div className="bg-white dark:bg-zinc-900 rounded-3xl p-5 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-extrabold text-[#18181B] dark:text-white">
+              Entrar com 1 Toque (Contas de Teste)
+            </h2>
+            <span className="text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#2fb34d]">
+              Instantâneo
+            </span>
+          </div>
+          <p className="text-xs text-[#71717A] dark:text-zinc-400">
+            Toque em qualquer perfil para entrar direto ou use os dados no formulário abaixo:
+          </p>
+
+          <div className="space-y-2.5 pt-1">
+            {/* 1. Dono de Time / Capitão */}
+            <button
+              type="button"
+              onClick={() => handleQuickCredentialClick('capitao@draftclub.pro', 'captain')}
+              className="w-full p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 hover:bg-[#7C5CFC]/10 border border-zinc-200/80 dark:border-zinc-700 hover:border-[#7C5CFC] transition-all flex items-center justify-between text-left group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-full bg-[#7C5CFC] text-white flex items-center justify-center font-extrabold text-sm shrink-0 shadow-sm">
+                  FP
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
+                      Dono de Time / Capitão
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC]">
+                      Furia del Plata
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#71717A] dark:text-zinc-400 font-mono mt-0.5 truncate">
+                    capitao@draftclub.pro • Senha: 123456
+                  </p>
+                </div>
               </div>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
-                {session.role}
-              </span>
-            </div>
+              <ArrowRight className="w-4 h-4 text-[#7C5CFC] shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+
+            {/* 2. Organizador / Admin da Liga */}
+            <button
+              type="button"
+              onClick={() => handleQuickCredentialClick('admin@draftclub.pro', 'admin')}
+              className="w-full p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 hover:bg-[#7C5CFC]/10 border border-zinc-200/80 dark:border-zinc-700 hover:border-[#7C5CFC] transition-all flex items-center justify-between text-left group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-full bg-amber-500 text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <Crown className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
+                      Organizador / Admin da Liga
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400">
+                      LPF 5x5
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#71717A] dark:text-zinc-400 font-mono mt-0.5 truncate">
+                    admin@draftclub.pro • Senha: 123456
+                  </p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-[#7C5CFC] shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+
+            {/* 3. Jogador (Atleta Pro Clubs) */}
+            <button
+              type="button"
+              onClick={() => handleQuickCredentialClick('atleta@draftclub.pro', 'player')}
+              className="w-full p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 hover:bg-[#7C5CFC]/10 border border-zinc-200/80 dark:border-zinc-700 hover:border-[#7C5CFC] transition-all flex items-center justify-between text-left group"
+            >
+              <div className="flex items-center gap-3 min-w-0">
+                <div className="w-11 h-11 rounded-full bg-[#38C958] text-white flex items-center justify-center shrink-0 shadow-sm">
+                  <User className="w-5 h-5" />
+                </div>
+                <div className="min-w-0">
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
+                      Jogador (Atleta Pro Clubs)
+                    </span>
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#38C958]/15 text-[#2fb34d]">
+                      Jefhe #10
+                    </span>
+                  </div>
+                  <p className="text-[11px] text-[#71717A] dark:text-zinc-400 font-mono mt-0.5 truncate">
+                    atleta@draftclub.pro • Senha: 123456
+                  </p>
+                </div>
+              </div>
+              <ArrowRight className="w-4 h-4 text-[#7C5CFC] shrink-0 group-hover:translate-x-0.5 transition-transform" />
+            </button>
+          </div>
+        </div>
+
+        {/* Formulário de Login por E-mail e Senha */}
+        <form
+          onSubmit={handleManualSubmit}
+          className="bg-white dark:bg-zinc-900 rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4"
+        >
+          <h2 className="text-sm font-extrabold text-[#18181B] dark:text-white">
+            Entrar com E-mail e Senha
+          </h2>
+
+          <div className="space-y-3">
             <div>
-              <p className="text-sm font-semibold text-zinc-200">{session.name}</p>
-              <p className="text-xs text-zinc-500">{session.email}</p>
-              {session.teamName && (
-                <p className="text-xs text-emerald-400 mt-0.5">Equipe: {session.teamName}</p>
-              )}
+              <label className="block text-xs font-bold text-[#71717A] dark:text-zinc-400 mb-1">
+                E-mail
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-[#71717A] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="capitao@draftclub.pro"
+                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-[#18181B] dark:text-white focus:outline-none focus:border-[#7C5CFC]"
+                />
+              </div>
             </div>
-            <div className="flex items-center gap-2 pt-1">
-              {session.role === 'admin' && (
-                <a
-                  href="/admin"
-                  className="flex-1 text-center py-2 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-medium text-xs transition-colors"
-                >
-                  Ir para Painel Admin
-                </a>
-              )}
-              {session.role === 'captain' && (
-                <a
-                  href="/captain"
-                  className="flex-1 text-center py-2 px-3 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-medium text-xs transition-colors"
-                >
-                  Ir para Painel do Capitão
-                </a>
-              )}
+
+            <div>
+              <label className="block text-xs font-bold text-[#71717A] dark:text-zinc-400 mb-1">
+                Senha
+              </label>
+              <div className="relative">
+                <Lock className="w-4 h-4 text-[#71717A] absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="123456"
+                  className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-semibold text-[#18181B] dark:text-white focus:outline-none focus:border-[#7C5CFC]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {errorMsg && (
+            <div className="p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-600 flex items-center gap-2 font-medium">
+              <AlertCircle className="w-4 h-4 shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 px-6 rounded-full bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-sm transition-all flex items-center justify-center gap-2 shadow-md"
+          >
+            {loading ? 'Entrando...' : 'Prosseguir'}
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </form>
+
+        {/* Sessão Atual */}
+        {session && (
+          <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <CheckCircle2 className="w-5 h-5 text-[#38C958]" />
+              <div>
+                <p className="text-xs font-extrabold text-[#18181B] dark:text-white">
+                  Conectado como {session.name}
+                </p>
+                <p className="text-[11px] text-[#7C5CFC] font-semibold">
+                  {session.email} ({session.role.toUpperCase()})
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Link
+                href={
+                  session.role === 'admin'
+                    ? '/admin'
+                    : session.role === 'player'
+                    ? '/player'
+                    : '/captain'
+                }
+                className="px-3.5 py-2 rounded-full bg-[#7C5CFC] text-white text-xs font-bold"
+              >
+                Abrir Perfil
+              </Link>
               <button
+                type="button"
                 onClick={logout}
-                className="flex items-center justify-center p-2 rounded-lg bg-zinc-800 hover:bg-zinc-700 text-zinc-300 transition-colors"
-                title="Sair da conta"
+                className="p-2 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-500 hover:text-rose-500"
+                title="Sair"
               >
                 <LogOut className="w-4 h-4" />
               </button>
             </div>
           </div>
         )}
-
-        {/* Form Supabase Auth */}
-        <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-4">
-          <div className="flex items-center gap-2 pb-1 border-b border-zinc-800/80">
-            <KeyRound className="w-4 h-4 text-zinc-400" />
-            <h2 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-              Entrar com Email & Senha
-            </h2>
-          </div>
-
-          <form onSubmit={handleSupabaseSubmit} className="space-y-3.5">
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1">Email</label>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="seu.email@exemplo.com"
-                className="w-full px-3.5 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
-              />
-            </div>
-            <div>
-              <label className="block text-xs font-medium text-zinc-400 mb-1">Senha</label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
-                className="w-full px-3.5 py-2 rounded-lg bg-zinc-950 border border-zinc-800 text-sm text-zinc-200 placeholder-zinc-600 focus:outline-none focus:border-zinc-600"
-              />
-            </div>
-
-            {errorMsg && (
-              <p className="text-xs text-rose-400 flex items-center gap-1.5">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" />
-                {errorMsg}
-              </p>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-2.5 px-4 rounded-xl bg-zinc-100 hover:bg-white text-zinc-950 font-semibold text-xs transition-colors flex items-center justify-center gap-2"
-            >
-              {loading ? 'Validando credenciais...' : 'Acessar Plataforma'}
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          </form>
-        </div>
-
-        {/* Acesso Rápido de Demonstração / Avaliação */}
-        <div className="p-5 rounded-2xl bg-zinc-900 border border-zinc-800 space-y-3">
-          <div className="flex items-center gap-2 pb-1 border-b border-zinc-800/80">
-            <Sparkles className="w-4 h-4 text-amber-400" />
-            <h2 className="text-xs font-semibold text-zinc-300 uppercase tracking-wider">
-              Acesso Rápido para Avaliação
-            </h2>
-          </div>
-          <p className="text-xs text-zinc-500">
-            Clique para assumir um perfil pré-configurado instantaneamente sem necessidade de confirmação de e-mail:
-          </p>
-
-          <div className="grid grid-cols-1 gap-2 pt-1">
-            <button
-              onClick={() => loginAsDemo('admin')}
-              className="flex items-center justify-between p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-emerald-700/60 hover:bg-zinc-900/60 transition-all text-left"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-emerald-950/40 border border-emerald-800/40 flex items-center justify-center text-emerald-400">
-                  <Shield className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-zinc-200">Admin Master (Organizador)</p>
-                  <p className="text-[11px] text-zinc-500">Criação de ligas, regras e validador de prints</p>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-900/30 text-emerald-400 border border-emerald-800/40">
-                /admin
-              </span>
-            </button>
-
-            <button
-              onClick={() => loginAsDemo('captain_boca')}
-              className="flex items-center justify-between p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-sky-700/60 hover:bg-zinc-900/60 transition-all text-left"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-sky-950/40 border border-sky-800/40 flex items-center justify-center text-sky-400">
-                  <UserCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-zinc-200">Capitão Boca Juniors (buzz)</p>
-                  <p className="text-[11px] text-zinc-500">Gestão de elenco e envio de partidas</p>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-sky-900/30 text-sky-400 border border-sky-800/40">
-                /captain
-              </span>
-            </button>
-
-            <button
-              onClick={() => loginAsDemo('captain_river')}
-              className="flex items-center justify-between p-3 rounded-xl bg-zinc-950 border border-zinc-800 hover:border-rose-700/60 hover:bg-zinc-900/60 transition-all text-left"
-            >
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-lg bg-rose-950/40 border border-rose-800/40 flex items-center justify-center text-rose-400">
-                  <UserCheck className="w-4 h-4" />
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-zinc-200">Capitão River Plate (Deivy)</p>
-                  <p className="text-[11px] text-zinc-500">Gestão de elenco e envio de partidas</p>
-                </div>
-              </div>
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-rose-900/30 text-rose-400 border border-rose-800/40">
-                /captain
-              </span>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
@@ -237,9 +289,9 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-zinc-950 text-zinc-400 flex flex-col items-center justify-center gap-2 text-xs">
-          <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
-          <span>Carregando portal de acesso...</span>
+        <div className="min-h-screen bg-[#F5F6FA] text-[#71717A] flex flex-col items-center justify-center gap-2 text-xs">
+          <Loader2 className="w-6 h-6 animate-spin text-[#7C5CFC]" />
+          <span>Carregando acesso Jogueiros PRO...</span>
         </div>
       }
     >

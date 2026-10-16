@@ -28,7 +28,7 @@ export function BackButton({ label = 'Voltar', fallbackHref, className }: BackBu
     <button
       onClick={handleBack}
       className={cn(
-        'inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-zinc-900/90 border border-zinc-800 text-zinc-400 hover:text-zinc-100 hover:border-zinc-700 transition-colors text-xs font-semibold uppercase tracking-wider',
+        'inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-800 text-[#18181B] dark:text-zinc-200 hover:border-[#7C5CFC] hover:text-[#7C5CFC] transition-all text-xs font-bold shadow-sm',
         className
       )}
     >
