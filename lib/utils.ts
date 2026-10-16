@@ -622,6 +622,7 @@ export const ALL_11V11_FORMATIONS: Record<string, FormationPreset> = {
     key: '3-4-1-2',
     label: '3-4-1-2',
     category: '3-defenders',
+    gameMode: '11v11',
     slots: [
       GK_SLOT,
       { slotId: 'zage', positionCode: 'ZAG', displayName: 'Zagueiro Esq', xPercent: 26, yPercent: 76 },
@@ -637,3 +638,58 @@ export const ALL_11V11_FORMATIONS: Record<string, FormationPreset> = {
     ],
   },
 };
+
+export const ALL_5V5_FORMATIONS: Record<string, FormationPreset> = {
+  '5v5-1-2-1': {
+    key: '5v5-1-2-1',
+    label: '1-2-1 (Losango / Rush Padrão)',
+    category: '5v5-rush',
+    gameMode: '5v5',
+    slots: [
+      { slotId: 'r_fixo', positionCode: 'ZAG', displayName: 'Fixo / Último Homem', xPercent: 50, yPercent: 78 },
+      { slotId: 'r_alae', positionCode: 'ME', displayName: 'Ala Esquerdo', xPercent: 20, yPercent: 52 },
+      { slotId: 'r_alad', positionCode: 'MD', displayName: 'Ala Direito', xPercent: 80, yPercent: 52 },
+      { slotId: 'r_mei', positionCode: 'MEI', displayName: 'Armador Central', xPercent: 50, yPercent: 36 },
+      { slotId: 'r_pivo', positionCode: 'ATA', displayName: 'Pivô / Artilheiro', xPercent: 50, yPercent: 16 },
+    ],
+  },
+  '5v5-2-1-1': {
+    key: '5v5-2-1-1',
+    label: '2-1-1 (Sólido / Contra-Ataque)',
+    category: '5v5-rush',
+    gameMode: '5v5',
+    slots: [
+      { slotId: 'r_zage', positionCode: 'ZAG', displayName: 'Defensor Esq', xPercent: 32, yPercent: 75 },
+      { slotId: 'r_zagd', positionCode: 'ZAG', displayName: 'Defensor Dir', xPercent: 68, yPercent: 75 },
+      { slotId: 'r_vol', positionCode: 'VOL', displayName: 'Volante Box-to-Box', xPercent: 50, yPercent: 52 },
+      { slotId: 'r_mei', positionCode: 'MEI', displayName: 'Segundo Atacante', xPercent: 35, yPercent: 28 },
+      { slotId: 'r_ata', positionCode: 'ATA', displayName: 'Centroavante', xPercent: 65, yPercent: 18 },
+    ],
+  },
+  '5v5-1-1-2': {
+    key: '5v5-1-1-2',
+    label: '1-1-2 (Pressão Alta 5x5)',
+    category: '5v5-rush',
+    gameMode: '5v5',
+    slots: [
+      { slotId: 'r_fixo', positionCode: 'ZAG', displayName: 'Líbero', xPercent: 50, yPercent: 78 },
+      { slotId: 'r_mc', positionCode: 'MC', displayName: 'Maestro Central', xPercent: 50, yPercent: 54 },
+      { slotId: 'r_pe', positionCode: 'PE', displayName: 'Atacante Esq', xPercent: 26, yPercent: 24 },
+      { slotId: 'r_pd', positionCode: 'PD', displayName: 'Atacante Dir', xPercent: 74, yPercent: 24 },
+      { slotId: 'r_ata', positionCode: 'ATA', displayName: 'Pivô Central', xPercent: 50, yPercent: 14 },
+    ],
+  },
+};
+
+export const DAYS_OF_WEEK = [
+  { key: 'seg', label: 'Seg', full: 'Segunda-feira' },
+  { key: 'ter', label: 'Ter', full: 'Terça-feira' },
+  { key: 'qua', label: 'Qua', full: 'Quarta-feira' },
+  { key: 'qui', label: 'Qui', full: 'Quinta-feira' },
+  { key: 'sex', label: 'Sex', full: 'Sexta-feira' },
+  { key: 'sab', label: 'Sáb', full: 'Sábado' },
+  { key: 'dom', label: 'Dom', full: 'Domingo' },
+] as const;
+
+export const TIME_SLOTS = ['19:00', '20:00', '21:00', '22:00', '22:30', '23:00', '23:30', '00:00'] as const;
+

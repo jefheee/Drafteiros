@@ -1,11 +1,21 @@
 -- =========================================================================
--- DRAFTCLUB SAAS - RBAC, LINEUPS & COMPLETE 11V11 ARCHITECTURE
+-- DRAFTCLUB SAAS - JOGUEIROS PRO EDITION (5v5 & 11v11 ARCHITECTURE)
 -- =========================================================================
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+DROP VIEW IF EXISTS vw_top_assists CASCADE;
+DROP VIEW IF EXISTS vw_top_scorers CASCADE;
+DROP VIEW IF EXISTS vw_tournament_standings CASCADE;
 DROP VIEW IF EXISTS vw_tournament_player_stats CASCADE;
 DROP VIEW IF EXISTS vw_community_positions CASCADE;
+DROP TABLE IF EXISTS tournament_finances CASCADE;
+DROP TABLE IF EXISTS match_incidents CASCADE;
+DROP TABLE IF EXISTS free_agents CASCADE;
+DROP TABLE IF EXISTS match_events CASCADE;
+DROP TABLE IF EXISTS tournament_phases CASCADE;
+DROP TABLE IF EXISTS match_player_stats CASCADE;
+DROP TABLE IF EXISTS matches CASCADE;
 DROP TABLE IF EXISTS squad_lineups CASCADE;
 DROP TABLE IF EXISTS draft_picks CASCADE;
 DROP TABLE IF EXISTS teams CASCADE;
@@ -16,17 +26,22 @@ DROP TABLE IF EXISTS tournament_participants CASCADE;
 DROP TABLE IF EXISTS player_profiles CASCADE;
 DROP TABLE IF EXISTS tournaments CASCADE;
 
--- 1. TORNEIOS
+-- 1. TORNEIOS (EVOLUÍDO COM GAME_MODE, FINANÇAS E REGRAS OFICIAIS)
 CREATE TABLE tournaments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
-    format TEXT NOT NULL DEFAULT '11v11',
-    status TEXT NOT NULL DEFAULT 'DRAFT' CHECK (status IN ('REGISTRATION', 'SCOUTING', 'DRAFT', 'ACTIVE', 'FINISHED')),
-    rules JSONB NOT NULL DEFAULT '{"crossplay_gen": "current_gen", "min_human_players": 11, "any_allowed": false, "gk_required": true}'::jsonb,
+    format TEXT NOT NULL DEFAULT '5v5',
+    game_mode TEXT NOT NULL DEFAULT '5v5' CHECK (game_mode IN ('5v5', '11v11')),
+    max_roster_size INTEGER NOT NULL DEFAULT 6,
+    entry_fee NUMERIC(10, 2) NOT NULL DEFAULT 70.00,
+    prize_distribution JSONB NOT NULL DEFAULT '{"first": 300, "second": 120, "third": 80, "top_scorer": 30, "top_assister": 30}'::jsonb,
+    rules_config JSONB NOT NULL DEFAULT '{"cancel_notice_minutes": 60, "wo_tolerance_minutes": 15, "disconnect_full_restart_limit_min": 20, "extra_time_group_stage": false}'::jsonb,
+    status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('REGISTRATION', 'SCOUTING', 'DRAFT', 'ACTIVE', 'FINISHED')),
+    rules JSONB NOT NULL DEFAULT '{"crossplay_gen": "current_gen", "min_human_players": 5, "any_allowed": false, "gk_required": false}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 2. PERFIS DE JOGADORES (PLAYER PROFILES)
+-- 2. PERFIS DE JOGADORES (PLAYER PROFILES COM VISUAL TRAITS, AVAILABILITY E MEDALS)
 CREATE TABLE player_profiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID,
@@ -35,6 +50,16 @@ CREATE TABLE player_profiles (
     archetype TEXT NOT NULL DEFAULT 'Mágico',
     archetypes TEXT[] NOT NULL DEFAULT '{"Mágico"}'::text[],
     avatar_url TEXT,
+    platform TEXT DEFAULT 'PS5' CHECK (platform IN ('PS5', 'Xbox Series', 'PC', 'OldGen')),
+    primary_position TEXT DEFAULT 'MEI',
+    secondary_positions TEXT[] DEFAULT '{}',
+    contact_discord TEXT,
+    contact_whatsapp TEXT,
+    is_looking_for_team BOOLEAN DEFAULT false,
+    bio TEXT,
+    visual_traits JSONB NOT NULL DEFAULT '{"skin_tone": "Médio", "hair_style": "Disfarçado (Fade) + Tranças", "hair_color": "Loiro Platinado", "facial_hair": "Cavanhaque fechado", "accessories": ["Faixa na cabeça branca", "Munhequeira dupla"], "shirt_number": 10, "celebration": "Mão no ouvido provocando"}'::jsonb,
+    availability JSONB NOT NULL DEFAULT '{"seg": ["21:00", "22:00", "23:00"], "ter": ["22:00", "23:00"], "qui": ["21:00", "22:00", "23:00"]}'::jsonb,
+    medals JSONB NOT NULL DEFAULT '[]'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -86,7 +111,7 @@ CREATE TABLE evaluations (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 7. TIMES DO CAMPEONATO
+-- 7. TIMES DO CAMPEONATO (COM CORES, UNIFORME IA E PATROCINADORES)
 CREATE TABLE teams (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
@@ -94,6 +119,12 @@ CREATE TABLE teams (
     captain_id UUID REFERENCES player_profiles(id) ON DELETE SET NULL,
     active_formation TEXT NOT NULL DEFAULT '4-3-3',
     logo_url TEXT,
+    primary_color TEXT NOT NULL DEFAULT '#06b6d4',
+    secondary_color TEXT NOT NULL DEFAULT '#ffffff',
+    kit_description TEXT DEFAULT 'Listrado azul claro e branco estilo Racing com patrocínio Betsson',
+    sponsors JSONB NOT NULL DEFAULT '[{"name": "Betsson", "logo_url": ""}, {"name": "RedBull Gaming", "logo_url": ""}]'::jsonb,
+    whatsapp_group_link TEXT,
+    instagram_handle TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -122,16 +153,34 @@ CREATE TABLE squad_lineups (
     UNIQUE(team_id, slot_id)
 );
 
--- 10. PARTIDAS E RESULTADOS (COM PROVAS DE SCREENSHOT EA SPORTS)
+-- 10. FASES DO CAMPEONATO (ESTILO COPAFÁCIL: GRUPOS, OITAVAS, QUARTAS, SEMI, FINAL)
+CREATE TABLE tournament_phases (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    phase_type TEXT NOT NULL DEFAULT 'groups' CHECK (phase_type IN ('groups', 'knockout')),
+    order_num INTEGER NOT NULL DEFAULT 1,
+    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('pending', 'active', 'finished')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 11. PARTIDAS, AGENDAMENTO INTELIGENTE E VALIDAÇÃO DUPLA
 CREATE TABLE matches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+    phase_id UUID REFERENCES tournament_phases(id) ON DELETE SET NULL,
+    round_number INTEGER NOT NULL DEFAULT 1,
     home_team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
     away_team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    scheduled_at TIMESTAMPTZ,
+    schedule_status TEXT NOT NULL DEFAULT 'unscheduled' CHECK (schedule_status IN ('unscheduled', 'proposed_by_home', 'proposed_by_away', 'confirmed')),
+    status TEXT NOT NULL DEFAULT 'scheduled' CHECK (status IN ('scheduled', 'pending_validation', 'completed', 'disputed', 'wo', 'pending', 'approved', 'rejected')),
     home_score INTEGER NOT NULL DEFAULT 0,
     away_score INTEGER NOT NULL DEFAULT 0,
     proof_image_url TEXT,
-    status TEXT NOT NULL DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+    submitted_by_team_id UUID REFERENCES teams(id) ON DELETE SET NULL,
+    validated_by_team_id UUID REFERENCES teams(id) ON DELETE SET NULL,
+    motm_player_id UUID REFERENCES player_profiles(id) ON DELETE SET NULL,
     reported_by UUID,
     notes TEXT,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
@@ -139,17 +188,70 @@ CREATE TABLE matches (
     reviewed_by UUID
 );
 
--- 11. ESTATÍSTICAS INDIVIDUAIS DA PARTIDA (GOLS, ASSISTÊNCIAS, CARTÕES)
+-- 12. ESTATÍSTICAS INDIVIDUAIS DA PARTIDA (COM SUPORTE A CONVIDADO AVULSO)
 CREATE TABLE match_player_stats (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+    player_id UUID REFERENCES player_profiles(id) ON DELETE SET NULL,
+    guest_name TEXT,
+    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    goals INTEGER NOT NULL DEFAULT 0,
+    assists INTEGER NOT NULL DEFAULT 0,
+    yellow_cards INTEGER NOT NULL DEFAULT 0,
+    red_cards INTEGER NOT NULL DEFAULT 0,
+    rating NUMERIC(3, 1) DEFAULT 7.0,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 13. CENTRAL DE INCIDENTES, W.O. E QUEDAS (REGRAS OFICIAIS)
+CREATE TABLE match_incidents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
+    reported_by_team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    incident_type TEXT NOT NULL CHECK (incident_type IN ('wo_delay', 'late_cancellation', 'player_disconnect_first_20', 'player_disconnect_halftime', 'game_bug')),
+    minute_occurred INTEGER,
+    score_at_incident TEXT,
+    evidence_url TEXT,
+    admin_resolution_notes TEXT,
+    status TEXT NOT NULL DEFAULT 'open' CHECK (status IN ('open', 'resolved', 'rejected')),
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 14. CONTROLE FINANCEIRO DE CAMPEONATOS (ERP)
+CREATE TABLE tournament_finances (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    entry_fee_paid BOOLEAN NOT NULL DEFAULT false,
+    paid_at TIMESTAMPTZ,
+    payment_proof_url TEXT,
+    notes TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(tournament_id, team_id)
+);
+
+-- 15. EVENTOS DETALHADOS DA PARTIDA (GOLS, ASSISTÊNCIAS, CARTÕES, CLEAN SHEETS)
+CREATE TABLE match_events (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
     player_id UUID NOT NULL REFERENCES player_profiles(id) ON DELETE CASCADE,
     team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
-    goals INTEGER NOT NULL DEFAULT 0,
-    assists INTEGER NOT NULL DEFAULT 0,
-    red_cards INTEGER NOT NULL DEFAULT 0,
-    yellow_cards INTEGER NOT NULL DEFAULT 0,
-    rating NUMERIC(3, 1) DEFAULT 6.0,
+    type TEXT NOT NULL CHECK (type IN ('goal', 'assist', 'yellow_card', 'red_card', 'clean_sheet')),
+    minute INTEGER,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- 16. MERCADÃO DE JOGADORES LIVRES (FREE AGENTS BUSCANDO TIME)
+CREATE TABLE free_agents (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    player_id UUID NOT NULL UNIQUE REFERENCES player_profiles(id) ON DELETE CASCADE,
+    platform TEXT NOT NULL DEFAULT 'PS5' CHECK (platform IN ('PS5', 'Xbox Series', 'PC', 'OldGen')),
+    primary_position TEXT NOT NULL,
+    secondary_positions TEXT[] DEFAULT '{}',
+    description TEXT,
+    contact_discord TEXT,
+    contact_whatsapp TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT true,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
@@ -163,6 +265,8 @@ CREATE INDEX idx_sl_team ON squad_lineups(team_id);
 CREATE INDEX idx_matches_tourn ON matches(tournament_id);
 CREATE INDEX idx_matches_status ON matches(status);
 CREATE INDEX idx_mps_match ON match_player_stats(match_id);
+CREATE INDEX idx_mi_match ON match_incidents(match_id);
+CREATE INDEX idx_tf_tourn ON tournament_finances(tournament_id);
 
 -- VIEWS
 CREATE OR REPLACE VIEW vw_community_positions AS
@@ -251,7 +355,7 @@ WITH team_matches AS (
             ELSE 0 
         END AS points
     FROM matches m
-    WHERE m.status = 'approved'
+    WHERE m.status IN ('approved', 'completed', 'wo')
     
     UNION ALL
     
@@ -270,7 +374,7 @@ WITH team_matches AS (
             ELSE 0 
         END AS points
     FROM matches m
-    WHERE m.status = 'approved'
+    WHERE m.status IN ('approved', 'completed', 'wo')
 ),
 aggregated AS (
     SELECT 
@@ -301,7 +405,49 @@ FROM aggregated a;
 
 ALTER VIEW vw_tournament_standings SET (security_invoker = on);
 
--- RLS
+-- VIEWS ANALÍTICAS DE E-SPORTS (ARTILHARIA E ASSISTÊNCIAS)
+CREATE OR REPLACE VIEW vw_top_scorers AS
+SELECT 
+    COALESCE(p.id, gen_random_uuid()) AS player_id,
+    COALESCE(p.name, mps.guest_name, 'Convidado') AS player_name,
+    t.id AS team_id,
+    t.name AS team_name,
+    t.logo_url AS team_logo_url,
+    m.tournament_id,
+    SUM(mps.goals)::INT AS goals_count,
+    COUNT(DISTINCT mps.match_id)::INT AS matches_played,
+    ROUND(SUM(mps.goals)::NUMERIC / NULLIF(COUNT(DISTINCT mps.match_id), 0), 2) AS goals_per_match,
+    ROW_NUMBER() OVER (PARTITION BY m.tournament_id ORDER BY SUM(mps.goals) DESC, COUNT(DISTINCT mps.match_id) ASC)::INT AS rank
+FROM match_player_stats mps
+JOIN matches m ON mps.match_id = m.id
+LEFT JOIN player_profiles p ON mps.player_id = p.id
+JOIN teams t ON mps.team_id = t.id
+WHERE mps.goals > 0 AND m.status IN ('approved', 'completed')
+GROUP BY p.id, p.name, mps.guest_name, t.id, t.name, t.logo_url, m.tournament_id;
+
+ALTER VIEW vw_top_scorers SET (security_invoker = on);
+
+CREATE OR REPLACE VIEW vw_top_assists AS
+SELECT 
+    COALESCE(p.id, gen_random_uuid()) AS player_id,
+    COALESCE(p.name, mps.guest_name, 'Convidado') AS player_name,
+    t.id AS team_id,
+    t.name AS team_name,
+    t.logo_url AS team_logo_url,
+    m.tournament_id,
+    SUM(mps.assists)::INT AS assists_count,
+    COUNT(DISTINCT mps.match_id)::INT AS matches_played,
+    ROW_NUMBER() OVER (PARTITION BY m.tournament_id ORDER BY SUM(mps.assists) DESC, COUNT(DISTINCT mps.match_id) ASC)::INT AS rank
+FROM match_player_stats mps
+JOIN matches m ON mps.match_id = m.id
+LEFT JOIN player_profiles p ON mps.player_id = p.id
+JOIN teams t ON mps.team_id = t.id
+WHERE mps.assists > 0 AND m.status IN ('approved', 'completed')
+GROUP BY p.id, p.name, mps.guest_name, t.id, t.name, t.logo_url, m.tournament_id;
+
+ALTER VIEW vw_top_assists SET (security_invoker = on);
+
+-- RLS & POLICIES
 ALTER TABLE tournaments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE player_profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tournament_participants ENABLE ROW LEVEL SECURITY;
@@ -311,8 +457,13 @@ ALTER TABLE evaluations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
 ALTER TABLE draft_picks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE squad_lineups ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tournament_phases ENABLE ROW LEVEL SECURITY;
 ALTER TABLE matches ENABLE ROW LEVEL SECURITY;
 ALTER TABLE match_player_stats ENABLE ROW LEVEL SECURITY;
+ALTER TABLE match_incidents ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tournament_finances ENABLE ROW LEVEL SECURITY;
+ALTER TABLE match_events ENABLE ROW LEVEL SECURITY;
+ALTER TABLE free_agents ENABLE ROW LEVEL SECURITY;
 
 CREATE POLICY "Public Read tournaments" ON tournaments FOR SELECT TO public USING (true);
 CREATE POLICY "Public Manage tournaments" ON tournaments FOR ALL TO public USING (true);
@@ -332,91 +483,16 @@ CREATE POLICY "Public Read draft_picks" ON draft_picks FOR SELECT TO public USIN
 CREATE POLICY "Public Manage draft_picks" ON draft_picks FOR ALL TO public USING (true);
 CREATE POLICY "Public Read squad_lineups" ON squad_lineups FOR SELECT TO public USING (true);
 CREATE POLICY "Public Manage squad_lineups" ON squad_lineups FOR ALL TO public USING (true);
--- 12. FASES DO CAMPEONATO (ESTILO COPAFÁCIL: GRUPOS, OITAVAS, QUARTAS, SEMI, FINAL)
-CREATE TABLE IF NOT EXISTS tournament_phases (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    phase_type TEXT NOT NULL DEFAULT 'groups' CHECK (phase_type IN ('groups', 'knockout')),
-    order_num INTEGER NOT NULL DEFAULT 1,
-    status TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('pending', 'active', 'finished')),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- 13. EVENTOS DETALHADOS DA PARTIDA (GOLS, ASSISTÊNCIAS, CARTÕES, CLEAN SHEETS)
-CREATE TABLE IF NOT EXISTS match_events (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
-    player_id UUID NOT NULL REFERENCES player_profiles(id) ON DELETE CASCADE,
-    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
-    type TEXT NOT NULL CHECK (type IN ('goal', 'assist', 'yellow_card', 'red_card', 'clean_sheet')),
-    minute INTEGER,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- 14. MERCADÃO DE JOGADORES LIVRES (FREE AGENTS BUSCANDO TIME)
-CREATE TABLE IF NOT EXISTS free_agents (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    player_id UUID NOT NULL UNIQUE REFERENCES player_profiles(id) ON DELETE CASCADE,
-    platform TEXT NOT NULL DEFAULT 'PS5' CHECK (platform IN ('PS5', 'Xbox Series', 'PC', 'OldGen')),
-    primary_position TEXT NOT NULL,
-    secondary_positions TEXT[] DEFAULT '{}',
-    description TEXT,
-    contact_discord TEXT,
-    contact_whatsapp TEXT,
-    is_active BOOLEAN NOT NULL DEFAULT true,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- VIEWS ANALÍTICAS DE E-SPORTS (ARTILHARIA E ASSISTÊNCIAS)
-CREATE OR REPLACE VIEW vw_top_scorers AS
-SELECT 
-    p.id AS player_id,
-    p.name AS player_name,
-    t.id AS team_id,
-    t.name AS team_name,
-    t.logo_url AS team_logo_url,
-    m.tournament_id,
-    COUNT(me.id)::INT AS goals_count,
-    COUNT(DISTINCT me.match_id)::INT AS matches_played,
-    ROUND(COUNT(me.id)::NUMERIC / NULLIF(COUNT(DISTINCT me.match_id), 0), 2) AS goals_per_match,
-    ROW_NUMBER() OVER (PARTITION BY m.tournament_id ORDER BY COUNT(me.id) DESC, COUNT(DISTINCT me.match_id) ASC)::INT AS rank
-FROM match_events me
-JOIN matches m ON me.match_id = m.id
-JOIN player_profiles p ON me.player_id = p.id
-JOIN teams t ON me.team_id = t.id
-WHERE me.type = 'goal' AND m.status = 'approved'
-GROUP BY p.id, p.name, t.id, t.name, t.logo_url, m.tournament_id;
-
-ALTER VIEW vw_top_scorers SET (security_invoker = on);
-
-CREATE OR REPLACE VIEW vw_top_assists AS
-SELECT 
-    p.id AS player_id,
-    p.name AS player_name,
-    t.id AS team_id,
-    t.name AS team_name,
-    t.logo_url AS team_logo_url,
-    m.tournament_id,
-    COUNT(me.id)::INT AS assists_count,
-    COUNT(DISTINCT me.match_id)::INT AS matches_played,
-    ROW_NUMBER() OVER (PARTITION BY m.tournament_id ORDER BY COUNT(me.id) DESC, COUNT(DISTINCT me.match_id) ASC)::INT AS rank
-FROM match_events me
-JOIN matches m ON me.match_id = m.id
-JOIN player_profiles p ON me.player_id = p.id
-JOIN teams t ON me.team_id = t.id
-WHERE me.type = 'assist' AND m.status = 'approved'
-GROUP BY p.id, p.name, t.id, t.name, t.logo_url, m.tournament_id;
-
-ALTER VIEW vw_top_assists SET (security_invoker = on);
-
--- RLS & POLICIES ADICIONAIS
-ALTER TABLE tournament_phases ENABLE ROW LEVEL SECURITY;
-ALTER TABLE match_events ENABLE ROW LEVEL SECURITY;
-ALTER TABLE free_agents ENABLE ROW LEVEL SECURITY;
-
 CREATE POLICY "Public Read tournament_phases" ON tournament_phases FOR SELECT TO public USING (true);
 CREATE POLICY "Public Manage tournament_phases" ON tournament_phases FOR ALL TO public USING (true);
+CREATE POLICY "Public Read matches" ON matches FOR SELECT TO public USING (true);
+CREATE POLICY "Public Manage matches" ON matches FOR ALL TO public USING (true);
+CREATE POLICY "Public Read match_player_stats" ON match_player_stats FOR SELECT TO public USING (true);
+CREATE POLICY "Public Manage match_player_stats" ON match_player_stats FOR ALL TO public USING (true);
+CREATE POLICY "Public Read match_incidents" ON match_incidents FOR SELECT TO public USING (true);
+CREATE POLICY "Public Manage match_incidents" ON match_incidents FOR ALL TO public USING (true);
+CREATE POLICY "Public Read tournament_finances" ON tournament_finances FOR SELECT TO public USING (true);
+CREATE POLICY "Public Manage tournament_finances" ON tournament_finances FOR ALL TO public USING (true);
 CREATE POLICY "Public Read match_events" ON match_events FOR SELECT TO public USING (true);
 CREATE POLICY "Public Manage match_events" ON match_events FOR ALL TO public USING (true);
 CREATE POLICY "Public Read free_agents" ON free_agents FOR SELECT TO public USING (true);

@@ -1,15 +1,24 @@
 'use client';
 
-import React, { createContext, useContext, useState, useMemo, useCallback, useEffect } from 'react';
+import React, { createContext, useContext, useState, useMemo, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
-import { PitchPositionSlot, TournamentPlayerStats, FormationPreset } from '@/types/database';
-import { ALL_11V11_FORMATIONS } from '@/lib/utils';
+import {
+  PitchPositionSlot,
+  TournamentPlayerStats,
+  FormationPreset,
+  GameMode,
+} from '@/types/database';
+import { ALL_11V11_FORMATIONS, ALL_5V5_FORMATIONS } from '@/lib/utils';
 
 interface SquadContextType {
+  gameMode: GameMode;
+  setGameMode: (mode: GameMode) => void;
   formation: string;
   setFormation: (formation: string) => void;
   slots: PitchPositionSlot[];
   assignments: Record<string, TournamentPlayerStats | null>;
+  sixthManReserve: TournamentPlayerStats | null;
+  setSixthManReserve: (player: TournamentPlayerStats | null) => void;
   selectedBenchPlayer: TournamentPlayerStats | null;
   setSelectedBenchPlayer: (player: TournamentPlayerStats | null) => void;
   assignPlayerToSlot: (slotId: string, player: TournamentPlayerStats) => void;
@@ -18,32 +27,74 @@ interface SquadContextType {
   clearPitch: () => void;
   saveLineupToDatabase: (tournamentId: string, teamId: string) => Promise<boolean>;
   isPlayerOnPitch: (playerId: string) => boolean;
-  loadLineupFromDatabase: (tournamentId: string, teamId: string, roster: TournamentPlayerStats[]) => Promise<void>;
+  loadLineupFromDatabase: (
+    tournamentId: string,
+    teamId: string,
+    roster: TournamentPlayerStats[]
+  ) => Promise<void>;
 }
 
 const SquadContext = createContext<SquadContextType | null>(null);
 
 export function SquadProvider({
   children,
-  initialFormation = '4-3-3',
+  initialFormation = '5v5-1-2-1',
+  initialGameMode = '5v5',
 }: {
   children: React.ReactNode;
   initialFormation?: string;
+  initialGameMode?: GameMode;
 }) {
+  const [gameMode, setGameModeState] = useState<GameMode>(initialGameMode);
   const [formation, setFormationState] = useState<string>(initialFormation);
   const [assignments, setAssignments] = useState<Record<string, TournamentPlayerStats | null>>({});
+  const [sixthManReserve, setSixthManReserve] = useState<TournamentPlayerStats | null>(null);
   const [selectedBenchPlayer, setSelectedBenchPlayer] = useState<TournamentPlayerStats | null>(null);
 
-  const currentPreset: FormationPreset = ALL_11V11_FORMATIONS[formation] || ALL_11V11_FORMATIONS['4-3-3'];
+  const allFormations = useMemo(
+    () => ({ ...ALL_11V11_FORMATIONS, ...ALL_5V5_FORMATIONS }),
+    []
+  );
+
+  const currentPreset: FormationPreset = useMemo(() => {
+    if (gameMode === '5v5') {
+      return ALL_5V5_FORMATIONS[formation] || ALL_5V5_FORMATIONS['5v5-1-2-1'];
+    }
+    return ALL_11V11_FORMATIONS[formation] || ALL_11V11_FORMATIONS['4-3-3'];
+  }, [gameMode, formation]);
+
   const slots = currentPreset.slots;
 
-  const setFormation = useCallback((newFormation: string) => {
-    if (ALL_11V11_FORMATIONS[newFormation]) {
-      setFormationState(newFormation);
+  const setGameMode = useCallback((mode: GameMode) => {
+    setGameModeState(mode);
+    if (mode === '5v5') {
+      setFormationState('5v5-1-2-1');
+    } else {
+      setFormationState('4-3-3');
     }
+    setAssignments({});
   }, []);
 
+  const setFormation = useCallback(
+    (newFormation: string) => {
+      if (allFormations[newFormation]) {
+        setFormationState(newFormation);
+        if (ALL_5V5_FORMATIONS[newFormation]) {
+          setGameModeState('5v5');
+        } else {
+          setGameModeState('11v11');
+        }
+      }
+    },
+    [allFormations]
+  );
+
   const assignPlayerToSlot = useCallback((slotId: string, player: TournamentPlayerStats) => {
+    if (slotId === 'reserve_6th') {
+      setSixthManReserve(player);
+      setSelectedBenchPlayer(null);
+      return;
+    }
     setAssignments((prev) => {
       const next = { ...prev };
       Object.keys(next).forEach((k) => {
@@ -58,14 +109,23 @@ export function SquadProvider({
   }, []);
 
   const removePlayerFromSlot = useCallback((slotId: string) => {
+    if (slotId === 'reserve_6th') {
+      setSixthManReserve(null);
+      return;
+    }
     setAssignments((prev) => ({ ...prev, [slotId]: null }));
   }, []);
 
-  const clearPitch = useCallback(() => setAssignments({}), []);
+  const clearPitch = useCallback(() => {
+    setAssignments({});
+    setSixthManReserve(null);
+  }, []);
 
   const isPlayerOnPitch = useCallback(
-    (playerId: string) => Object.values(assignments).some((p) => p?.player_id === playerId),
-    [assignments]
+    (playerId: string) =>
+      Object.values(assignments).some((p) => p?.player_id === playerId) ||
+      sixthManReserve?.player_id === playerId,
+    [assignments, sixthManReserve]
   );
 
   const autoAssignSquad = useCallback(
@@ -94,8 +154,13 @@ export function SquadProvider({
       });
 
       setAssignments(newAssignments);
+
+      if (gameMode === '5v5') {
+        const sixth = availablePlayers.find((p) => !used.has(p.player_id)) || null;
+        setSixthManReserve(sixth);
+      }
     },
-    [slots]
+    [slots, gameMode]
   );
 
   const saveLineupToDatabase = useCallback(
@@ -140,8 +205,13 @@ export function SquadProvider({
           .eq('id', teamId)
           .single();
 
-        if (teamData?.active_formation && ALL_11V11_FORMATIONS[teamData.active_formation]) {
+        if (teamData?.active_formation && allFormations[teamData.active_formation]) {
           setFormationState(teamData.active_formation);
+          if (ALL_5V5_FORMATIONS[teamData.active_formation]) {
+            setGameModeState('5v5');
+          } else {
+            setGameModeState('11v11');
+          }
         }
 
         const { data: lineupData } = await supabase
@@ -165,15 +235,19 @@ export function SquadProvider({
         console.warn('Erro ao carregar escalação salva:', e);
       }
     },
-    []
+    [allFormations]
   );
 
   const value = useMemo(
     () => ({
+      gameMode,
+      setGameMode,
       formation,
       setFormation,
       slots,
       assignments,
+      sixthManReserve,
+      setSixthManReserve,
       selectedBenchPlayer,
       setSelectedBenchPlayer,
       assignPlayerToSlot,
@@ -185,10 +259,13 @@ export function SquadProvider({
       isPlayerOnPitch,
     }),
     [
+      gameMode,
+      setGameMode,
       formation,
       setFormation,
       slots,
       assignments,
+      sixthManReserve,
       selectedBenchPlayer,
       assignPlayerToSlot,
       removePlayerFromSlot,
