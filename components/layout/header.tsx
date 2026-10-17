@@ -23,6 +23,7 @@ import {
   Images,
   FileCheck2,
   UserPlus,
+  Users,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-context';
 import { cn } from '@/lib/utils';
@@ -37,10 +38,9 @@ export default function Header() {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [metricsModalOpen, setMetricsModalOpen] = useState(false);
 
-  const [selectedSeason, setSelectedSeason] = useState('Liga 5x5 LPF');
+  const [selectedSeason, setSelectedSeason] = useState('LPF 5x5');
   const [isDark, setIsDark] = useState(false);
 
-  // Pontuação da Súmula (Idêntica à print do Jogueiros)
   const [metricsScore, setMetricsScore] = useState({
     gol: 8,
     assistencia: 5,
@@ -98,264 +98,117 @@ export default function Header() {
     }));
   };
 
+  const characterName = session?.characterName || 'JEFHE';
+  const fullName = session?.fullName || 'Jefherson';
+
   const currentRoleLabel =
     session?.role === 'admin'
-      ? 'Admin LPF 5x5'
+      ? 'Admin da Liga'
       : session?.role === 'player'
-      ? 'Jefhe (Atleta)'
+      ? `${characterName} (Atleta)`
       : 'Furia del Plata';
 
   const currentInitials =
-    session?.role === 'admin' ? 'LPF' : session?.role === 'player' ? 'JF' : 'FP';
+    session?.role === 'admin'
+      ? 'LPF'
+      : session?.role === 'player'
+      ? characterName.slice(0, 2).toUpperCase()
+      : 'FP';
 
   const notifications = [
     {
       id: 'n1',
-      title: 'Súmula aguardando sua aprovação',
-      desc: 'Furia del Plata 3 x 1 Boca Juniors FC • Dupla Validação pendente.',
-      time: 'Há 5 min',
-      href: '/matches',
-      icon: FileCheck2,
-      badge: 'Urgente',
+      title: 'Pós-Jogo Oficial: Furia del Plata 2 - 7 La Catimba',
+      desc: 'Arte 4:5 full-bleed sem patrocinadores pronta para download no Estúdio.',
+      time: 'Agora',
+      href: '/studio',
+      icon: Images,
+      badge: 'Banner 4:5',
     },
     {
       id: 'n2',
-      title: 'Novos Banners @atleticodapalhoca liberados!',
-      desc: 'Gere o banner pós-jogo 4:5 ou Story 9:16 com 1 toque usando a foto da partida.',
-      time: 'Há 18 min',
-      href: '/studio',
-      icon: Images,
-      badge: 'Novo',
+      title: 'Súmula validada & Tabela atualizada',
+      desc: 'HAALANDINHO (5 gols) assumiu a artilharia isolada da LPF 5x5.',
+      time: 'Há 10 min',
+      href: '/matches',
+      icon: FileCheck2,
+      badge: 'Súmula',
     },
     {
       id: 'n3',
-      title: 'Tinder de Horários: Match de agenda!',
-      desc: '5 titulares confirmaram presença Terça-feira às 22:30h.',
-      time: 'Há 1h',
+      title: 'Tinder de Horários por Intervalos',
+      desc: 'Janela ideal detectada: Terça-feira (Noite Pico • 21:30 às 23:30).',
+      time: 'Há 35 min',
       href: '/matches',
       icon: Calendar,
       badge: 'Agenda',
     },
     {
       id: 'n4',
-      title: 'Convite de Elenco (Código 192Y4I)',
-      desc: 'Jefhe aceitou o convite e entrou no elenco do Furia del Plata.',
-      time: 'Ontem',
-      href: '/captain',
+      title: 'Sala de Draft Oficial (+40 Atletas)',
+      desc: 'Sorteio de ordem por IA (Snake Draft) liberado para os capitães.',
+      time: 'Hoje',
+      href: '/draft-board',
       icon: UserPlus,
-      badge: 'Time',
+      badge: 'Draft',
     },
   ];
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-[#F5F6FA]/90 dark:bg-zinc-950/90 backdrop-blur-md border-b border-zinc-200/60 dark:border-zinc-800/80 transition-colors">
-        <div className="max-w-3xl mx-auto px-3.5 sm:px-6 h-16 flex items-center justify-between gap-2">
-          {/* 1. CANTO ESQUERDO: Seletor Rápido de Conta/Perfil ("Mudar de conta") */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                setAccountMenuOpen(!accountMenuOpen);
-                setSeasonMenuOpen(false);
-              }}
-              className="h-10 pl-1.5 pr-3 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-2 hover:border-[#7C5CFC] transition-all"
-            >
-              <div className="w-7 h-7 rounded-full bg-[#7C5CFC] text-white font-extrabold text-[11px] flex items-center justify-center shadow-sm">
-                {currentInitials}
-              </div>
-              <span className="text-xs font-extrabold text-[#18181B] dark:text-white truncate max-w-[95px] sm:max-w-[140px]">
-                {currentRoleLabel}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#7C5CFC]" />
-            </button>
+      <header className="sticky top-0 z-40 w-full bg-[#F5F6FA]/95 dark:bg-zinc-950/95 backdrop-blur-md border-b border-zinc-200/60 dark:border-zinc-800/80 transition-colors">
+        <div className="max-w-3xl mx-auto w-full px-3 py-2.5 flex items-center justify-between gap-1.5 overflow-hidden">
+          {/* 1. CANTO ESQUERDO: Seletor Multi-Perfil na Mesma Conta */}
+          <button
+            type="button"
+            onClick={() => {
+              setAccountMenuOpen(!accountMenuOpen);
+              setSeasonMenuOpen(false);
+            }}
+            className="max-w-[145px] sm:max-w-[200px] h-9 pl-1.5 pr-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-1.5 hover:border-[#7C5CFC] transition-all shrink-0 overflow-hidden"
+          >
+            <div className="w-6 h-6 rounded-full bg-[#7C5CFC] text-white font-extrabold text-[10px] flex items-center justify-center shrink-0">
+              {currentInitials}
+            </div>
+            <span className="text-[11px] font-extrabold text-[#18181B] dark:text-white truncate">
+              {currentRoleLabel}
+            </span>
+            <ChevronDown className="w-3 h-3 text-[#7C5CFC] shrink-0" />
+          </button>
 
-            {accountMenuOpen && (
-              <div className="absolute left-0 mt-2 w-72 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-2xl p-3 space-y-2 z-50">
-                <div className="px-2 py-1 flex items-center justify-between">
-                  <span className="text-[11px] font-extrabold uppercase tracking-wider text-[#71717A]">
-                    Mudar de Conta (1 Clique)
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setAccountMenuOpen(false)}
-                    className="text-zinc-400 hover:text-zinc-600"
-                  >
-                    <X className="w-3.5 h-3.5" />
-                  </button>
-                </div>
+          {/* 2. CENTRO: Pílula Compacta da Liga */}
+          <button
+            type="button"
+            onClick={() => {
+              setSeasonMenuOpen(!seasonMenuOpen);
+              setAccountMenuOpen(false);
+            }}
+            className="max-w-[115px] sm:max-w-[180px] h-9 px-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-1 hover:border-[#7C5CFC] transition-all overflow-hidden"
+          >
+            <Calendar className="w-3 h-3 text-[#7C5CFC] shrink-0" />
+            <span className="truncate text-xs font-semibold text-[#18181B] dark:text-white">
+              {selectedSeason}
+            </span>
+            <ChevronDown className="w-3 h-3 text-[#71717A] shrink-0" />
+          </button>
 
-                <button
-                  type="button"
-                  onClick={() => handleSelectRole('captain')}
-                  className={cn(
-                    'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
-                    session?.role === 'captain'
-                      ? 'bg-[#7C5CFC]/10 border border-[#7C5CFC]/30'
-                      : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
-                  )}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-[#7C5CFC] text-white flex items-center justify-center font-black text-xs">
-                      FP
-                    </div>
-                    <div>
-                      <p className="text-xs font-extrabold text-[#18181B] dark:text-white">
-                        Furia del Plata
-                      </p>
-                      <p className="text-[10px] text-[#7C5CFC] font-semibold">
-                        Dono do Time / Capitão
-                      </p>
-                    </div>
-                  </div>
-                  {session?.role === 'captain' && (
-                    <Check className="w-4 h-4 text-[#7C5CFC]" />
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectRole('player')}
-                  className={cn(
-                    'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
-                    session?.role === 'player'
-                      ? 'bg-[#7C5CFC]/10 border border-[#7C5CFC]/30'
-                      : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
-                  )}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-[#38C958] text-white flex items-center justify-center font-black text-xs">
-                      JF
-                    </div>
-                    <div>
-                      <p className="text-xs font-extrabold text-[#18181B] dark:text-white">
-                        Jefhe
-                      </p>
-                      <p className="text-[10px] text-[#38C958] font-semibold">
-                        Visão Jogador (Atleta)
-                      </p>
-                    </div>
-                  </div>
-                  {session?.role === 'player' && (
-                    <Check className="w-4 h-4 text-[#7C5CFC]" />
-                  )}
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => handleSelectRole('admin')}
-                  className={cn(
-                    'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
-                    session?.role === 'admin'
-                      ? 'bg-[#7C5CFC]/10 border border-[#7C5CFC]/30'
-                      : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
-                  )}
-                >
-                  <div className="flex items-center gap-2.5">
-                    <div className="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center font-black text-xs">
-                      <Crown className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-extrabold text-[#18181B] dark:text-white">
-                        Admin da Liga (LPF 5x5)
-                      </p>
-                      <p className="text-[10px] text-amber-600 font-semibold">
-                        Organizador & ERP Financeiro
-                      </p>
-                    </div>
-                  </div>
-                  {session?.role === 'admin' && (
-                    <Check className="w-4 h-4 text-[#7C5CFC]" />
-                  )}
-                </button>
-
-                <div className="pt-1 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between px-1">
-                  <Link
-                    href="/login"
-                    onClick={() => setAccountMenuOpen(false)}
-                    className="text-[11px] font-bold text-[#7C5CFC] hover:underline py-1"
-                  >
-                    Tela de Login Completa →
-                  </Link>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAccountMenuOpen(false);
-                      logout();
-                    }}
-                    className="text-[11px] font-bold text-rose-500 flex items-center gap-1 py-1"
-                  >
-                    <LogOut className="w-3 h-3" /> Sair
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* 2. CENTRO: Seletor de Temporada / Liga */}
-          <div className="relative">
-            <button
-              type="button"
-              onClick={() => {
-                setSeasonMenuOpen(!seasonMenuOpen);
-                setAccountMenuOpen(false);
-              }}
-              className="h-10 px-3 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center gap-1.5 hover:border-[#7C5CFC] transition-all"
-            >
-              <Calendar className="w-3.5 h-3.5 text-[#7C5CFC] shrink-0" />
-              <span className="text-[11px] sm:text-xs font-bold text-[#18181B] dark:text-white truncate max-w-[125px] sm:max-w-[180px]">
-                <span className="hidden sm:inline text-[#71717A] font-medium">Temporada: </span>
-                {selectedSeason}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-[#71717A]" />
-            </button>
-
-            {seasonMenuOpen && (
-              <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-60 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-2xl p-2.5 space-y-1 z-50">
-                {[
-                  'Liga 5x5 LPF',
-                  'Temporada 2026 • 11v11',
-                  'Copa Relâmpago Pro Clubs',
-                ].map((s) => (
-                  <button
-                    key={s}
-                    type="button"
-                    onClick={() => {
-                      setSelectedSeason(s);
-                      setSeasonMenuOpen(false);
-                    }}
-                    className={cn(
-                      'w-full px-3 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-between text-left transition-all',
-                      selectedSeason === s
-                        ? 'bg-[#7C5CFC] text-white'
-                        : 'text-[#18181B] dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'
-                    )}
-                  >
-                    <span>📅 {s}</span>
-                    {selectedSeason === s && <Check className="w-3.5 h-3.5" />}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* 3. CANTO DIREITO: Sino de Notificações + Menu/Configurações */}
-          <div className="flex items-center gap-1.5">
+          {/* 3. CANTO DIREITO: Ícones Circulares Compactos w-9 h-9 shrink-0 */}
+          <div className="flex items-center gap-1 shrink-0">
             <button
               type="button"
               onClick={() => setNotificationsOpen(true)}
-              className="relative w-10 h-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#7C5CFC] transition-all"
+              className="relative w-9 h-9 shrink-0 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#7C5CFC] transition-all"
               title="Suas Notificações"
             >
               <Bell className="w-4 h-4" />
-              <span className="absolute top-2 right-2.5 w-2 h-2 rounded-full bg-[#7C5CFC]" />
+              <span className="absolute top-1.5 right-2 w-2 h-2 rounded-full bg-[#7C5CFC]" />
             </button>
 
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
-              className="w-10 h-10 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#7C5CFC] transition-all"
-              title="Configurações e Métricas"
+              className="w-9 h-9 shrink-0 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#7C5CFC] transition-all"
+              title="Configurações e Perfis"
             >
               <SlidersHorizontal className="w-4 h-4" />
             </button>
@@ -363,9 +216,186 @@ export default function Header() {
         </div>
       </header>
 
-      {/* ===================================================================== */}
-      {/* MODAL: SUAS NOTIFICAÇÕES (ESTILO JOGUEIROS) */}
-      {/* ===================================================================== */}
+      {/* DROPDOWN MULTI-PERFIL (CONTA ÚNICA) */}
+      {accountMenuOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/20 backdrop-blur-[1px]"
+          onClick={() => setAccountMenuOpen(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mt-14 ml-3 w-[calc(100vw-24px)] max-w-xs rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-2xl p-3.5 space-y-2.5"
+          >
+            <div className="px-2 py-1 flex items-center justify-between border-b border-zinc-100 dark:border-zinc-800 pb-2">
+              <div>
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                  Conta Única Multi-Perfil
+                </span>
+                <span className="text-xs font-extrabold text-[#18181B] dark:text-white">
+                  {fullName} • <span className="text-[#38C958]">{characterName}</span>
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAccountMenuOpen(false)}
+                className="w-7 h-7 rounded-full bg-zinc-100 dark:bg-zinc-800 flex items-center justify-center text-zinc-500"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => handleSelectRole('player')}
+              className={cn(
+                'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
+                session?.role === 'player'
+                  ? 'bg-[#7C5CFC]/10 border border-[#7C5CFC]/30'
+                  : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
+              )}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-full bg-[#38C958] text-white flex items-center justify-center font-black text-xs shrink-0">
+                  🏃
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
+                    🏃 Atleta ({characterName})
+                  </p>
+                  <p className="text-[10px] text-[#38C958] font-semibold truncate">
+                    Minha Build, Qualidades, PlayStyles & AcceleRATE
+                  </p>
+                </div>
+              </div>
+              {session?.role === 'player' && (
+                <Check className="w-4 h-4 text-[#7C5CFC] shrink-0" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectRole('captain')}
+              className={cn(
+                'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
+                session?.role === 'captain'
+                  ? 'bg-[#7C5CFC]/10 border border-[#7C5CFC]/30'
+                  : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
+              )}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-full bg-[#7C5CFC] text-white flex items-center justify-center font-black text-xs shrink-0">
+                  🛡️
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
+                    🛡️ Capitão (Furia del Plata)
+                  </p>
+                  <p className="text-[10px] text-[#7C5CFC] font-semibold truncate">
+                    Elenco, Escudo/Uniformes & Rateio da Inscrição
+                  </p>
+                </div>
+              </div>
+              {session?.role === 'captain' && (
+                <Check className="w-4 h-4 text-[#7C5CFC] shrink-0" />
+              )}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => handleSelectRole('admin')}
+              className={cn(
+                'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
+                session?.role === 'admin'
+                  ? 'bg-[#7C5CFC]/10 border border-[#7C5CFC]/30'
+                  : 'hover:bg-zinc-50 dark:hover:bg-zinc-800'
+              )}
+            >
+              <div className="flex items-center gap-2.5 min-w-0">
+                <div className="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center font-black text-xs shrink-0">
+                  👑
+                </div>
+                <div className="min-w-0">
+                  <p className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
+                    👑 Admin da Liga (LPF 5x5)
+                  </p>
+                  <p className="text-[10px] text-amber-600 font-semibold truncate">
+                    Tesouraria 100%, Chaveamento & E-mails
+                  </p>
+                </div>
+              </div>
+              {session?.role === 'admin' && (
+                <Check className="w-4 h-4 text-[#7C5CFC] shrink-0" />
+              )}
+            </button>
+
+            <div className="pt-1.5 border-t border-zinc-100 dark:border-zinc-800 flex items-center justify-between px-1">
+              <Link
+                href="/draft-board"
+                onClick={() => setAccountMenuOpen(false)}
+                className="text-[11px] font-bold text-[#7C5CFC] hover:underline py-1 flex items-center gap-1"
+              >
+                <Users className="w-3.5 h-3.5" /> Sala de Draft (+40)
+              </Link>
+              <Link
+                href="/login"
+                onClick={() => setAccountMenuOpen(false)}
+                className="text-[11px] font-bold text-zinc-600 dark:text-zinc-300 hover:underline py-1"
+              >
+                Conta / Cadastro →
+              </Link>
+              <button
+                type="button"
+                onClick={() => {
+                  setAccountMenuOpen(false);
+                  logout();
+                }}
+                className="text-[11px] font-bold text-rose-500 flex items-center gap-1 py-1"
+              >
+                <LogOut className="w-3 h-3" /> Sair
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DROPDOWN SELETOR DE CAMPEONATO */}
+      {seasonMenuOpen && (
+        <div
+          className="fixed inset-0 z-50 bg-black/20 backdrop-blur-[1px]"
+          onClick={() => setSeasonMenuOpen(false)}
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="mt-14 mx-auto w-64 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-2xl p-2.5 space-y-1"
+          >
+            {[
+              'LPF 5x5',
+              'Superliga 11v11',
+              'Copa Relâmpago 7v7',
+            ].map((s) => (
+              <button
+                key={s}
+                type="button"
+                onClick={() => {
+                  setSelectedSeason(s);
+                  setSeasonMenuOpen(false);
+                }}
+                className={cn(
+                  'w-full px-3 py-2.5 rounded-2xl text-xs font-bold flex items-center justify-between text-left transition-all',
+                  selectedSeason === s
+                    ? 'bg-[#7C5CFC] text-white'
+                    : 'text-[#18181B] dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-zinc-800'
+                )}
+              >
+                <span>🏆 {s}</span>
+                {selectedSeason === s && <Check className="w-3.5 h-3.5" />}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: SUAS NOTIFICAÇÕES */}
       {notificationsOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 border border-zinc-100 dark:border-zinc-800 shadow-2xl space-y-4 max-h-[85vh] overflow-y-auto">
@@ -375,7 +405,7 @@ export default function Header() {
                   Suas Notificações
                 </h2>
                 <p className="text-xs text-[#71717A]">
-                  Aprovações de súmula, novos banners e convites do time
+                  Súmulas validadas, artes 4:5 e alertas oficiais da liga
                 </p>
               </div>
               <button
@@ -434,15 +464,13 @@ export default function Header() {
         </div>
       )}
 
-      {/* ===================================================================== */}
-      {/* MODAL: CONFIGURAÇÕES DO TIME, TEMA & PONTUAÇÃO DA SÚMULA */}
-      {/* ===================================================================== */}
+      {/* MODAL: CONFIGURAÇÕES & TROCA DE PERFIL */}
       {settingsOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-[#F5F6FA] dark:bg-zinc-950 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-5 border border-zinc-200 dark:border-zinc-800 shadow-2xl space-y-4 max-h-[88vh] overflow-y-auto">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-extrabold text-[#18181B] dark:text-white">
-                Configurações
+                Configurações da Conta
               </h2>
               <button
                 type="button"
@@ -453,45 +481,31 @@ export default function Header() {
               </button>
             </div>
 
-            {/* Card PRO Team (Ativado) igual à print */}
             <div className="p-4 rounded-3xl bg-gradient-to-r from-[#7C5CFC] to-[#6344E5] text-white shadow-lg flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center">
+                <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
                   <Sparkles className="w-6 h-6 text-white" />
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-black">PRO Team</span>
+                    <span className="text-sm font-black">{characterName}</span>
                     <span className="px-2 py-0.5 rounded-full bg-[#38C958] text-white text-[10px] font-extrabold">
-                      Ativado
+                      Conta Multi-Perfil
                     </span>
                   </div>
                   <p className="text-xs text-white/85">
-                    Banners ilimitados, Súmula por IA Vision e Caixa do Time liberados.
+                    Titular: {fullName} • Alterne entre Atleta, Capitão e Admin sem deslogar.
                   </p>
                 </div>
               </div>
             </div>
 
-            {/* Card Mudar de Conta */}
+            {/* Alternador de Visão na mesma conta */}
             <div className="bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-zinc-100 dark:border-zinc-800 space-y-2.5">
               <span className="text-xs font-extrabold text-[#71717A] uppercase tracking-wider block">
-                Mudar de Conta
+                Alternar Papel na Mesma Conta
               </span>
               <div className="grid grid-cols-3 gap-2">
-                <button
-                  type="button"
-                  onClick={() => handleSelectRole('captain')}
-                  className={cn(
-                    'p-2.5 rounded-2xl border text-center transition-all',
-                    session?.role === 'captain'
-                      ? 'border-[#7C5CFC] bg-[#7C5CFC]/10 text-[#7C5CFC] font-extrabold'
-                      : 'border-zinc-100 dark:border-zinc-800 text-xs font-semibold'
-                  )}
-                >
-                  <Shield className="w-4 h-4 mx-auto mb-1" />
-                  <span className="text-[11px] block">Dono Time</span>
-                </button>
                 <button
                   type="button"
                   onClick={() => handleSelectRole('player')}
@@ -503,7 +517,20 @@ export default function Header() {
                   )}
                 >
                   <User className="w-4 h-4 mx-auto mb-1" />
-                  <span className="text-[11px] block">Jogador</span>
+                  <span className="text-[11px] block">Atleta</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleSelectRole('captain')}
+                  className={cn(
+                    'p-2.5 rounded-2xl border text-center transition-all',
+                    session?.role === 'captain'
+                      ? 'border-[#7C5CFC] bg-[#7C5CFC]/10 text-[#7C5CFC] font-extrabold'
+                      : 'border-zinc-100 dark:border-zinc-800 text-xs font-semibold'
+                  )}
+                >
+                  <Shield className="w-4 h-4 mx-auto mb-1" />
+                  <span className="text-[11px] block">Capitão</span>
                 </button>
                 <button
                   type="button"
@@ -521,7 +548,6 @@ export default function Header() {
               </div>
             </div>
 
-            {/* Opções de Menu */}
             <div className="bg-white dark:bg-zinc-900 rounded-3xl p-2 border border-zinc-100 dark:border-zinc-800 divide-y divide-zinc-100 dark:divide-zinc-800">
               <button
                 type="button"
@@ -539,7 +565,7 @@ export default function Header() {
                       Aparência do Aplicativo
                     </span>
                     <span className="text-[11px] text-[#71717A]">
-                      {isDark ? 'Dark Mode Pro ativado' : 'Light Mode Jogueiros (Padrão)'}
+                      {isDark ? 'Dark Mode ativado' : 'Light Mode Clean (Padrão)'}
                     </span>
                   </div>
                 </div>
@@ -560,7 +586,7 @@ export default function Header() {
                   <Calculator className="w-5 h-5 text-[#7C5CFC]" />
                   <div>
                     <span className="text-xs font-extrabold text-[#18181B] dark:text-white block">
-                      Pontuação de métricas
+                      Pontuação da Súmula
                     </span>
                     <span className="text-[11px] text-[#71717A]">
                       Gol ({metricsScore.gol}), Assistência ({metricsScore.assistencia}), Cartões...
@@ -571,6 +597,25 @@ export default function Header() {
               </button>
 
               <Link
+                href="/draft-board"
+                onClick={() => setSettingsOpen(false)}
+                className="w-full p-3.5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-2xl transition-colors"
+              >
+                <div className="flex items-center gap-3">
+                  <Users className="w-5 h-5 text-[#7C5CFC]" />
+                  <div>
+                    <span className="text-xs font-extrabold text-[#18181B] dark:text-white block">
+                      Sala de Draft Oficial (+40 Jogadores)
+                    </span>
+                    <span className="text-[11px] text-[#71717A]">
+                      Sorteio de Ordem por IA & Contratação ao Vivo
+                    </span>
+                  </div>
+                </div>
+                <span className="text-xs font-bold text-[#7C5CFC]">Abrir &gt;</span>
+              </Link>
+
+              <Link
                 href="/captain"
                 onClick={() => setSettingsOpen(false)}
                 className="w-full p-3.5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-zinc-800/50 rounded-2xl transition-colors"
@@ -579,10 +624,10 @@ export default function Header() {
                   <Wallet className="w-5 h-5 text-[#7C5CFC]" />
                   <div>
                     <span className="text-xs font-extrabold text-[#18181B] dark:text-white block">
-                      Financeiro & Caixa do Time
+                      Rateio da Inscrição & Caixa do Time
                     </span>
                     <span className="text-[11px] text-[#71717A]">
-                      Saldo atual: R$ 560,00 • Mensalidades e Inscrições
+                      Divisão automática por jogador + comprovante integral
                     </span>
                   </div>
                 </div>
@@ -593,9 +638,7 @@ export default function Header() {
         </div>
       )}
 
-      {/* ===================================================================== */}
-      {/* MODAL: PONTUAÇÃO DA SÚMULA (GOL 8, ASSIST 5, ETC.) */}
-      {/* ===================================================================== */}
+      {/* MODAL: PONTUAÇÃO DA SÚMULA */}
       {metricsModalOpen && (
         <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-end sm:items-center justify-center p-0 sm:p-4">
           <div className="bg-white dark:bg-zinc-900 w-full max-w-md rounded-t-3xl sm:rounded-3xl p-6 border border-zinc-100 dark:border-zinc-800 shadow-2xl space-y-4">
@@ -605,7 +648,7 @@ export default function Header() {
                   Pontuação da súmula
                 </h2>
                 <p className="text-xs text-[#71717A]">
-                  Personalize quanto vale cada ação para o ranking de destaques do time
+                  Personalize o peso de cada estatística no ranking geral
                 </p>
               </div>
               <button
@@ -625,7 +668,7 @@ export default function Header() {
                 { key: 'defesaDificil', label: '🧤 Defesa difícil', val: metricsScore.defesaDificil },
                 { key: 'cartaoAmarelo', label: '🟨 Cartão amarelo', val: metricsScore.cartaoAmarelo },
                 { key: 'cartaoVermelho', label: '🟥 Cartão vermelho', val: metricsScore.cartaoVermelho },
-                { key: 'destaque', label: '⭐ Destaque (Craque)', val: metricsScore.destaque },
+                { key: 'destaque', label: '⭐ Destaque (MVP)', val: metricsScore.destaque },
               ].map((item) => (
                 <div
                   key={item.key}
@@ -637,7 +680,7 @@ export default function Header() {
                   <div className="flex items-center gap-3">
                     <button
                       type="button"
-                      onClick={() => adjustMetric(item.key as any, -1)}
+                      onClick={() => adjustMetric(item.key as keyof typeof metricsScore, -1)}
                       className="w-8 h-8 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 font-black text-sm text-[#7C5CFC] flex items-center justify-center"
                     >
                       -
@@ -647,7 +690,7 @@ export default function Header() {
                     </span>
                     <button
                       type="button"
-                      onClick={() => adjustMetric(item.key as any, 1)}
+                      onClick={() => adjustMetric(item.key as keyof typeof metricsScore, 1)}
                       className="w-8 h-8 rounded-full bg-[#7C5CFC] text-white font-black text-sm flex items-center justify-center"
                     >
                       +

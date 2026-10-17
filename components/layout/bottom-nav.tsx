@@ -20,6 +20,8 @@ export function BottomNav() {
   const profileHref =
     session?.role === 'player'
       ? '/player'
+      : session?.role === 'admin'
+      ? '/admin'
       : '/captain';
 
   const tabs = [
@@ -28,15 +30,19 @@ export function BottomNav() {
       label: 'Início',
       href: '/',
       icon: Home,
-      isActive: pathname === '/' || pathname.startsWith('/rankings') || pathname.startsWith('/tournaments'),
+      isActive:
+        pathname === '/' ||
+        pathname.startsWith('/rankings') ||
+        pathname.startsWith('/tournaments'),
       isAvatar: false,
     },
     {
       id: 'search',
-      label: 'Buscar',
-      href: '/market',
+      label: 'Draft',
+      href: '/draft-board',
       icon: Search,
-      isActive: pathname.startsWith('/market'),
+      isActive:
+        pathname.startsWith('/draft-board') || pathname.startsWith('/market'),
       isAvatar: false,
     },
     {
@@ -71,15 +77,15 @@ export function BottomNav() {
 
   const initials =
     session?.role === 'player'
-      ? 'JF'
+      ? (session?.characterName || 'JF').slice(0, 2).toUpperCase()
       : session?.role === 'admin'
       ? 'LPF'
       : 'FP';
 
   return (
     <nav
-      aria-label="Navegação Principal Jogueiros"
-      className="fixed bottom-4 left-1/2 -translate-x-1/2 w-[92%] max-w-md h-16 bg-[#7C5CFC] rounded-full px-3 flex items-center justify-between shadow-xl z-50 select-none"
+      aria-label="Navegação Principal"
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-20px)] max-w-[420px] h-14 bg-[#7C5CFC] rounded-full px-2 flex items-center justify-between shadow-2xl border border-white/15 select-none"
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;
@@ -91,14 +97,14 @@ export function BottomNav() {
             href={tab.href}
             className={cn(
               active
-                ? 'bg-white text-[#7C5CFC] px-4 py-2 rounded-full flex items-center gap-2 font-bold text-sm shadow-sm transition-all'
-                : 'text-white/90 hover:text-white p-2.5 rounded-full flex items-center justify-center transition-all'
+                ? 'px-3 py-1.5 rounded-full bg-white text-[#7C5CFC] font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-xs transition-all'
+                : 'w-9 h-9 flex items-center justify-center text-white/90 hover:text-white shrink-0 rounded-full transition-all'
             )}
           >
             {tab.isAvatar ? (
               <span
                 className={cn(
-                  'w-7 h-7 rounded-full flex items-center justify-center text-[10px] font-black border-2 transition-all shrink-0',
+                  'w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black border transition-all shrink-0',
                   active
                     ? 'bg-[#7C5CFC] text-white border-[#7C5CFC]'
                     : 'bg-white/20 text-white border-white/70'
@@ -107,7 +113,7 @@ export function BottomNav() {
                 {initials}
               </span>
             ) : (
-              <Icon className="w-5 h-5 shrink-0" />
+              <Icon className="w-4 h-4 shrink-0" />
             )}
 
             {active && <span className="truncate">{tab.label}</span>}

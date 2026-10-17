@@ -1,5 +1,5 @@
 -- =========================================================================
--- DRAFTCLUB SAAS - JOGUEIROS PRO EDITION (5v5 & 11v11 ARCHITECTURE)
+-- DRAFTCLUB SAAS - PRODUÇÃO REAL SUPABASE (MULTI-PERFIL, RLS ESTRITO & STORAGE)
 -- =========================================================================
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
@@ -9,6 +9,7 @@ DROP VIEW IF EXISTS vw_top_scorers CASCADE;
 DROP VIEW IF EXISTS vw_tournament_standings CASCADE;
 DROP VIEW IF EXISTS vw_tournament_player_stats CASCADE;
 DROP VIEW IF EXISTS vw_community_positions CASCADE;
+DROP TABLE IF EXISTS tournament_registrations CASCADE;
 DROP TABLE IF EXISTS tournament_finances CASCADE;
 DROP TABLE IF EXISTS match_incidents CASCADE;
 DROP TABLE IF EXISTS free_agents CASCADE;
@@ -25,71 +26,170 @@ DROP TABLE IF EXISTS player_stats CASCADE;
 DROP TABLE IF EXISTS tournament_participants CASCADE;
 DROP TABLE IF EXISTS player_profiles CASCADE;
 DROP TABLE IF EXISTS tournaments CASCADE;
+DROP TABLE IF EXISTS profiles CASCADE;
 
--- 1. TORNEIOS (EVOLUÍDO COM GAME_MODE, FINANÇAS E REGRAS OFICIAIS)
+-- =========================================================================
+-- 1. TABELA PROFILES (CONTA ÚNICA MULTI-PERFIL: ATLETA, CAPITÃO & ADMIN)
+-- =========================================================================
+CREATE TABLE profiles (
+    id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
+    email TEXT UNIQUE NOT NULL,
+    full_name TEXT NOT NULL,
+    character_name TEXT NOT NULL,
+    roles TEXT[] NOT NULL DEFAULT ARRAY['player']::TEXT[],
+    active_role_view TEXT NOT NULL DEFAULT 'player' CHECK (active_role_view IN ('player', 'captain', 'admin')),
+    whatsapp TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- =========================================================================
+-- 2. TORNEIOS DINÂMICOS (QUALQUER FORMATO, REGRAS LIVRES & RATEIO 100%)
+-- =========================================================================
 CREATE TABLE tournaments (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     format TEXT NOT NULL DEFAULT '5v5',
-    game_mode TEXT NOT NULL DEFAULT '5v5' CHECK (game_mode IN ('5v5', '11v11')),
+    format_label TEXT NOT NULL DEFAULT '5v5',
+    game_mode TEXT NOT NULL DEFAULT '5v5',
+    players_on_pitch INTEGER NOT NULL DEFAULT 5,
+    max_reserves INTEGER NOT NULL DEFAULT 1,
     max_roster_size INTEGER NOT NULL DEFAULT 6,
     entry_fee NUMERIC(10, 2) NOT NULL DEFAULT 70.00,
+    bracket_type TEXT NOT NULL DEFAULT 'league_playoffs' CHECK (bracket_type IN ('league_playoffs', 'groups_knockout', 'swiss', 'double_elimination', 'single_elimination')),
+    bracket_config JSONB NOT NULL DEFAULT '{"teams_count": 8, "playoff_spots": 4, "legs": 1}'::jsonb,
+    custom_rules JSONB NOT NULL DEFAULT '["Tolerância de W.O. no lobby: 15 minutos com print do relógio", "Queda até 20 min do 1º tempo: reinicia partida de 90 min mantendo gols", "Queda no intervalo ou 2º tempo: joga apenas 1 tempo mantendo placar", "Adiamento somente com 60 minutos de antecedência"]'::jsonb,
     prize_distribution JSONB NOT NULL DEFAULT '{"first": 300, "second": 120, "third": 80, "top_scorer": 30, "top_assister": 30}'::jsonb,
+    prize_breakdown JSONB NOT NULL DEFAULT '{"first": 300, "second": 120, "third": 80, "top_scorer": 30, "top_assister": 30}'::jsonb,
     rules_config JSONB NOT NULL DEFAULT '{"cancel_notice_minutes": 60, "wo_tolerance_minutes": 15, "disconnect_full_restart_limit_min": 20, "extra_time_group_stage": false}'::jsonb,
+    draft_order JSONB NOT NULL DEFAULT '[]'::jsonb,
     status TEXT NOT NULL DEFAULT 'ACTIVE' CHECK (status IN ('REGISTRATION', 'SCOUTING', 'DRAFT', 'ACTIVE', 'FINISHED')),
     rules JSONB NOT NULL DEFAULT '{"crossplay_gen": "current_gen", "min_human_players": 5, "any_allowed": false, "gk_required": false}'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 2. PERFIS DE JOGADORES (PLAYER PROFILES COM VISUAL TRAITS, AVAILABILITY E MEDALS)
+-- =========================================================================
+-- 3. PLAYER PROFILES (IDENTIDADE DUPLA, BUILD, ACCELERATE & PLAYSTYLES)
+-- =========================================================================
 CREATE TABLE player_profiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    user_id UUID,
-    name TEXT NOT NULL UNIQUE,
-    positions_declared TEXT[] NOT NULL DEFAULT '{}',
-    archetype TEXT NOT NULL DEFAULT 'Mágico',
-    archetypes TEXT[] NOT NULL DEFAULT '{"Mágico"}'::text[],
+    user_id UUID UNIQUE REFERENCES profiles(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    character_name TEXT NOT NULL,
+    full_name TEXT,
+    team_id UUID,
     avatar_url TEXT,
+    avatar_face_url TEXT,
+    avatar_body_url TEXT,
+    card_design TEXT NOT NULL DEFAULT '/assets/fc-26-clean-card-designs/default/gold-rare.webp',
+    primary_position TEXT NOT NULL DEFAULT 'MEI',
+    secondary_positions TEXT[] NOT NULL DEFAULT '{}',
+    positions_declared TEXT[] NOT NULL DEFAULT '{"MEI"}'::TEXT[],
+    archetype TEXT NOT NULL DEFAULT 'Maestro',
+    archetypes TEXT[] NOT NULL DEFAULT '{"Maestro"}'::TEXT[],
+    height_cm INTEGER NOT NULL DEFAULT 185,
+    weight_kg INTEGER NOT NULL DEFAULT 78,
+    gender TEXT NOT NULL DEFAULT 'M' CHECK (gender IN ('M', 'F')),
+    attributes JSONB NOT NULL DEFAULT '{
+      "acceleration": 88, "sprint_speed": 90,
+      "attack_positioning": 86, "finishing": 88, "shot_power": 87, "long_shots": 84, "volleys": 80, "penalties": 85,
+      "vision": 90, "crossing": 84, "free_kick": 82, "short_passing": 91, "long_passing": 88, "curve": 86,
+      "agility": 86, "balance": 84, "reactions": 89, "ball_control": 90, "dribbling": 89, "composure": 88,
+      "interceptions": 68, "heading_accuracy": 75, "def_awareness": 66, "standing_tackle": 70, "sliding_tackle": 64,
+      "jumping": 82, "stamina": 92, "strength": 80, "aggression": 76, "skill_moves": 5, "weak_foot": 5
+    }'::jsonb,
+    accelerate_type TEXT NOT NULL DEFAULT 'Controlada' CHECK (accelerate_type IN ('Prolongada', 'Explosiva', 'Controlada')),
+    accelerate_sub_type TEXT NOT NULL DEFAULT 'Controlled (100% Controlada)',
+    playstyles JSONB NOT NULL DEFAULT '[]'::jsonb,
+    availability_slots JSONB NOT NULL DEFAULT '{
+      "seg": {"periods": ["noite_pico"], "customStart": "21:30", "customEnd": "23:30"},
+      "ter": {"periods": ["noite_pico"], "customStart": "21:30", "customEnd": "23:30"},
+      "qui": {"periods": ["noite_pico"], "customStart": "21:30", "customEnd": "23:30"}
+    }'::jsonb,
+    career_stats JSONB NOT NULL DEFAULT '{
+      "official_matches": 0,
+      "official_goals": 0,
+      "official_assists": 0,
+      "official_motm": 0,
+      "titles_won": 0
+    }'::jsonb,
     platform TEXT DEFAULT 'PS5' CHECK (platform IN ('PS5', 'Xbox Series', 'PC', 'OldGen')),
-    primary_position TEXT DEFAULT 'MEI',
-    secondary_positions TEXT[] DEFAULT '{}',
     contact_discord TEXT,
     contact_whatsapp TEXT,
     is_looking_for_team BOOLEAN DEFAULT false,
     bio TEXT,
-    visual_traits JSONB NOT NULL DEFAULT '{"skin_tone": "Médio", "hair_style": "Disfarçado (Fade) + Tranças", "hair_color": "Loiro Platinado", "facial_hair": "Cavanhaque fechado", "accessories": ["Faixa na cabeça branca", "Munhequeira dupla"], "shirt_number": 10, "celebration": "Mão no ouvido provocando"}'::jsonb,
-    availability JSONB NOT NULL DEFAULT '{"seg": ["21:00", "22:00", "23:00"], "ter": ["22:00", "23:00"], "qui": ["21:00", "22:00", "23:00"]}'::jsonb,
+    visual_traits JSONB NOT NULL DEFAULT '{"skin_tone": "Médio", "hair_style": "Disfarçado (Fade)", "hair_color": "Preto", "facial_hair": "Barba cerrada", "accessories": ["Munhequeira"], "shirt_number": 10, "celebration": "Braços abertos"}'::jsonb,
+    availability JSONB NOT NULL DEFAULT '{"seg": ["21:00", "22:00", "23:00"], "ter": ["22:00", "23:00"]}'::jsonb,
     medals JSONB NOT NULL DEFAULT '[]'::jsonb,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 3. PARTICIPANTES E ROLES DINÂMICOS POR TORNEIO (RBAC: Admin, Captain, Player)
+-- =========================================================================
+-- 4. TIMES DO CAMPEONATO (COM UNIFORMES REAIS, ESCUDO E INVITE CODE)
+-- =========================================================================
+CREATE TABLE teams (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    short_name TEXT DEFAULT 'CLB',
+    captain_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
+    active_formation TEXT NOT NULL DEFAULT '5v5-1-2-1',
+    logo_url TEXT,
+    kit_home_url TEXT,
+    kit_away_url TEXT,
+    primary_color TEXT NOT NULL DEFAULT '#7C5CFC',
+    secondary_color TEXT NOT NULL DEFAULT '#38bdf8',
+    invite_code TEXT UNIQUE DEFAULT substring(md5(random()::text), 1, 6),
+    kit_description TEXT,
+    sponsors JSONB NOT NULL DEFAULT '[]'::jsonb,
+    whatsapp_group_link TEXT,
+    instagram_handle TEXT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+-- =========================================================================
+-- 5. TOURNAMENT REGISTRATIONS (RATEIO INTERNO DO CAPITÃO + LIBERAÇÃO ADMIN)
+-- =========================================================================
+CREATE TABLE tournament_registrations (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
+    team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
+    total_fee NUMERIC(10, 2) NOT NULL DEFAULT 70.00,
+    member_contributions JSONB NOT NULL DEFAULT '[]'::jsonb,
+    full_fee_paid_to_admin BOOLEAN NOT NULL DEFAULT false,
+    payment_proof_url TEXT,
+    approved_by_admin_at TIMESTAMPTZ,
+    is_cleared_to_play BOOLEAN NOT NULL DEFAULT false,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    UNIQUE(tournament_id, team_id)
+);
+
+-- =========================================================================
+-- 6. PARTICIPANTES, STATS, VOTOS, AVALIAÇÕES, DRAFT E ESCALAÇÕES
+-- =========================================================================
 CREATE TABLE tournament_participants (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
     player_id UUID NOT NULL REFERENCES player_profiles(id) ON DELETE CASCADE,
-    user_id UUID,
+    user_id UUID REFERENCES profiles(id) ON DELETE SET NULL,
     role TEXT NOT NULL DEFAULT 'player' CHECK (role IN ('admin', 'captain', 'player')),
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     UNIQUE(tournament_id, player_id)
 );
 
--- 4. ATRIBUTOS EA SPORTS E BUILD OCR
 CREATE TABLE player_stats (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     player_id UUID NOT NULL UNIQUE REFERENCES player_profiles(id) ON DELETE CASCADE,
-    pace INTEGER NOT NULL DEFAULT 75 CHECK (pace BETWEEN 1 AND 99),
-    shooting INTEGER NOT NULL DEFAULT 75 CHECK (shooting BETWEEN 1 AND 99),
-    passing INTEGER NOT NULL DEFAULT 75 CHECK (passing BETWEEN 1 AND 99),
-    dribbling INTEGER NOT NULL DEFAULT 75 CHECK (dribbling BETWEEN 1 AND 99),
-    defending INTEGER NOT NULL DEFAULT 75 CHECK (defending BETWEEN 1 AND 99),
-    physical INTEGER NOT NULL DEFAULT 75 CHECK (physical BETWEEN 1 AND 99),
+    pace INTEGER NOT NULL DEFAULT 85 CHECK (pace BETWEEN 1 AND 99),
+    shooting INTEGER NOT NULL DEFAULT 85 CHECK (shooting BETWEEN 1 AND 99),
+    passing INTEGER NOT NULL DEFAULT 85 CHECK (passing BETWEEN 1 AND 99),
+    dribbling INTEGER NOT NULL DEFAULT 85 CHECK (dribbling BETWEEN 1 AND 99),
+    defending INTEGER NOT NULL DEFAULT 70 CHECK (defending BETWEEN 1 AND 99),
+    physical INTEGER NOT NULL DEFAULT 82 CHECK (physical BETWEEN 1 AND 99),
     build_image_url TEXT,
     ocr_extracted_at TIMESTAMPTZ,
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 5. VOTAÇÃO DE POSIÇÃO REAL PELA COMUNIDADE
 CREATE TABLE position_votes (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     player_id UUID NOT NULL REFERENCES player_profiles(id) ON DELETE CASCADE,
@@ -99,7 +199,6 @@ CREATE TABLE position_votes (
     UNIQUE(player_id, voter_id)
 );
 
--- 6. AVALIAÇÕES POR TORNEIO (PEER REVIEW EGO-SAFE)
 CREATE TABLE evaluations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     player_id UUID NOT NULL REFERENCES player_profiles(id) ON DELETE CASCADE,
@@ -111,24 +210,6 @@ CREATE TABLE evaluations (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 7. TIMES DO CAMPEONATO (COM CORES, UNIFORME IA E PATROCINADORES)
-CREATE TABLE teams (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-    tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
-    name TEXT NOT NULL,
-    captain_id UUID REFERENCES player_profiles(id) ON DELETE SET NULL,
-    active_formation TEXT NOT NULL DEFAULT '4-3-3',
-    logo_url TEXT,
-    primary_color TEXT NOT NULL DEFAULT '#06b6d4',
-    secondary_color TEXT NOT NULL DEFAULT '#ffffff',
-    kit_description TEXT DEFAULT 'Listrado azul claro e branco estilo Racing com patrocínio Betsson',
-    sponsors JSONB NOT NULL DEFAULT '[{"name": "Betsson", "logo_url": ""}, {"name": "RedBull Gaming", "logo_url": ""}]'::jsonb,
-    whatsapp_group_link TEXT,
-    instagram_handle TEXT,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
-);
-
--- 8. PICKS DO DRAFT
 CREATE TABLE draft_picks (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
@@ -141,7 +222,6 @@ CREATE TABLE draft_picks (
     UNIQUE(tournament_id, round, pick_number)
 );
 
--- 9. ESCALAÇÃO TÁTICA PERSISTIDA (SQUAD LINEUPS)
 CREATE TABLE squad_lineups (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
@@ -153,7 +233,6 @@ CREATE TABLE squad_lineups (
     UNIQUE(team_id, slot_id)
 );
 
--- 10. FASES DO CAMPEONATO (ESTILO COPAFÁCIL: GRUPOS, OITAVAS, QUARTAS, SEMI, FINAL)
 CREATE TABLE tournament_phases (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
@@ -164,7 +243,9 @@ CREATE TABLE tournament_phases (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 11. PARTIDAS, AGENDAMENTO INTELIGENTE E VALIDAÇÃO DUPLA
+-- =========================================================================
+-- 7. PARTIDAS, SÚMULAS E INCIDENTES
+-- =========================================================================
 CREATE TABLE matches (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
@@ -188,12 +269,12 @@ CREATE TABLE matches (
     reviewed_by UUID
 );
 
--- 12. ESTATÍSTICAS INDIVIDUAIS DA PARTIDA (COM SUPORTE A CONVIDADO AVULSO)
 CREATE TABLE match_player_stats (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
     player_id UUID REFERENCES player_profiles(id) ON DELETE SET NULL,
     guest_name TEXT,
+    character_name TEXT,
     team_id UUID NOT NULL REFERENCES teams(id) ON DELETE CASCADE,
     goals INTEGER NOT NULL DEFAULT 0,
     assists INTEGER NOT NULL DEFAULT 0,
@@ -203,7 +284,6 @@ CREATE TABLE match_player_stats (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 13. CENTRAL DE INCIDENTES, W.O. E QUEDAS (REGRAS OFICIAIS)
 CREATE TABLE match_incidents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
@@ -217,7 +297,6 @@ CREATE TABLE match_incidents (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 14. CONTROLE FINANCEIRO DE CAMPEONATOS (ERP)
 CREATE TABLE tournament_finances (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     tournament_id UUID NOT NULL REFERENCES tournaments(id) ON DELETE CASCADE,
@@ -230,7 +309,6 @@ CREATE TABLE tournament_finances (
     UNIQUE(tournament_id, team_id)
 );
 
--- 15. EVENTOS DETALHADOS DA PARTIDA (GOLS, ASSISTÊNCIAS, CARTÕES, CLEAN SHEETS)
 CREATE TABLE match_events (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     match_id UUID NOT NULL REFERENCES matches(id) ON DELETE CASCADE,
@@ -241,7 +319,6 @@ CREATE TABLE match_events (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- 16. MERCADÃO DE JOGADORES LIVRES (FREE AGENTS BUSCANDO TIME)
 CREATE TABLE free_agents (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     player_id UUID NOT NULL UNIQUE REFERENCES player_profiles(id) ON DELETE CASCADE,
@@ -255,7 +332,11 @@ CREATE TABLE free_agents (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
--- ÍNDICES
+-- =========================================================================
+-- 8. ÍNDICES DE PERFORMANCE
+-- =========================================================================
+CREATE INDEX idx_profiles_email ON profiles(email);
+CREATE INDEX idx_pp_character_name ON player_profiles(character_name);
 CREATE INDEX idx_tp_tournament ON tournament_participants(tournament_id);
 CREATE INDEX idx_tp_role ON tournament_participants(role);
 CREATE INDEX idx_eval_tourn ON evaluations(tournament_id, player_id);
@@ -266,9 +347,11 @@ CREATE INDEX idx_matches_tourn ON matches(tournament_id);
 CREATE INDEX idx_matches_status ON matches(status);
 CREATE INDEX idx_mps_match ON match_player_stats(match_id);
 CREATE INDEX idx_mi_match ON match_incidents(match_id);
-CREATE INDEX idx_tf_tourn ON tournament_finances(tournament_id);
+CREATE INDEX idx_tr_tourn ON tournament_registrations(tournament_id);
 
--- VIEWS
+-- =========================================================================
+-- 9. VIEWS ANALÍTICAS DESTACANDO CHARACTER_NAME
+-- =========================================================================
 CREATE OR REPLACE VIEW vw_community_positions AS
 WITH vote_counts AS (
     SELECT 
@@ -282,7 +365,7 @@ WITH vote_counts AS (
 )
 SELECT 
     p.id AS player_id,
-    COALESCE(vc.voted_position, (p.positions_declared)[1]) AS top_voted_position,
+    COALESCE(vc.voted_position, p.primary_position, (p.positions_declared)[1]) AS top_voted_position,
     COALESCE(vc.vote_percentage, 100.0) AS top_position_confidence,
     COALESCE(total_v.total_votes, 0) AS total_position_votes
 FROM player_profiles p
@@ -299,10 +382,12 @@ CREATE OR REPLACE VIEW vw_tournament_player_stats AS
 SELECT 
     tp.tournament_id,
     p.id AS player_id,
-    p.name,
+    COALESCE(p.character_name, p.name) AS name,
+    p.character_name,
+    p.full_name,
     p.archetype,
     p.positions_declared,
-    COALESCE(cp.top_voted_position, (p.positions_declared)[1]) AS community_position,
+    COALESCE(cp.top_voted_position, p.primary_position, (p.positions_declared)[1]) AS community_position,
     COALESCE(cp.top_position_confidence, 0.0) AS community_confidence,
     cp.total_position_votes,
     tp.role AS participant_role,
@@ -331,13 +416,12 @@ LEFT JOIN evaluations e ON tp.player_id = e.player_id AND tp.tournament_id = e.t
 LEFT JOIN draft_picks dp ON tp.tournament_id = dp.tournament_id AND tp.player_id = dp.player_id
 LEFT JOIN teams t ON dp.team_id = t.id
 GROUP BY 
-    tp.tournament_id, p.id, p.name, p.archetype, p.positions_declared,
+    tp.tournament_id, p.id, p.character_name, p.name, p.full_name, p.archetype, p.positions_declared, p.primary_position,
     cp.top_voted_position, cp.top_position_confidence, cp.total_position_votes,
     tp.role, dp.team_id, t.name, dp.round, dp.pick_number;
 
 ALTER VIEW vw_tournament_player_stats SET (security_invoker = on);
 
--- TABELA DE CLASSIFICAÇÃO EM TEMPO REAL (STANDINGS)
 CREATE OR REPLACE VIEW vw_tournament_standings AS
 WITH team_matches AS (
     SELECT 
@@ -405,11 +489,12 @@ FROM aggregated a;
 
 ALTER VIEW vw_tournament_standings SET (security_invoker = on);
 
--- VIEWS ANALÍTICAS DE E-SPORTS (ARTILHARIA E ASSISTÊNCIAS)
 CREATE OR REPLACE VIEW vw_top_scorers AS
 SELECT 
     COALESCE(p.id, gen_random_uuid()) AS player_id,
-    COALESCE(p.name, mps.guest_name, 'Convidado') AS player_name,
+    COALESCE(p.character_name, p.name, mps.character_name, mps.guest_name, 'Convidado') AS player_name,
+    COALESCE(p.character_name, p.name, mps.character_name, mps.guest_name, 'Convidado') AS character_name,
+    p.full_name,
     t.id AS team_id,
     t.name AS team_name,
     t.logo_url AS team_logo_url,
@@ -423,14 +508,16 @@ JOIN matches m ON mps.match_id = m.id
 LEFT JOIN player_profiles p ON mps.player_id = p.id
 JOIN teams t ON mps.team_id = t.id
 WHERE mps.goals > 0 AND m.status IN ('approved', 'completed')
-GROUP BY p.id, p.name, mps.guest_name, t.id, t.name, t.logo_url, m.tournament_id;
+GROUP BY p.id, p.character_name, p.name, p.full_name, mps.character_name, mps.guest_name, t.id, t.name, t.logo_url, m.tournament_id;
 
 ALTER VIEW vw_top_scorers SET (security_invoker = on);
 
 CREATE OR REPLACE VIEW vw_top_assists AS
 SELECT 
     COALESCE(p.id, gen_random_uuid()) AS player_id,
-    COALESCE(p.name, mps.guest_name, 'Convidado') AS player_name,
+    COALESCE(p.character_name, p.name, mps.character_name, mps.guest_name, 'Convidado') AS player_name,
+    COALESCE(p.character_name, p.name, mps.character_name, mps.guest_name, 'Convidado') AS character_name,
+    p.full_name,
     t.id AS team_id,
     t.name AS team_name,
     t.logo_url AS team_logo_url,
@@ -443,18 +530,50 @@ JOIN matches m ON mps.match_id = m.id
 LEFT JOIN player_profiles p ON mps.player_id = p.id
 JOIN teams t ON mps.team_id = t.id
 WHERE mps.assists > 0 AND m.status IN ('approved', 'completed')
-GROUP BY p.id, p.name, mps.guest_name, t.id, t.name, t.logo_url, m.tournament_id;
+GROUP BY p.id, p.character_name, p.name, p.full_name, mps.character_name, mps.guest_name, t.id, t.name, t.logo_url, m.tournament_id;
 
 ALTER VIEW vw_top_assists SET (security_invoker = on);
 
--- RLS & POLICIES
+-- =========================================================================
+-- 10. SUPABASE STORAGE BUCKETS & POLICIES (PLAYER-MEDIA, TEAM-MEDIA, MATCH-PROOFS)
+-- =========================================================================
+INSERT INTO storage.buckets (id, name, public)
+VALUES
+  ('player-media', 'player-media', true),
+  ('team-media', 'team-media', true),
+  ('match-proofs', 'match-proofs', true)
+ON CONFLICT (id) DO NOTHING;
+
+DROP POLICY IF EXISTS "Public Read Storage Objects" ON storage.objects;
+CREATE POLICY "Public Read Storage Objects"
+ON storage.objects FOR SELECT
+TO public
+USING (bucket_id IN ('player-media', 'team-media', 'match-proofs'));
+
+DROP POLICY IF EXISTS "Authenticated Upload Storage Objects" ON storage.objects;
+CREATE POLICY "Authenticated Upload Storage Objects"
+ON storage.objects FOR INSERT
+TO authenticated
+WITH CHECK (bucket_id IN ('player-media', 'team-media', 'match-proofs'));
+
+DROP POLICY IF EXISTS "Owner Update Storage Objects" ON storage.objects;
+CREATE POLICY "Owner Update Storage Objects"
+ON storage.objects FOR UPDATE
+TO authenticated
+USING (auth.uid() = owner);
+
+-- =========================================================================
+-- 11. ROW LEVEL SECURITY (RLS) ESTRITO COM VALIDAÇÃO AUTH.UID()
+-- =========================================================================
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tournaments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE player_profiles ENABLE ROW LEVEL SECURITY;
+ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tournament_registrations ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tournament_participants ENABLE ROW LEVEL SECURITY;
 ALTER TABLE player_stats ENABLE ROW LEVEL SECURITY;
 ALTER TABLE position_votes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE evaluations ENABLE ROW LEVEL SECURITY;
-ALTER TABLE teams ENABLE ROW LEVEL SECURITY;
 ALTER TABLE draft_picks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE squad_lineups ENABLE ROW LEVEL SECURITY;
 ALTER TABLE tournament_phases ENABLE ROW LEVEL SECURITY;
@@ -465,35 +584,100 @@ ALTER TABLE tournament_finances ENABLE ROW LEVEL SECURITY;
 ALTER TABLE match_events ENABLE ROW LEVEL SECURITY;
 ALTER TABLE free_agents ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Public Read tournaments" ON tournaments FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage tournaments" ON tournaments FOR ALL TO public USING (true);
-CREATE POLICY "Public Read player_profiles" ON player_profiles FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage player_profiles" ON player_profiles FOR ALL TO public USING (true);
-CREATE POLICY "Public Read participants" ON tournament_participants FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage participants" ON tournament_participants FOR ALL TO public USING (true);
-CREATE POLICY "Public Read player_stats" ON player_stats FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage player_stats" ON player_stats FOR ALL TO public USING (true);
-CREATE POLICY "Public Read position_votes" ON position_votes FOR SELECT TO public USING (true);
-CREATE POLICY "Public Insert position_votes" ON position_votes FOR ALL TO public USING (true);
-CREATE POLICY "Public Read evaluations" ON evaluations FOR SELECT TO public USING (true);
-CREATE POLICY "Public Insert evaluations" ON evaluations FOR INSERT TO public WITH CHECK (true);
-CREATE POLICY "Public Read teams" ON teams FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage teams" ON teams FOR ALL TO public USING (true);
-CREATE POLICY "Public Read draft_picks" ON draft_picks FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage draft_picks" ON draft_picks FOR ALL TO public USING (true);
-CREATE POLICY "Public Read squad_lineups" ON squad_lineups FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage squad_lineups" ON squad_lineups FOR ALL TO public USING (true);
-CREATE POLICY "Public Read tournament_phases" ON tournament_phases FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage tournament_phases" ON tournament_phases FOR ALL TO public USING (true);
-CREATE POLICY "Public Read matches" ON matches FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage matches" ON matches FOR ALL TO public USING (true);
-CREATE POLICY "Public Read match_player_stats" ON match_player_stats FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage match_player_stats" ON match_player_stats FOR ALL TO public USING (true);
-CREATE POLICY "Public Read match_incidents" ON match_incidents FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage match_incidents" ON match_incidents FOR ALL TO public USING (true);
-CREATE POLICY "Public Read tournament_finances" ON tournament_finances FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage tournament_finances" ON tournament_finances FOR ALL TO public USING (true);
-CREATE POLICY "Public Read match_events" ON match_events FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage match_events" ON match_events FOR ALL TO public USING (true);
-CREATE POLICY "Public Read free_agents" ON free_agents FOR SELECT TO public USING (true);
-CREATE POLICY "Public Manage free_agents" ON free_agents FOR ALL TO public USING (true);
+-- Função auxiliar para verificar se o usuário logado possui papel de admin
+CREATE OR REPLACE FUNCTION public.is_league_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles
+    WHERE id = auth.uid() AND ('admin' = ANY(roles))
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- PROFILES: Leitura pública; escrita restrita ao próprio dono da conta (auth.uid() = id) ou Admin
+CREATE POLICY "Profiles Public Select" ON profiles FOR SELECT TO public USING (true);
+CREATE POLICY "Profiles Self Insert" ON profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = id);
+CREATE POLICY "Profiles Self Update" ON profiles FOR UPDATE TO authenticated USING (auth.uid() = id OR public.is_league_admin());
+
+-- PLAYER_PROFILES: Leitura pública; escrita restrita ao dono do boneco (auth.uid() = user_id) ou Admin
+CREATE POLICY "Player Profiles Public Select" ON player_profiles FOR SELECT TO public USING (true);
+CREATE POLICY "Player Profiles Owner Insert" ON player_profiles FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id OR public.is_league_admin());
+CREATE POLICY "Player Profiles Owner Update" ON player_profiles FOR UPDATE TO authenticated USING (auth.uid() = user_id OR public.is_league_admin());
+CREATE POLICY "Player Profiles Admin Delete" ON player_profiles FOR DELETE TO authenticated USING (public.is_league_admin());
+
+-- TEAMS: Leitura pública; atualização apenas pelo Capitão dono do time ou Admin
+CREATE POLICY "Teams Public Select" ON teams FOR SELECT TO public USING (true);
+CREATE POLICY "Teams Captain Insert" ON teams FOR INSERT TO authenticated WITH CHECK (auth.uid() = captain_id OR public.is_league_admin());
+CREATE POLICY "Teams Captain Update" ON teams FOR UPDATE TO authenticated USING (auth.uid() = captain_id OR public.is_league_admin());
+CREATE POLICY "Teams Admin Delete" ON teams FOR DELETE TO authenticated USING (public.is_league_admin());
+
+-- TOURNAMENTS: Leitura pública; escrita exclusiva de Admin
+CREATE POLICY "Tournaments Public Select" ON tournaments FOR SELECT TO public USING (true);
+CREATE POLICY "Tournaments Admin Write" ON tournaments FOR ALL TO authenticated USING (public.is_league_admin()) WITH CHECK (public.is_league_admin());
+
+-- TOURNAMENT_REGISTRATIONS: Leitura pública; atualização pelo Capitão do time ou Admin
+CREATE POLICY "Registrations Public Select" ON tournament_registrations FOR SELECT TO public USING (true);
+CREATE POLICY "Registrations Captain Or Admin Write" ON tournament_registrations FOR ALL TO authenticated
+USING (
+  public.is_league_admin() OR EXISTS (
+    SELECT 1 FROM public.teams t WHERE t.id = tournament_registrations.team_id AND t.captain_id = auth.uid()
+  )
+)
+WITH CHECK (
+  public.is_league_admin() OR EXISTS (
+    SELECT 1 FROM public.teams t WHERE t.id = tournament_registrations.team_id AND t.captain_id = auth.uid()
+  )
+);
+
+-- MATCHES: Leitura pública; atualização apenas pelos Capitães dos 2 times envolvidos no confronto ou Admin
+-- E impede que o mesmo time que enviou a súmula faça a auto-validação como time adversário
+CREATE POLICY "Matches Public Select" ON matches FOR SELECT TO public USING (true);
+CREATE POLICY "Matches Captains Or Admin Update" ON matches FOR UPDATE TO authenticated
+USING (
+  public.is_league_admin() OR EXISTS (
+    SELECT 1 FROM public.teams t
+    WHERE (t.id = matches.home_team_id OR t.id = matches.away_team_id)
+      AND t.captain_id = auth.uid()
+  )
+)
+WITH CHECK (
+  public.is_league_admin() OR (
+    EXISTS (
+      SELECT 1 FROM public.teams t
+      WHERE (t.id = matches.home_team_id OR t.id = matches.away_team_id)
+        AND t.captain_id = auth.uid()
+    )
+    AND (
+      matches.validated_by_team_id IS NULL
+      OR matches.validated_by_team_id <> matches.submitted_by_team_id
+    )
+  )
+);
+CREATE POLICY "Matches Admin Insert" ON matches FOR INSERT TO authenticated WITH CHECK (public.is_league_admin());
+
+-- Demais tabelas auxiliares com leitura pública e escrita autenticada
+CREATE POLICY "Public Select Participants" ON tournament_participants FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Participants" ON tournament_participants FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Player Stats" ON player_stats FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Player Stats" ON player_stats FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Votes" ON position_votes FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Votes" ON position_votes FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Evaluations" ON evaluations FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Evaluations" ON evaluations FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Public Select Draft Picks" ON draft_picks FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Draft Picks" ON draft_picks FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Lineups" ON squad_lineups FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Lineups" ON squad_lineups FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Phases" ON tournament_phases FOR SELECT TO public USING (true);
+CREATE POLICY "Admin Write Phases" ON tournament_phases FOR ALL TO authenticated USING (public.is_league_admin());
+CREATE POLICY "Public Select Match Player Stats" ON match_player_stats FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Match Player Stats" ON match_player_stats FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Incidents" ON match_incidents FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Incidents" ON match_incidents FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Finances" ON tournament_finances FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Finances" ON tournament_finances FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Events" ON match_events FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Events" ON match_events FOR ALL TO authenticated USING (true);
+CREATE POLICY "Public Select Free Agents" ON free_agents FOR SELECT TO public USING (true);
+CREATE POLICY "Auth Write Free Agents" ON free_agents FOR ALL TO authenticated USING (true);

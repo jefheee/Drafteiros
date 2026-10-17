@@ -4,6 +4,9 @@
  * GEMINI_API_KEYS (separadas por vírgula) ou GEMINI_API_KEY.
  */
 
+import { PlayerAttributes } from '@/types/database';
+import { DEFAULT_PLAYER_ATTRIBUTES } from '@/lib/accelerate';
+
 export interface OcrMatchPlayer {
   name: string;
   team: 'home' | 'away';
@@ -19,6 +22,16 @@ export interface OcrMatchSheetResult {
   motm_name: string;
   confidence: number;
   players: OcrMatchPlayer[];
+  summary_note: string;
+  used_mock?: boolean;
+}
+
+export interface OcrPlayerAttributesResult {
+  height_cm: number;
+  weight_kg: number;
+  overall: number;
+  attributes: PlayerAttributes;
+  confidence: number;
   summary_note: string;
   used_mock?: boolean;
 }
@@ -68,7 +81,7 @@ export function getGeminiApiKeys(): string[] {
 
 /**
  * Executa chamada multimodal à REST API do Google Gemini (gemini-2.5-flash -> gemini-1.5-flash)
- * com rotação Round-Robin entre chaves e suporte a imagens Base64 inline (Avatar do Boneco / Uniforme / Súmula).
+ * com rotação Round-Robin entre chaves e suporte a imagens Base64 inline.
  */
 export async function callGeminiWithRotation(params: {
   systemInstruction: string;
@@ -177,19 +190,58 @@ export async function callGeminiWithRotation(params: {
 
 export function getMockOcrMatchSheet(): OcrMatchSheetResult {
   return {
-    home_score: 3,
-    away_score: 1,
-    motm_name: 'Jefhe',
-    confidence: 99.1,
+    home_score: 2,
+    away_score: 7,
+    motm_name: 'HAALANDINHO',
+    confidence: 99.4,
     summary_note:
-      'Placar 3x1 e estatísticas individuais extraídos automaticamente por visão computacional da foto da partida EA FC 26.',
+      'Placar 2x7 (Furia del Plata vs La Catimba) e estatísticas por Nome do Personagem extraídos automaticamente por visão computacional.',
     players: [
-      { name: 'Jefhe', team: 'home', goals: 2, assists: 1, rating: 9.6, is_motm: true },
-      { name: 'Andrei_VOL', team: 'home', goals: 1, assists: 1, rating: 8.9, is_motm: false },
-      { name: 'Enzo_Maestro', team: 'home', goals: 0, assists: 1, rating: 8.5, is_motm: false },
-      { name: 'Muralha_GK', team: 'home', goals: 0, assists: 0, rating: 8.3, is_motm: false },
-      { name: 'Buzz_ProClubs', team: 'away', goals: 1, assists: 0, rating: 7.8, is_motm: false },
+      { name: 'JEFHE', team: 'home', goals: 1, assists: 1, rating: 8.4, is_motm: false },
+      { name: 'MIGUEL', team: 'home', goals: 1, assists: 0, rating: 8.1, is_motm: false },
+      { name: 'HAALANDINHO', team: 'away', goals: 5, assists: 1, rating: 10.0, is_motm: true },
+      { name: 'JOAO VINY', team: 'away', goals: 1, assists: 2, rating: 9.2, is_motm: false },
+      { name: 'TETEU', team: 'away', goals: 1, assists: 2, rating: 9.0, is_motm: false },
     ],
+    used_mock: true,
+  };
+}
+
+export function getMockOcrPlayerAttributes(): OcrPlayerAttributesResult {
+  return {
+    height_cm: 175,
+    weight_kg: 68,
+    overall: 92,
+    attributes: {
+      ...DEFAULT_PLAYER_ATTRIBUTES,
+      acceleration: 94,
+      sprint_speed: 93,
+      agility: 92,
+      balance: 89,
+      attack_positioning: 91,
+      finishing: 93,
+      shot_power: 90,
+      long_shots: 87,
+      volleys: 85,
+      penalties: 88,
+      vision: 89,
+      crossing: 84,
+      free_kick_accuracy: 83,
+      short_passing: 90,
+      long_passing: 86,
+      curve: 91,
+      dribbling: 94,
+      ball_control: 93,
+      reactions: 91,
+      composure: 92,
+      jumping: 79,
+      stamina: 92,
+      strength: 74,
+      aggression: 70,
+    },
+    confidence: 99.2,
+    summary_note:
+      'Atributos de Qualidades/Corpo (Altura 175cm, Peso 68kg, Aceleração 94, Agilidade 92, Força 74 -> AcceleRATE Explosiva) lidos da imagem via Gemini Vision.',
     used_mock: true,
   };
 }
@@ -202,20 +254,20 @@ export function getMockRoleplay(params: {
   scoreContext?: string;
   customContext?: string;
 }): RoleplayResult {
-  const player = params.playerName || 'Jefhe';
+  const player = params.playerName || 'JEFHE';
   const team = params.teamName || 'Furia del Plata';
-  const rival = params.rivalName || 'Boca Juniors FC';
-  const score = params.scoreContext || '3 x 1';
+  const rival = params.rivalName || 'La Catimba';
+  const score = params.scoreContext || '2 - 7';
   const extra = params.customContext ? ` (${params.customContext})` : '';
 
   switch (params.roleplayType) {
     case 'nota_repudio':
       return {
         title: `COMUNICADO IMPORTANTE — ${team.toUpperCase()}`,
-        whatsapp_text: `🚨 *NOTA DE REPÚDIO OFICIAL - ${team.toUpperCase()}* 🚨\n\nA diretoria do *${team}*, em conjunto com seu camisa 10 *${player}*, vem a público manifestar total indignação com os acontecimentos na partida contra o *${rival}* (${score})${extra}.\n\nMesmo com servidor oscilando e cera no final, mostramos força dentro de campo. Exigimos providências imediatas da organização da Liga LPF 5x5!\n\n📌 *Diretoria Executiva — ${team}* 🛡️`,
+        whatsapp_text: `🚨 *NOTA DE REPÚDIO OFICIAL - ${team.toUpperCase()}* 🚨\n\nA diretoria do *${team}*, em conjunto com seu camisa 10 *${player}*, vem a público manifestar total indignação com os acontecimentos na partida contra o *${rival}* (${score})${extra}.\n\nMesmo com servidor oscilando, mostramos força dentro de campo. Exigimos providências imediatas da organização da Liga LPF 5x5!\n\n📌 *Diretoria Executiva — ${team}* 🛡️`,
         instagram_caption: `COMUNICADO IMPORTANTE! 🚨 A diretoria do ${team} não vai se calar diante do que aconteceu hoje em campo contra o ${rival}. Contra tudo e contra todos! ⚔️🔥`,
-        comunicado_graphic_text: `A diretoria do ${team}, representada por ${player}, manifesta repúdio oficial aos fatos ocorridos no confronto diante do ${rival} (${score}). Seguimos firmes em busca do título da Liga 5x5 LPF contra tudo e contra todos!`,
-        hashtags: ['#ProClubs26', '#ComunicadoImportante', '#EAFC26', '#LigaLPF5x5', '#JogueirosPRO'],
+        comunicado_graphic_text: `A diretoria do ${team}, representada por ${player}, manifesta repúdio oficial aos fatos ocorridos no confronto diante do ${rival} (${score}). Seguimos firmes em busca do título da Liga 5x5 LPF!`,
+        hashtags: ['#ProClubs26', '#ComunicadoImportante', '#EAFC26', '#LigaLPF5x5'],
         used_mock: true,
       };
 
@@ -242,10 +294,10 @@ export function getMockRoleplay(params: {
     case 'anuncio_contratacao':
       return {
         title: `BEM-VINDO AO CLUBE — ${player.toUpperCase()}`,
-        whatsapp_text: `🚨 *HERE WE GO! CONTRATAÇÃO OFICIAL!* 🚨\n\nAcabou a novela no Mercadão! *${player}* é o novo reforço oficial do *${team}* para a temporada do EA FC 26${extra}!\n\nO craque já teve o registro liberado na Liga LPF 5x5 e estreia hoje mesmo!\n\n✍️ *"Vim pra fazer história e buscar esse troféu!"* — ${player}`,
+        whatsapp_text: `🚨 *HERE WE GO! CONTRATAÇÃO OFICIAL!* 🚨\n\nAcabou a novela no Draft! *${player}* é o novo reforço oficial do *${team}* para a temporada do EA FC 26${extra}!\n\nO craque já teve o registro liberado na Liga LPF 5x5 e estreia hoje mesmo!\n\n✍️ *"Vim pra fazer história e buscar esse troféu!"* — ${player}`,
         instagram_caption: `CONTRATADO! ✍️🔥 ${player} chega para reforçar o elenco do ${team} na disputa pelo título da Liga 5x5! 🚀⚽`,
         comunicado_graphic_text: `CONTRATAÇÃO OFICIAL! O ${team} anuncia a chegada de ${player} para a disputa da Liga 5x5 LPF no EA FC 26. Bem-vindo ao gigante!`,
-        hashtags: ['#Contratado', '#MercadaoProClubs', '#NovoReforco', '#EAFC26'],
+        hashtags: ['#Contratado', '#DraftProClubs', '#NovoReforco', '#EAFC26'],
         used_mock: true,
       };
 
@@ -253,9 +305,9 @@ export function getMockRoleplay(params: {
     default:
       return {
         title: `FALA, CRAQUE! — ${player.toUpperCase()}`,
-        whatsapp_text: `🎙️ *ZONA MISTA EA FC 26 — ENTREVISTA PÓS-JOGO*\n\n⚽ *Placar Final:* ${team} ${score} ${rival}\n⭐ *Craque da Partida:* ${player}\n\n💬 *"Sabíamos que o jogo contra o ${rival} seria decidido nos detalhes${extra}. Nossa tabela curta no 5x5 encaixou perfeito e saímos com os 3 pontos!"*`,
-        instagram_caption: `Fala, Craque! 🎙️⭐ Vitória gigante no clássico (${score}) e palavras de quem decidiu em campo pelo ${team}! ⚽🏆`,
-        comunicado_graphic_text: `"Nossa equipe mostrou maturidade tática do início ao fim diante do ${rival} (${score}). Esses 3 pontos colocam o ${team} no topo da Liga 5x5 LPF!" — ${player}, Craque da Partida.`,
+        whatsapp_text: `🎙️ *ZONA MISTA EA FC 26 — ENTREVISTA PÓS-JOGO*\n\n⚽ *Placar Final:* ${team} ${score} ${rival}\n⭐ *Craque em Destaque:* ${player}\n\n💬 *"Sabíamos que o jogo contra o ${rival} seria decidido nos detalhes${extra}. Nossa tabela curta no 5x5 encaixou e seguimos fortes na competição!"*`,
+        instagram_caption: `Fala, Craque! 🎙️⭐ Palavras de quem deixou tudo em campo pelo ${team}! ⚽🏆`,
+        comunicado_graphic_text: `"Nossa equipe mostrou entrega do início ao fim diante do ${rival} (${score}). Seguimos focados no topo da Liga 5x5 LPF!" — ${player}.`,
         hashtags: ['#ZonaMista', '#CraqueDoJogo', '#MOTM', '#EAFC26', '#ProClubs'],
         used_mock: true,
       };
@@ -271,49 +323,49 @@ export function getMockCharacterPrompt(params: {
   hasUploadedAvatar?: boolean;
   hasUploadedKit?: boolean;
 }): CharacterPromptResult {
-  const player = params.playerName || 'Jefhe';
+  const player = params.playerName || 'JEFHE';
   const team = params.teamName || 'Furia del Plata';
   const primary = params.primaryColor || '#7C5CFC';
   const secondary = params.secondaryColor || '#38C958';
   const idea = params.sceneIdea || 'Comemorando gol na chuva apontando para o escudo do clube';
 
   const detected_visual_summary = params.hasUploadedAvatar
-    ? 'Traços faciais, corte de cabelo, barba e uniforme lidos automaticamente pela IA Vision a partir da foto enviada do seu boneco e escudo.'
-    : 'Leitura visual baseada no avatar do atleta e nas cores do uniforme do clube salvos no perfil.';
+    ? 'Traços faciais, corte de cabelo, estrutura corporal e uniforme lidos automaticamente pela IA Vision a partir das fotos reais dos personagens e camisas selecionadas.'
+    : 'Leitura visual baseada nas fotos reais de rosto/corpo do elenco e nas cores oficiais do uniforme do clube.';
 
-  const prompt_en = `Hyper-realistic 8K sports broadcast photography of EA Sports FC 26 Pro Clubs athlete "${player}" (#10) playing for "${team}". Visual appearance extracted directly from the player's uploaded EA FC avatar photo and club kit reference (primary hex ${primary}, secondary hex ${secondary}). Action & Scene: ${idea}. Environment: Packed South American stadium at night under heavy dramatic rain, volumetric floodlights, wet grass droplets in slow motion, Canon EOS R3 400mm f/2.8L telephoto lens, Frostbite Engine skin pores and wet jersey fabric realism, Copa Libertadores broadcast color grading.`;
+  const prompt_en = `Hyper-realistic 8K sports broadcast photography of EA Sports FC 26 Pro Clubs athlete(s) "${player}" playing for "${team}". Visual appearance extracted directly from the player's uploaded EA FC face & full-body photos and club kit reference (primary hex ${primary}, secondary hex ${secondary}, zero commercial sponsors on the chest, clean official crest). Action & Scene: ${idea}. Environment: Packed South American stadium at night under heavy dramatic rain, volumetric floodlights, wet grass droplets in slow motion, Canon EOS R3 400mm f/2.8L telephoto lens, Frostbite Engine skin pores and wet jersey fabric realism.`;
 
-  const prompt_pt = `Fotografia hiper-realista em 8K de transmissão esportiva do atleta "${player}" (#10) atuando pelo "${team}" no EA Sports FC 26 Pro Clubs. Rosto, corte de cabelo, chuteira e uniforme extraídos diretamente por Visão Computacional da foto enviada do boneco e do escudo do time (cores ${primary} e ${secondary}). Cena em campo: ${idea}. Ambiente: Estádio lotado à noite sob chuva intensa, refletores volumétricos, lente teleobjetiva 400mm f/2.8, textura hiper-realista de suor e tecido molhado motor Frostbite.`;
+  const prompt_pt = `Fotografia hiper-realista em 8K de transmissão esportiva do(s) personagem(ns) "${player}" atuando pelo "${team}" no EA Sports FC 26 Pro Clubs. Rosto, fisionomia de corpo inteiro e uniforme extraídos diretamente por Visão Computacional das fotos reais cadastradas no clube (cores ${primary} e ${secondary}, camisa limpa sem patrocinadores, apenas escudo oficial). Cena em campo: ${idea}. Ambiente: Estádio sul-americano lotado à noite sob chuva intensa, refletores volumétricos, lente teleobjetiva 400mm f/2.8, textura hiper-realista motor Frostbite.`;
 
   return {
     prompt_en,
     prompt_pt,
     detected_visual_summary,
     negative_prompt:
-      'cartoon, anime, lowres, blurry face, deformed hands, extra fingers, watermark, text overlay, plastic skin',
+      'sponsors, commercial logos, bet logos, cartoon, anime, lowres, blurry face, deformed hands, extra fingers, watermark, text overlay',
     camera_settings: 'Canon EOS R3 • 400mm f/2.8L IS III • ISO 800 • 1/2000s • Broadcast HDR',
     style_tags: [
-      'Gemini Vision Multimodal',
-      'Zero Digitação',
+      'Gemini 2.5 Flash Multimodal',
+      'Fidelidade Rosto + Corpo + Uniforme',
+      'Zero Patrocinadores',
       'EA FC 26 Frostbite 8K',
-      'Night Stadium Rain',
     ],
     generated_image_url: null,
     external_generators: [
-      {
-        name: 'Bing Image Creator (DALL-E 3)',
-        url: 'https://www.bing.com/images/create',
-        badge: 'Grátis • 1 Clique',
-      },
       {
         name: 'Google ImageFX (Imagen 3)',
         url: 'https://aitestkitchen.withgoogle.com/tools/image-fx',
         badge: 'Ultra Realista',
       },
       {
+        name: 'Bing Image Creator (DALL-E 3)',
+        url: 'https://www.bing.com/images/create',
+        badge: 'Grátis • 1 Clique',
+      },
+      {
         name: 'ChatGPT / Midjourney',
         url: 'https://chatgpt.com/',
-        badge: 'Anexar Foto + Prompt',
+        badge: 'Anexar Kit de Referência',
       },
     ],
     used_mock: true,

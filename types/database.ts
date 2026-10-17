@@ -1,9 +1,54 @@
 export type Tier = 'S' | 'A' | 'B' | 'C' | 'D' | 'UNRATED';
 export type TournamentStatus = 'REGISTRATION' | 'SCOUTING' | 'DRAFT' | 'ACTIVE' | 'FINISHED';
 export type ParticipantRole = 'admin' | 'captain' | 'player';
-export type GameMode = '5v5' | '11v11';
+export type GameMode = '3v3' | '4v4' | '5v5' | '7v7' | '11v11' | string;
+export type PlayerPosition =
+  | 'ST'
+  | 'LW'
+  | 'RW'
+  | 'CAM'
+  | 'CM'
+  | 'CDM'
+  | 'LB'
+  | 'RB'
+  | 'CB'
+  | 'GK'
+  | 'ATA'
+  | 'MEI'
+  | 'MC'
+  | 'VOL'
+  | 'ZAG'
+  | string;
 
-export type MatchScheduleStatus = 'unscheduled' | 'proposed_by_home' | 'proposed_by_away' | 'confirmed';
+export type AccelerateType = 'Prolongada' | 'Explosiva' | 'Controlada';
+export type AccelerateSubType =
+  | 'Lengthy (100% Prolongada)'
+  | 'Mostly Lengthy (70% Prolongada / 30% Controlada)'
+  | 'Controlled Lengthy (50% Prolongada / 50% Controlada)'
+  | 'Controlled (100% Controlada)'
+  | 'Controlled Explosive (50% Explosiva / 50% Controlada)'
+  | 'Mostly Explosive (70% Explosiva / 30% Controlada)'
+  | 'Explosive (100% Explosiva)'
+  | string;
+
+export type BracketType =
+  | 'league_playoffs'
+  | 'groups_knockout'
+  | 'swiss'
+  | 'double_elimination'
+  | 'single_elimination'
+  | 'pontos_corridos_g4'
+  | 'grupos_mata_mata'
+  | 'mata_mata_puro'
+  | 'suico_top8'
+  | string;
+
+export type MatchScheduleStatus =
+  | 'unscheduled'
+  | 'proposed_by_home'
+  | 'proposed_by_away'
+  | 'confirmed';
+
 export type MatchStatus =
   | 'scheduled'
   | 'pending_validation'
@@ -19,9 +64,175 @@ export type IncidentType =
   | 'late_cancellation'
   | 'player_disconnect_first_20'
   | 'player_disconnect_halftime'
-  | 'game_bug';
+  | 'game_bug'
+  | 'wo'
+  | string;
 
 export type IncidentStatus = 'open' | 'resolved' | 'rejected';
+
+export interface UserProfile {
+  id: string;
+  email: string;
+  full_name: string;
+  character_name: string;
+  roles: ParticipantRole[];
+  active_role_view: ParticipantRole;
+  whatsapp?: string;
+  created_at: string;
+}
+
+export interface PlayerAttributes {
+  // Ritmo
+  acceleration: number;
+  sprint_speed: number;
+  // Artilharia / Finalização
+  attack_positioning: number;
+  finishing: number;
+  shot_power: number;
+  long_shots: number;
+  volleys: number;
+  penalties: number;
+  // Passe
+  vision: number;
+  crossing: number;
+  free_kick: number;
+  free_kick_accuracy?: number;
+  short_passing: number;
+  long_passing: number;
+  curve: number;
+  // Controle de Bola / Drible
+  agility: number;
+  balance: number;
+  reactions: number;
+  ball_control: number;
+  dribbling: number;
+  composure: number;
+  // Defesa
+  interceptions: number;
+  heading_accuracy: number;
+  def_awareness: number;
+  standing_tackle: number;
+  sliding_tackle: number;
+  // Físico & Estrelas
+  jumping: number;
+  stamina: number;
+  strength: number;
+  aggression: number;
+  skill_moves?: number;
+  weak_foot?: number;
+  // Goleiro
+  gk_diving?: number;
+  gk_handling?: number;
+  gk_kicking?: number;
+  gk_positioning?: number;
+  gk_reflexes?: number;
+}
+
+export interface PlayStyleSelection {
+  id: string;
+  name?: string;
+  category?: string;
+  icon?: string;
+  plusIcon?: string;
+  tier?: 'silver' | 'gold';
+  level?: 'silver' | 'gold';
+}
+
+export type TimeIntervalPeriod =
+  | 'manha'
+  | 'tarde'
+  | 'inicio_noite'
+  | 'noite_pico'
+  | 'madrugada'
+  | 'custom';
+
+export interface AvailabilitySlotRange {
+  id?: string;
+  label?: string;
+  start?: string;
+  end?: string;
+  periods?: TimeIntervalPeriod[];
+  customStart?: string;
+  customEnd?: string;
+}
+
+export type WeeklyAvailabilitySlots = Record<string, AvailabilitySlotRange>;
+
+export interface PlayerCareerStats {
+  official_matches?: number;
+  official_goals?: number;
+  official_assists?: number;
+  official_motm?: number;
+  titles_won?: number;
+  tournaments_played?: number;
+  matches_played?: number;
+  goals?: number;
+  assists?: number;
+  mvps?: number;
+  clean_sheets?: number;
+  average_rating?: number;
+}
+
+export interface PlayerVisualTraits {
+  skin_tone?: string;
+  hair_style?: string;
+  hair_color?: string;
+  facial_hair?: string;
+  accessories?: string[];
+  shirt_number?: number;
+  celebration?: string;
+  avatar_photo_url?: string;
+  body_photo_url?: string;
+}
+
+export type WeeklyAvailability = Record<string, any>;
+
+export interface PlayerMedal {
+  id: string;
+  title: string;
+  icon?: string;
+  unlocked_at?: string;
+}
+
+export interface PlayerProfile {
+  id: string;
+  user_id?: string;
+  name: string;
+  ea_Tag?: string;
+  character_name: string;
+  full_name?: string;
+  team_id?: string | null;
+  is_free_agent?: boolean;
+  overall?: number;
+  avatar_url?: string;
+  avatar_face_url?: string;
+  avatar_body_url?: string;
+  attributes_screenshot_url?: string;
+  card_design?: string;
+  positions_declared: string[];
+  primary_position?: PlayerPosition;
+  secondary_positions?: string[];
+  archetype?: string;
+  archetypes?: string[];
+  height_cm?: number;
+  weight_kg?: number;
+  gender?: 'M' | 'F';
+  attributes?: PlayerAttributes;
+  accelerate_type?: AccelerateType;
+  accelerate_sub_type?: AccelerateSubType;
+  playstyles?: PlayStyleSelection[];
+  availability_slots?: WeeklyAvailabilitySlots;
+  career_stats?: PlayerCareerStats;
+  platform?: 'PS5' | 'Xbox Series' | 'PC' | 'OldGen';
+  contact_discord?: string;
+  contact_whatsapp?: string;
+  is_looking_for_team?: boolean;
+  bio?: string;
+  visual_traits?: PlayerVisualTraits;
+  availability?: WeeklyAvailability;
+  medals?: PlayerMedal[];
+  created_at: string;
+}
 
 export interface TournamentRules {
   crossplay_gen: 'current_gen' | 'old_gen';
@@ -45,58 +256,66 @@ export interface TournamentRulesConfig {
   extra_time_group_stage: boolean;
 }
 
+export interface DraftOrderSlot {
+  pickOrder?: number;
+  pick_number?: number;
+  round?: number;
+  teamId?: string;
+  team_id?: string;
+  teamName?: string;
+  team_name?: string;
+  captainName?: string;
+  captain_name?: string;
+}
+
 export interface Tournament {
   id: string;
   name: string;
   format: string;
+  format_label?: string;
   game_mode?: GameMode;
+  players_on_pitch?: number;
+  starters_count?: number;
+  max_reserves?: number;
+  reserves_count?: number;
   max_roster_size?: number;
   entry_fee?: number;
+  bracket_type?: BracketType;
+  bracket_config?: Record<string, any>;
+  custom_rules?: string[];
   prize_distribution?: TournamentPrizeDistribution;
+  prize_breakdown?: TournamentPrizeDistribution;
   rules_config?: TournamentRulesConfig;
+  draft_order?: DraftOrderSlot[];
   status: TournamentStatus;
   rules?: TournamentRules;
   created_at: string;
 }
 
-export interface PlayerVisualTraits {
-  skin_tone?: string;
-  hair_style?: string;
-  hair_color?: string;
-  facial_hair?: string;
-  accessories?: string[];
-  shirt_number?: number;
-  celebration?: string;
+export interface MemberContribution {
+  player_id: string;
+  character_name: string;
+  full_name?: string;
+  amount: number;
+  paid?: boolean;
+  paid_to_captain?: boolean;
+  paid_at?: string | null;
 }
 
-export type WeeklyAvailability = Record<string, string[]>;
-
-export interface PlayerMedal {
+export interface TournamentRegistration {
   id: string;
-  title: string;
-  icon?: string;
-  unlocked_at?: string;
-}
-
-export interface PlayerProfile {
-  id: string;
-  user_id?: string;
-  name: string;
-  positions_declared: string[];
-  archetype?: string;
-  archetypes?: string[];
-  avatar_url?: string;
-  platform?: 'PS5' | 'Xbox Series' | 'PC' | 'OldGen';
-  primary_position?: string;
-  secondary_positions?: string[];
-  contact_discord?: string;
-  contact_whatsapp?: string;
-  is_looking_for_team?: boolean;
-  bio?: string;
-  visual_traits?: PlayerVisualTraits;
-  availability?: WeeklyAvailability;
-  medals?: PlayerMedal[];
-  created_at: string;
+  tournament_id: string;
+  team_id: string;
+  total_fee: number;
+  member_contributions: MemberContribution[];
+  full_fee_paid_to_admin: boolean;
+  payment_status?: 'pending' | 'paid_by_captain' | 'approved' | string;
+  payment_proof_url?: string | null;
+  approved_by_admin_at?: string | null;
+  is_cleared_to_play: boolean;
+  notes?: string;
+  created_at?: string;
+  team?: Team;
 }
 
 export interface TournamentParticipant {
@@ -168,15 +387,20 @@ export interface Team {
   id: string;
   tournament_id: string;
   name: string;
+  short_name?: string;
   captain_id?: string;
   active_formation: string;
   logo_url?: string;
+  kit_home_url?: string;
+  kit_away_url?: string;
   primary_color?: string;
   secondary_color?: string;
+  invite_code?: string;
   kit_description?: string;
   sponsors?: TeamSponsor[];
   whatsapp_group_link?: string;
   instagram_handle?: string;
+  is_approved?: boolean;
   created_at: string;
 }
 
@@ -205,6 +429,7 @@ export interface MatchPlayerStat {
   match_id: string;
   player_id?: string | null;
   guest_name?: string | null;
+  character_name?: string | null;
   team_id: string;
   goals: number;
   assists: number;
@@ -280,6 +505,8 @@ export interface FreeAgent {
 export interface TopScorer {
   player_id: string;
   player_name: string;
+  character_name?: string;
+  full_name?: string;
   team_id: string;
   team_name: string;
   team_logo_url?: string | null;
@@ -293,6 +520,8 @@ export interface TopScorer {
 export interface TopAssist {
   player_id: string;
   player_name: string;
+  character_name?: string;
+  full_name?: string;
   team_id: string;
   team_name: string;
   team_logo_url?: string | null;
@@ -300,6 +529,21 @@ export interface TopAssist {
   assists_count: number;
   matches_played: number;
   rank: number;
+}
+
+export interface MatchOcrExtractedData {
+  home_score: number;
+  away_score: number;
+  motm_name?: string;
+  confidence?: number;
+  players?: {
+    name: string;
+    team: 'home' | 'away';
+    goals: number;
+    assists: number;
+    rating: number;
+    is_motm?: boolean;
+  }[];
 }
 
 export interface Match {
@@ -311,12 +555,17 @@ export interface Match {
   away_team_id: string;
   scheduled_at?: string | null;
   schedule_status?: MatchScheduleStatus;
+  proposed_slots?: string[];
   status: MatchStatus;
   home_score: number;
   away_score: number;
   proof_image_url?: string | null;
+  ocr_extracted_data?: MatchOcrExtractedData | null;
   submitted_by_team_id?: string | null;
   validated_by_team_id?: string | null;
+  validated_by?: string | null;
+  incident_type?: string | null;
+  incident_report?: string | null;
   motm_player_id?: string | null;
   reported_by?: string | null;
   notes?: string | null;
@@ -348,10 +597,12 @@ export interface TournamentStanding {
   position: number;
 }
 
-export interface TournamentPlayerStats {
+export interface TournamentPlayerStatsView {
   tournament_id: string;
   player_id: string;
   name: string;
+  character_name?: string;
+  full_name?: string;
   archetype: string;
   archetypes?: string[];
   positions_declared: string[];
@@ -372,19 +623,27 @@ export interface TournamentPlayerStats {
   draft_pick_number?: number | null;
 }
 
+export type TournamentPlayerStats = TournamentPlayerStatsView;
+
 export interface PitchPositionSlot {
   slotId: string;
   positionCode: string;
   displayName: string;
-  xPercent: number; // 0 a 100 da largura do campo
-  yPercent: number; // 0 a 100 da altura (90 = GK, 15 = ATA)
-  assignedPlayerId?: string | null;
+  xPercent: number;
+  yPercent: number;
 }
 
 export interface FormationPreset {
   key: string;
   label: string;
-  category: '4-defenders' | '5-defenders' | '3-defenders' | '5v5-rush';
+  category: string;
   gameMode?: GameMode;
   slots: PitchPositionSlot[];
+}
+
+export interface CommunityPositionView {
+  player_id: string;
+  top_voted_position: string;
+  top_position_confidence: number;
+  total_position_votes: number;
 }

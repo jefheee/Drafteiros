@@ -16,11 +16,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="pt-BR">
-      <body className="bg-[#F5F6FA] dark:bg-zinc-950 text-[#18181B] dark:text-zinc-100 antialiased min-h-screen flex flex-col selection:bg-[#7C5CFC] selection:text-white transition-colors">
+    <html lang="pt-BR" className="overflow-x-hidden max-w-[100vw]">
+      <body className="bg-[#F5F6FA] dark:bg-zinc-950 text-[#18181B] dark:text-zinc-100 antialiased min-h-screen flex flex-col overflow-x-hidden max-w-[100vw] selection:bg-[#7C5CFC] selection:text-white transition-colors">
         <AuthProvider>
           <Header />
-          <div className="flex-1 pb-28">{children}</div>
+          <div className="flex-1 w-full max-w-[100vw] overflow-x-hidden pb-28">{children}</div>
           <BottomNav />
         </AuthProvider>
       </body>

@@ -2,12 +2,13 @@ import { NextResponse } from 'next/server';
 import {
   callGeminiWithRotation,
   getMockOcrMatchSheet,
+  getMockOcrPlayerAttributes,
   getMockRoleplay,
   getMockCharacterPrompt,
   RoleplayType,
 } from '@/lib/gemini';
+import { DEFAULT_PLAYER_ATTRIBUTES } from '@/lib/accelerate';
 
-// Limite de segurança de payload (4.2 MB) para compatibilidade com Vercel Serverless Functions
 const MAX_PAYLOAD_BYTES = 4.2 * 1024 * 1024;
 
 export async function POST(request: Request) {
@@ -34,7 +35,7 @@ export async function POST(request: Request) {
       const { imageBase64, mimeType, homeTeamName, awayTeamName } = body;
 
       const systemInstruction = `Você é um motor especializado de OCR de visão computacional para o jogo EA Sports FC 26 (modo Pro Clubs).
-Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo da Partida) e retornar ESTRITAMENTE um objeto JSON contendo:
+Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo da Partida) e retornar ESTRITAMENTE um objeto JSON contendo o Nome do Personagem (character_name) de cada jogador:
 {
   "home_score": number,
   "away_score": number,
@@ -53,7 +54,7 @@ Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo d
   ]
 }`;
 
-      const userPrompt = `Analise este print pós-jogo do EA FC 26 Pro Clubs entre "${homeTeamName || 'Furia del Plata'}" e "${awayTeamName || 'Boca Juniors FC'}". Extraia o placar exato e a lista de jogadores detectados na tela com gols, assistências e nota da partida (0.0 a 10.0).`;
+      const userPrompt = `Analise este print pós-jogo do EA FC 26 Pro Clubs entre "${homeTeamName || 'Furia del Plata'}" e "${awayTeamName || 'La Catimba'}". Extraia o placar exato e a lista de personagens detectados na tela com gols, assistências e nota da partida (0.0 a 10.0).`;
 
       const aiResponse = await callGeminiWithRotation({
         systemInstruction,
@@ -72,7 +73,7 @@ Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo d
             meta: { model: aiResponse.modelUsed, keyIndex: aiResponse.keyIndexUsed },
           });
         } catch {
-          // fallback para mock caso JSON venha malformado
+          // fallback
         }
       }
 
@@ -84,7 +85,105 @@ Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo d
     }
 
     // =========================================================================
-    // AÇÃO 2: GERADOR DE ROLEPLAY / COMUNICADOS OFICIAIS MULTIMODAL (generate_roleplay)
+    // AÇÃO 1B: OCR DE QUALIDADES / CORPO DO PRO CLUBS (ocr_player_attributes)
+    // =========================================================================
+    if (action === 'ocr_player_attributes') {
+      const { imageBase64, mimeType } = body;
+
+      const systemInstruction = `Você é um leitor OCR especialista na tela "Qualidades / Corpo" do modo Clubs no EA Sports FC 26.
+Extraia da imagem a altura em centímetros (height_cm), o peso em kg (weight_kg), o GER/Overall e todos os 31 atributos numéricos (1 a 99) de Ritmo, Finalização, Passe, Drible, Defesa, Físico e Goleiro.
+Retorne ESTRITAMENTE um JSON válido com a estrutura:
+{
+  "height_cm": number,
+  "weight_kg": number,
+  "overall": number,
+  "confidence": number,
+  "summary_note": string,
+  "attributes": {
+    "acceleration": number,
+    "sprint_speed": number,
+    "attack_positioning": number,
+    "finishing": number,
+    "shot_power": number,
+    "long_shots": number,
+    "volleys": number,
+    "penalties": number,
+    "vision": number,
+    "crossing": number,
+    "free_kick_accuracy": number,
+    "short_passing": number,
+    "long_passing": number,
+    "curve": number,
+    "agility": number,
+    "balance": number,
+    "reactions": number,
+    "ball_control": number,
+    "dribbling": number,
+    "composure": number,
+    "interceptions": number,
+    "heading_accuracy": number,
+    "def_awareness": number,
+    "standing_tackle": number,
+    "sliding_tackle": number,
+    "jumping": number,
+    "stamina": number,
+    "strength": number,
+    "aggression": number,
+    "gk_diving": number,
+    "gk_handling": number,
+    "gk_kicking": number,
+    "gk_positioning": number,
+    "gk_reflexes": number
+  }
+}`;
+
+      const userPrompt = `Analise este print da tela de Qualidades / Corpo do EA FC 26 Pro Clubs e extraia exatamente os valores numéricos de Altura (cm), Peso (kg), Overall e cada atributo visível.`;
+
+      const aiResponse = await callGeminiWithRotation({
+        systemInstruction,
+        userPrompt,
+        inlineImageBase64: imageBase64,
+        mimeType: mimeType || 'image/jpeg',
+        responseJson: true,
+      });
+
+      const fallbackMock = getMockOcrPlayerAttributes();
+
+      if (aiResponse?.text) {
+        try {
+          const parsed = JSON.parse(aiResponse.text);
+          return NextResponse.json({
+            ok: true,
+            data: {
+              height_cm: Number(parsed.height_cm) || fallbackMock.height_cm,
+              weight_kg: Number(parsed.weight_kg) || fallbackMock.weight_kg,
+              overall: Number(parsed.overall) || fallbackMock.overall,
+              confidence: Number(parsed.confidence) || 98.5,
+              summary_note:
+                parsed.summary_note ||
+                'Atributos de Qualidades e Corpo extraídos automaticamente via Gemini Vision.',
+              attributes: {
+                ...DEFAULT_PLAYER_ATTRIBUTES,
+                ...(parsed.attributes || {}),
+              },
+              used_mock: false,
+            },
+            meta: { model: aiResponse.modelUsed, keyIndex: aiResponse.keyIndexUsed },
+          });
+        } catch {
+          // fallback
+        }
+      }
+
+      return NextResponse.json({
+        ok: true,
+        data: fallbackMock,
+        meta: { model: 'gemini-vision-attributes-fallback', keyIndex: 0 },
+      });
+    }
+
+    // =========================================================================
+    // AÇÃO 2: GERADOR DE ROLEPLAY / COMUNICADOS OFICIAIS (generate_roleplay)
     // =========================================================================
     if (action === 'generate_roleplay') {
       const {
@@ -99,8 +198,7 @@ Sua tarefa é ler prints de final de partida (Desempenho de Jogadores / Resumo d
         mimeType,
       } = body;
 
-      const systemInstruction = `Você é um redator criativo e diretor de comunicação de clubes de EA FC 26 Pro Clubs (estilo aplicativo Jogueiros).
-Se imagens do boneco ou do escudo/uniforme forem anexadas, observe os detalhes visuais (cores da camisa, estilo do jogador) para enriquecer o texto.
+      const systemInstruction = `Você é um redator criativo e diretor de comunicação de clubes de EA FC 26 Pro Clubs.
 Retorne ESTRITAMENTE um JSON no formato:
 {
   "title": string,
@@ -111,10 +209,10 @@ Retorne ESTRITAMENTE um JSON no formato:
 }`;
 
       const userPrompt = `Gere um comunicado/roleplay do tipo "${roleplayType}".
-Atleta/Capitão: ${playerName || 'Jefhe'}
+Personagem/Capitão: ${playerName || 'JEFHE'}
 Clube: ${teamName || 'Furia del Plata'}
-Adversário: ${rivalName || 'Boca Juniors FC'}
-Placar/Último Jogo: ${scoreContext || '3 x 1'}
+Adversário: ${rivalName || 'La Catimba'}
+Placar/Último Jogo: ${scoreContext || '2 - 7'}
 Contexto Adicional: ${customContext || 'Jogo decisivo pela Liga 5x5 LPF'}`;
 
       const aiResponse = await callGeminiWithRotation({
@@ -156,7 +254,7 @@ Contexto Adicional: ${customContext || 'Jogo decisivo pela Liga 5x5 LPF'}`;
     }
 
     // =========================================================================
-    // AÇÃO 3: GERADOR MULTIMODAL DE IMAGEM/PROMPT PELA FOTO DO BONECO (Zero Digitação)
+    // AÇÃO 3: GERADOR MULTIMODAL DE IMAGEM/PROMPT (FOTOS DE ROSTO/CORPO + UNIFORME)
     // =========================================================================
     if (action === 'generate_character_prompt') {
       const {
@@ -171,7 +269,7 @@ Contexto Adicional: ${customContext || 'Jogo decisivo pela Liga 5x5 LPF'}`;
       } = body;
 
       const systemInstruction = `Você é um Diretor de Arte de E-Sports e Visão Computacional especialista no motor Frostbite do EA Sports FC 26.
-FILOSOFIA ZERO DIGITAÇÃO: O jogador NÃO digitou características físicas. Você DEVE inspecionar visualmente a foto anexada do personagem no EA FC (rosto, tom de pele, corte e cor do cabelo, barba, acessórios) e a foto do escudo/uniforme do time, combinando o que você enxerga nas fotos com a cena pedida pelo usuário para gerar um Prompt Mestre hiper-realista em 8K.
+Inspecione as imagens anexadas (rosto/corpo inteiro do personagem no EA FC e escudo/uniforme oficial do clube sem patrocinadores) e combine com a cena pedida para gerar um Prompt Mestre hiper-realista em 8K.
 Retorne ESTRITAMENTE um JSON com:
 {
   "prompt_en": string,
@@ -182,8 +280,8 @@ Retorne ESTRITAMENTE um JSON com:
   "style_tags": string[]
 }`;
 
-      const userPrompt = `Analise visualmente a(s) foto(s) anexada(s) do boneco do jogador "${playerName || 'Jefhe'}" e do uniforme do time "${teamName || 'Furia del Plata'}" (Cores: ${primaryColor || '#7C5CFC'} e ${secondaryColor || '#38C958'}).
-Crie a descrição visual e o Prompt Mestre 8K para a cena: "${sceneIdea || 'Comemorando gol na chuva provocando a torcida rival'}".`;
+      const userPrompt = `Analise visualmente a(s) foto(s) anexada(s) do(s) personagem(ns) "${playerName || 'JEFHE'}" e do uniforme limpo (sem patrocinadores) do time "${teamName || 'Furia del Plata'}" (Cores: ${primaryColor || '#7C5CFC'} e ${secondaryColor || '#38C958'}).
+Crie a descrição visual e o Prompt Mestre 8K para a cena: "${sceneIdea || 'Comemorando gol na chuva apontando para o escudo do clube'}".`;
 
       const aiResponse = await callGeminiWithRotation({
         systemInstruction,

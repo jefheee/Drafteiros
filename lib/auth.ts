@@ -3,8 +3,12 @@ import { ParticipantRole } from '@/types/database';
 export interface AuthSession {
   userId: string;
   email: string;
-  name: string;
-  role: ParticipantRole;
+  name: string; // Exibido no header / compatibilidade
+  fullName: string; // Nome real da pessoa (uso administrativo/financeiro, ex: "Jefherson")
+  characterName: string; // Nome do boneco no Pro Clubs (destaque absoluto, ex: "Jefhe")
+  role: ParticipantRole; // Visão ativa no momento ('player' | 'captain' | 'admin')
+  roles: ParticipantRole[]; // Todos os papéis acumulados na mesma conta
+  playerId?: string;
   teamId?: string | null;
   teamName?: string | null;
   tournamentId?: string;
@@ -15,28 +19,40 @@ export const DEMO_USERS: Record<string, AuthSession> = {
   captain: {
     userId: 'u0000000-0000-0000-0000-000000000004',
     email: 'capitao@draftclub.pro',
-    name: 'Furia del Plata',
+    name: 'Jefhe',
+    fullName: 'Jefherson',
+    characterName: 'Jefhe',
     role: 'captain',
+    roles: ['player', 'captain', 'admin'],
+    playerId: 'p1111111-1111-1111-1111-111111111111',
     teamId: 'b3333333-3333-3333-3333-333333333333',
     teamName: 'Furia del Plata',
     tournamentId: '11111111-1111-1111-1111-111111111111',
-    avatarUrl: 'https://images.unsplash.com/photo-1560272564-c83b66b1ad12?w=300&q=80',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
   },
   admin: {
     userId: 'u0000000-0000-0000-0000-000000000001',
     email: 'admin@draftclub.pro',
-    name: 'Admin Liga LPF 5x5',
+    name: 'Jefhe (Admin LPF)',
+    fullName: 'Jefherson',
+    characterName: 'Jefhe',
     role: 'admin',
+    roles: ['player', 'captain', 'admin'],
+    playerId: 'p1111111-1111-1111-1111-111111111111',
     teamId: 'b3333333-3333-3333-3333-333333333333',
-    teamName: 'Liga Argentina 5x5',
+    teamName: 'Furia del Plata',
     tournamentId: '11111111-1111-1111-1111-111111111111',
-    avatarUrl: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=300&q=80',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
   },
   player: {
     userId: 'p1111111-1111-1111-1111-111111111111',
     email: 'atleta@draftclub.pro',
     name: 'Jefhe',
+    fullName: 'Jefherson',
+    characterName: 'Jefhe',
     role: 'player',
+    roles: ['player', 'captain', 'admin'],
+    playerId: 'p1111111-1111-1111-1111-111111111111',
     teamId: 'b3333333-3333-3333-3333-333333333333',
     teamName: 'Furia del Plata',
     tournamentId: '11111111-1111-1111-1111-111111111111',
@@ -44,18 +60,26 @@ export const DEMO_USERS: Record<string, AuthSession> = {
   },
   captain_boca: {
     userId: 'u0000000-0000-0000-0000-000000000002',
-    email: 'capitao@draftclub.pro',
-    name: 'Furia del Plata',
+    email: 'haalandinho@lacatimba.gg',
+    name: 'Haalandinho',
+    fullName: 'Lucas Andrade',
+    characterName: 'Haalandinho',
     role: 'captain',
-    teamId: 'b3333333-3333-3333-3333-333333333333',
-    teamName: 'Furia del Plata',
+    roles: ['player', 'captain'],
+    playerId: 'p4444444-4444-4444-4444-444444444444',
+    teamId: 'b1111111-1111-1111-1111-111111111111',
+    teamName: 'La Catimba',
     tournamentId: '11111111-1111-1111-1111-111111111111',
   },
   captain_river: {
     userId: 'u0000000-0000-0000-0000-000000000003',
     email: 'deivy@riverplate.gg',
-    name: 'Deivy (River Plate)',
+    name: 'Deivy_10',
+    fullName: 'Deivid Oliveira',
+    characterName: 'Deivy_10',
     role: 'captain',
+    roles: ['player', 'captain'],
+    playerId: 'p2222222-2222-2222-2222-222222222222',
     teamId: 'b2222222-2222-2222-2222-222222222222',
     teamName: 'River Plate eSports',
     tournamentId: '11111111-1111-1111-1111-111111111111',
@@ -63,21 +87,35 @@ export const DEMO_USERS: Record<string, AuthSession> = {
   captain_racing: {
     userId: 'u0000000-0000-0000-0000-000000000004',
     email: 'capitao@draftclub.pro',
-    name: 'Furia del Plata',
+    name: 'Jefhe',
+    fullName: 'Jefherson',
+    characterName: 'Jefhe',
     role: 'captain',
+    roles: ['player', 'captain', 'admin'],
+    playerId: 'p1111111-1111-1111-1111-111111111111',
     teamId: 'b3333333-3333-3333-3333-333333333333',
     teamName: 'Furia del Plata',
     tournamentId: '11111111-1111-1111-1111-111111111111',
   },
 };
 
-const STORAGE_KEY = 'draftclub_auth_session';
+const STORAGE_KEY = 'draftclub_auth_session_v3';
 
 export function getStoredSession(): AuthSession | null {
   if (typeof window === 'undefined') return null;
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as AuthSession;
+    return {
+      ...parsed,
+      fullName: parsed.fullName || parsed.name || 'Atleta',
+      characterName: parsed.characterName || parsed.name || 'Jefhe',
+      roles:
+        parsed.roles && parsed.roles.length > 0
+          ? parsed.roles
+          : ['player', 'captain', 'admin'],
+    };
   } catch {
     return null;
   }
@@ -87,7 +125,6 @@ export function setStoredSession(session: AuthSession): void {
   if (typeof window === 'undefined') return;
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-    // Grava cookies HTTP para proteção imediata no middleware.ts
     document.cookie = `draftclub-demo-role=${session.role}; path=/; max-age=604800; SameSite=Lax`;
     document.cookie = `draftclub_role=${session.role}; path=/; max-age=604800; SameSite=Lax`;
     document.cookie = `sb-access-token=demo-session-token; path=/; max-age=604800; SameSite=Lax`;
