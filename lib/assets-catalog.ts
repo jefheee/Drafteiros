@@ -440,20 +440,20 @@ export const PLAYSTYLE_ASSETS: PlayStyleAsset[] = RAW_PLAYSTYLES.map((p) => ({
 // 3. EVENTOS, TROFÉUS E TEMPLATES OFICIAIS (Híbridos Array + Propriedades Nomeadas)
 export const EVENT_ASSETS = Object.assign(
   [
-    { id: 'goal', name: 'Gol Marcado', iconUrl: '/assets/events/goal.jpg' },
-    { id: 'assist', name: 'Assistência', iconUrl: '/assets/events/assist.jpg' },
-    { id: 'motm', name: 'MVP da Partida', iconUrl: '/assets/events/motm.jpg' },
-    { id: 'cleanSheet', name: 'Clean Sheet', iconUrl: '/assets/events/clean-sheet.jpg' },
-    { id: 'yellowCard', name: 'Cartão Amarelo', iconUrl: '/assets/events/yellow-card.jpg' },
-    { id: 'redCard', name: 'Cartão Vermelho', iconUrl: '/assets/events/red-card.jpg' },
+    { id: 'goal', name: 'Gol Marcado', iconUrl: '/assets//.png' },
+    { id: 'assist', name: 'Assistência', iconUrl: '/assets//.png' },
+    { id: 'motm', name: 'MVP da Partida', iconUrl: '/assets//.png' },
+    { id: 'cleanSheet', name: 'Clean Sheet', iconUrl: '/assets//.png' },
+    { id: 'yellowCard', name: 'Cartão Amarelo', iconUrl: '/assets//.png' },
+    { id: 'redCard', name: 'Cartão Vermelho', iconUrl: '/assets//.png' },
   ] as EventAssetItem[],
   {
-    goal: '/assets/events/goal.jpg',
-    assist: '/assets/events/assist.jpg',
-    motm: '/assets/events/motm.jpg',
-    cleanSheet: '/assets/events/clean-sheet.jpg',
-    yellowCard: '/assets/events/yellow-card.jpg',
-    redCard: '/assets/events/red-card.jpg',
+    goal: '/assets//.png',
+    assist: '/assets//.png',
+    motm: '/assets//.png',
+    cleanSheet: '/assets//.png',
+    yellowCard: '/assets//.png',
+    redCard: '/assets//.png',
   }
 );
 
@@ -462,43 +462,43 @@ export const AWARD_ASSETS = Object.assign(
     {
       id: 'firstPlace',
       name: 'Troféu de Ouro (Campeão)',
-      iconUrl: '/assets/awards/1st-place.jpg',
+      iconUrl: '/assets//.png',
     },
     {
       id: 'secondPlace',
       name: 'Troféu de Prata (Vice)',
-      iconUrl: '/assets/awards/2nd-place.jpg',
+      iconUrl: '/assets//.png',
     },
     {
       id: 'thirdPlace',
       name: 'Troféu de Bronze (3º Lugar)',
-      iconUrl: '/assets/awards/3rd-place.jpg',
+      iconUrl: '/assets//.png',
     },
     {
       id: 'goldenBoot',
       name: 'Chuteira de Ouro (Artilheiro)',
-      iconUrl: '/assets/awards/golden-boot.jpg',
+      iconUrl: '/assets//.png',
     },
     {
       id: 'playmakerTrophy',
       name: 'Troféu Melhor Assistente (Garçom)',
-      iconUrl: '/assets/awards/playmaker-trophy.jpg',
+      iconUrl: '/assets//.png',
     },
   ] as AwardAssetItem[],
   {
-    firstPlace: '/assets/awards/1st-place.jpg',
-    secondPlace: '/assets/awards/2nd-place.jpg',
-    thirdPlace: '/assets/awards/3rd-place.jpg',
-    goldenBoot: '/assets/awards/golden-boot.jpg',
-    playmakerTrophy: '/assets/awards/playmaker-trophy.jpg',
+    firstPlace: '/assets//.png',
+    secondPlace: '/assets//.png',
+    thirdPlace: '/assets//.png',
+    goldenBoot: '/assets//.png',
+    playmakerTrophy: '/assets//.png',
   }
 );
 
 export const PLATFORM_ASSETS = {
-  PS5: '/assets/platforms/playstation.jpg',
-  'Xbox Series': '/assets/platforms/xbox.jpg',
-  PC: '/assets/platforms/pc.jpg',
-  OldGen: '/assets/platforms/playstation.jpg',
+  PS5: '/assets//.png',
+  'Xbox Series': '/assets//.png',
+  PC: '/assets//.png',
+  OldGen: '/assets//.png',
 };
 
 export const TEMPLATE_ASSETS = Object.assign(
@@ -520,9 +520,9 @@ export const TEMPLATE_ASSETS = Object.assign(
     },
   ] as TemplateAssetItem[],
   {
-    captainBand: '/assets/tactics/captain-band.jpg',
-    defaultCrest: '/assets/templates/default-crest.jpg',
-    guestAvatar: '/assets/templates/guest-avatar.jpg',
+    captainBand: '/assets//.png',
+    defaultCrest: '/assets//.png',
+    guestAvatar: '/assets//.png',
   }
 );
 

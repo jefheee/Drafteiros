@@ -384,7 +384,7 @@ export default function MatchesPage() {
                 {selectedMatch.ocr_extracted_data?.motm_name && (
                   <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-600 text-[11px] font-black flex items-center gap-1">
                     <img
-                      src="/assets/events/MVP da Partida (MOTM)/MVP da Partida (MOTM).png"
+                      src="/assets/events/motm.png"
                       alt="MVP"
                       className="w-4 h-4 object-contain"
                     />
@@ -574,7 +574,7 @@ export default function MatchesPage() {
           <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
             <div className="flex items-center gap-3">
               <img
-                src="/assets/events/W.O. _ Jogo Cancelado/W.O. _ Jogo Cancelado.png"
+                src="/assets/events/red-card.png"
                 alt="W.O."
                 className="w-10 h-10 object-contain"
               />

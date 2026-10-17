@@ -340,31 +340,31 @@ export default function AdminDashboardPage() {
                     label: '1º Lugar (Campeão)',
                     val: prizeFirst,
                     setter: setPrizeFirst,
-                    icon: '/assets/awards/Troféu de Ouro (Campeão)/Troféu de Ouro (Campeão).png',
+                    icon: '/assets/awards/1st-place.png',
                   },
                   {
                     label: '2º Lugar (Vice)',
                     val: prizeSecond,
                     setter: setPrizeSecond,
-                    icon: '/assets/awards/Troféu de Prata (Vice)/Troféu de Prata (Vice).png',
+                    icon: '/assets/awards/2nd-place.png',
                   },
                   {
                     label: '3º Lugar (Bronze)',
                     val: prizeThird,
                     setter: setPrizeThird,
-                    icon: '/assets/awards/Troféu de Bronze (3º Lugar)/Troféu de Bronze (3º Lugar).png',
+                    icon: '/assets/awards/3rd-place.png',
                   },
                   {
                     label: 'Artilheiro',
                     val: prizeScorer,
                     setter: setPrizeScorer,
-                    icon: '/assets/awards/Chuteira de Ouro (Artilheiro)/Chuteira de Ouro (Artilheiro).png',
+                    icon: '/assets/awards/golden-boot.png',
                   },
                   {
                     label: 'Garçom (Assists)',
                     val: prizeAssister,
                     setter: setPrizeAssister,
-                    icon: '/assets/awards/Troféu Melhor Assistente (Garçom)/Troféu Melhor Assistente (Garçom).png',
+                    icon: '/assets/awards/playmaker-trophy.png',
                   },
                 ].map((item) => (
                   <div

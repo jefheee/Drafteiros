@@ -409,7 +409,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <img
-                    src="/assets/awards/Chuteira de Ouro (Artilheiro)/Chuteira de Ouro (Artilheiro).png"
+                    src="/assets/awards/golden-boot.png"
                     alt="Chuteira de Ouro"
                     className="w-7 h-7 object-contain"
                   />
@@ -466,7 +466,7 @@ export default function HomePage() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <img
-                    src="/assets/awards/Troféu Melhor Assistente (Garçom)/Troféu Melhor Assistente (Garçom).png"
+                    src="/assets/awards/playmaker-trophy.png"
                     alt="Garçom"
                     className="w-7 h-7 object-contain"
                   />
