@@ -183,15 +183,14 @@ export default function MarketSearchPage() {
                       className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-xs shrink-0 overflow-hidden"
                       style={{ backgroundColor: team.primary_color || '#7C5CFC' }}
                     >
-                      {team.logo_url ? (
-                        <img
-                          src={team.logo_url}
-                          alt={team.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        team.name.substring(0, 2).toUpperCase()
-                      )}
+                      <img
+                        src={team.logo_url || '/assets/templates/default-crest.png'}
+                        alt={team.name}
+                        className="w-full h-full object-contain p-1"
+                        onError={(e) => {
+                          (e.currentTarget as HTMLImageElement).src = '/assets/templates/default-crest.png';
+                        }}
+                      />
                     </div>
 
                     <div className="min-w-0 space-y-1">

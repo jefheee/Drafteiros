@@ -371,7 +371,7 @@ export default function OfficialDraftBoardPage() {
                     <img
                       src={
                         player.avatar_face_url ||
-                        '/assets/fc-26-clean-card-designs/default/gold-rare.webp'
+                        '/assets/templates/guest-avatar.png'
                       }
                       alt={player.character_name}
                       className="w-full h-full object-cover"

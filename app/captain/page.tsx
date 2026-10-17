@@ -212,20 +212,14 @@ export default function CaptainDashboardPage() {
         <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div className="flex items-center gap-3.5">
-              {currentTeam?.logo_url ? (
-                <img
-                  src={currentTeam.logo_url}
-                  alt={currentTeam.name}
-                  className="w-14 h-14 rounded-2xl object-cover border border-zinc-200 dark:border-zinc-700 shrink-0"
-                />
-              ) : (
-                <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center text-white font-black text-base shrink-0 shadow-sm"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  {(currentTeam?.name || 'FP').substring(0, 2).toUpperCase()}
-                </div>
-              )}
+              <img
+                src={currentTeam?.logo_url || '/assets/templates/default-crest.png'}
+                alt={currentTeam?.name || 'Escudo do Clube'}
+                className="w-14 h-14 rounded-2xl object-contain bg-zinc-900/10 dark:bg-zinc-800/50 p-1.5 border border-zinc-200 dark:border-zinc-700 shrink-0"
+                onError={(e) => {
+                  (e.currentTarget as HTMLImageElement).src = '/assets/templates/default-crest.png';
+                }}
+              />
 
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
@@ -472,9 +466,12 @@ export default function CaptainDashboardPage() {
                   className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-100 dark:border-zinc-800 flex items-center gap-3"
                 >
                   <img
-                    src={p.avatar_face_url || '/assets/fc-26-clean-card-designs/default/gold-rare.webp'}
+                    src={p.avatar_face_url || '/assets/templates/guest-avatar.png'}
                     alt={p.character_name}
                     className="w-12 h-12 rounded-2xl object-cover border border-zinc-200 dark:border-zinc-700 shrink-0"
+                    onError={(e) => {
+                      (e.currentTarget as HTMLImageElement).src = '/assets/templates/guest-avatar.png';
+                    }}
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1">

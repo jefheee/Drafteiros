@@ -169,7 +169,7 @@ export default function PlayerProfilePage() {
 
   // Fotos Reais do Personagem (Supabase Storage)
   const [avatarFaceUrl, setAvatarFaceUrl] = useState<string>(
-    currentPlayer?.avatar_face_url || '/assets/fc-26-clean-card-designs/default/gold-rare.webp'
+    currentPlayer?.avatar_face_url || '/assets/templates/guest-avatar.png'
   );
   const [avatarBodyUrl, setAvatarBodyUrl] = useState<string>(
     currentPlayer?.avatar_body_url || '/assets/templates/ Banner de Matchday/Banner de Matchday.png'

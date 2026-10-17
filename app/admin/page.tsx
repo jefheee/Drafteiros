@@ -722,9 +722,12 @@ export default function AdminDashboardPage() {
                     className="p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 text-center space-y-1"
                   >
                     <img
-                      src={p.avatar_face_url || '/assets/fc-26-clean-card-designs/default/gold-rare.webp'}
+                      src={p.avatar_face_url || '/assets/templates/guest-avatar.png'}
                       alt={p.character_name}
                       className="w-12 h-12 mx-auto rounded-xl object-cover"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLImageElement).src = '/assets/templates/guest-avatar.png';
+                      }}
                     />
                     <span className="text-xs font-black uppercase block truncate">
                       {p.character_name}

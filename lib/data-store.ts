@@ -419,7 +419,7 @@ export function useLeagueStore() {
       avatar_url:
         updatedPlayer.avatar_face_url ||
         updatedPlayer.avatar_url ||
-        '/assets//.png',
+        '/assets/templates/guest-avatar.png',
     };
     const curr = getInitialStoreState();
     const exists = curr.players.some((p) => p.id === normalized.id);

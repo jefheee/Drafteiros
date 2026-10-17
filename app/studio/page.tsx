@@ -1048,9 +1048,12 @@ export default function MediaStudioPage() {
                         className="px-2.5 py-1.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 flex items-center gap-2 shrink-0"
                       >
                         <img
-                          src={p.avatar_face_url || '/assets/fc-26-clean-card-designs/default/gold-rare.webp'}
+                          src={p.avatar_face_url || '/assets/templates/guest-avatar.png'}
                           alt={p.character_name}
                           className="w-7 h-7 rounded-lg object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/assets/templates/guest-avatar.png';
+                          }}
                         />
                         <div className="text-[10px]">
                           <strong className="block uppercase">{p.character_name}</strong>

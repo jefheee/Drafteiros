@@ -240,20 +240,14 @@ export default function HomePage() {
                     <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-2.5 py-1">
                       {/* Mandante */}
                       <div className="flex items-center gap-2 min-w-0">
-                        {homeTeam?.logo_url ? (
-                          <img
-                            src={homeTeam.logo_url}
-                            alt={homeTeam.name}
-                            className="w-10 h-10 rounded-2xl object-cover border border-zinc-200 dark:border-zinc-700 shrink-0"
-                          />
-                        ) : (
-                          <div
-                            className="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-xs shrink-0 shadow-xs"
-                            style={{ backgroundColor: homeTeam?.primary_color || '#7C5CFC' }}
-                          >
-                            {(homeTeam?.name || 'CA').substring(0, 2).toUpperCase()}
-                          </div>
-                        )}
+                        <img
+                          src={homeTeam?.logo_url || '/assets/templates/default-crest.png'}
+                          alt={homeTeam?.name || 'Mandante'}
+                          className="w-10 h-10 rounded-2xl object-contain bg-zinc-900/10 dark:bg-zinc-800/50 p-1 border border-zinc-200 dark:border-zinc-700 shrink-0"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/assets/templates/default-crest.png';
+                          }}
+                        />
                         <div className="min-w-0">
                           <span className="text-xs sm:text-sm font-extrabold text-zinc-900 dark:text-zinc-100 leading-tight line-clamp-2">
                             {homeTeam?.name || 'Mandante'}
@@ -277,20 +271,14 @@ export default function HomePage() {
                           </span>
                           <span className="text-[10px] text-zinc-400 block">Visitante</span>
                         </div>
-                        {awayTeam?.logo_url ? (
-                          <img
-                            src={awayTeam.logo_url}
-                            alt={awayTeam.name}
-                            className="w-10 h-10 rounded-2xl object-cover border border-zinc-200 dark:border-zinc-700 shrink-0"
-                          />
-                        ) : (
-                          <div
-                            className="w-10 h-10 rounded-2xl flex items-center justify-center text-white font-black text-xs shrink-0 shadow-xs"
-                            style={{ backgroundColor: awayTeam?.primary_color || '#18181B' }}
-                          >
-                            {(awayTeam?.name || 'VI').substring(0, 2).toUpperCase()}
-                          </div>
-                        )}
+                        <img
+                          src={awayTeam?.logo_url || '/assets/templates/default-crest.png'}
+                          alt={awayTeam?.name || 'Visitante'}
+                          className="w-10 h-10 rounded-2xl object-contain bg-zinc-900/10 dark:bg-zinc-800/50 p-1 border border-zinc-200 dark:border-zinc-700 shrink-0"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLImageElement).src = '/assets/templates/default-crest.png';
+                          }}
+                        />
                       </div>
                     </div>
 
@@ -367,12 +355,14 @@ export default function HomePage() {
                         </td>
                         <td className="py-2.5 px-2 font-extrabold text-zinc-900 dark:text-zinc-100">
                           <div className="flex items-center gap-2">
-                            <span
-                              className="w-5 h-5 rounded-full flex items-center justify-center text-[9px] font-black text-white shrink-0"
-                              style={{ backgroundColor: teamObj?.primary_color || '#7C5CFC' }}
-                            >
-                              {team.team_name.substring(0, 2).toUpperCase()}
-                            </span>
+                            <img
+                              src={team.logo_url || teamObj?.logo_url || '/assets/templates/default-crest.png'}
+                              alt={team.team_name}
+                              className="w-5 h-5 rounded-full object-contain shrink-0"
+                              onError={(e) => {
+                                (e.currentTarget as HTMLImageElement).src = '/assets/templates/default-crest.png';
+                              }}
+                            />
                             <span className="leading-tight">{team.team_name}</span>
                           </div>
                         </td>
