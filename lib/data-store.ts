@@ -45,8 +45,8 @@ export interface LeagueStoreState {
   finances: TournamentFinance[];
 }
 
-function getInitialStoreState(): LeagueStoreState {
-  const base: LeagueStoreState = {
+function getBaseStoreState(): LeagueStoreState {
+  return {
     tournaments: [FALLBACK_TOURNAMENT],
     activeTournamentId: FALLBACK_TOURNAMENT.id,
     teams: FALLBACK_TEAMS,
@@ -59,7 +59,10 @@ function getInitialStoreState(): LeagueStoreState {
     incidents: FALLBACK_INCIDENTS,
     finances: FALLBACK_FINANCES,
   };
+}
 
+function getInitialStoreState(): LeagueStoreState {
+  const base = getBaseStoreState();
   if (typeof window === 'undefined') return base;
   try {
     const raw = localStorage.getItem(STORE_KEY);
@@ -341,7 +344,7 @@ export async function uploadMediaToStorage(
 }
 
 export function useLeagueStore() {
-  const [state, setState] = useState<LeagueStoreState>(() => getInitialStoreState());
+  const [state, setState] = useState<LeagueStoreState>(() => getBaseStoreState());
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
