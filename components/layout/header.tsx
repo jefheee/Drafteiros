@@ -40,6 +40,7 @@ export default function Header() {
 
   const [selectedSeason, setSelectedSeason] = useState('LPF 5x5');
   const [isDark, setIsDark] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const [metricsScore, setMetricsScore] = useState({
     gol: 8,
@@ -52,6 +53,7 @@ export default function Header() {
   });
 
   useEffect(() => {
+    setMounted(true);
     if (typeof window !== 'undefined') {
       const savedTheme = localStorage.getItem('draftclub_theme');
       if (savedTheme === 'dark') {
@@ -167,11 +169,11 @@ export default function Header() {
             }}
             className="max-w-[145px] sm:max-w-[200px] h-9 pl-1.5 pr-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-1.5 hover:border-[#7C5CFC] transition-all shrink-0 overflow-hidden"
           >
-            <div className="w-6 h-6 rounded-full bg-[#7C5CFC] text-white font-extrabold text-[10px] flex items-center justify-center shrink-0">
-              {currentInitials}
+            <div className="w-6 h-6 rounded-full bg-[#7C5CFC] text-white font-extrabold text-[10px] flex items-center justify-center shrink-0" suppressHydrationWarning>
+              {mounted ? currentInitials : 'FP'}
             </div>
-            <span className="text-[11px] font-extrabold text-[#18181B] dark:text-white truncate">
-              {currentRoleLabel}
+            <span className="text-[11px] font-extrabold text-[#18181B] dark:text-white truncate" suppressHydrationWarning>
+              {mounted ? (session?.teamName || currentRoleLabel) : 'Furia del Plata'}
             </span>
             <ChevronDown className="w-3 h-3 text-[#7C5CFC] shrink-0" />
           </button>

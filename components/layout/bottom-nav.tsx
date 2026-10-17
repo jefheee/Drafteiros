@@ -103,6 +103,7 @@ export function BottomNav() {
           >
             {tab.isAvatar ? (
               <span
+                suppressHydrationWarning
                 className={cn(
                   'w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black border transition-all shrink-0',
                   active

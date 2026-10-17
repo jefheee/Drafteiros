@@ -30,12 +30,17 @@ const INTERVAL_PRESETS: AvailabilitySlotRange[] = [
 export default function MatchesPage() {
   const { matches, teams, players, tournament, updateMatchInStore } = useLeagueStore();
 
+  const [mounted, setMounted] = useState(false);
   const [selectedMatchId, setSelectedMatchId] = useState<string>(
     matches[0]?.id || 'match-furia-catimba'
   );
   const [activeSubTab, setActiveSubTab] = useState<'sumula_ocr' | 'tinder_schedule' | 'wo_rules'>(
     'sumula_ocr'
   );
+
+  React.useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const selectedMatch = useMemo(
     () => matches.find((m) => m.id === selectedMatchId) || matches[0],
@@ -261,7 +266,7 @@ export default function MatchesPage() {
                         : 'Agendada'}
                     </span>
                   </div>
-                  <div className="flex items-center justify-between gap-2 text-xs font-black">
+                  <div className="flex items-center justify-between gap-2 text-xs font-black" suppressHydrationWarning>
                     <span className="truncate">{hName}</span>
                     <span className="px-2 py-0.5 rounded-lg bg-white dark:bg-zinc-900 text-[#7C5CFC] shrink-0">
                       {m.home_score} - {m.away_score}
@@ -333,7 +338,7 @@ export default function MatchesPage() {
           <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-extrabold">
+                <h2 className="text-base font-extrabold" suppressHydrationWarning>
                   {homeTeam?.name} {selectedMatch.home_score} - {selectedMatch.away_score}{' '}
                   {awayTeam?.name}
                 </h2>
