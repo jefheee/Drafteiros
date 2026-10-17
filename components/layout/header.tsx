@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -26,11 +26,13 @@ import {
   Users,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-context';
+import { useLeagueStore } from '@/lib/data-store';
 import { cn } from '@/lib/utils';
 
 export default function Header() {
   const router = useRouter();
   const { session, switchProfileRole, logout } = useAuth();
+  const { players, teams, tournament } = useLeagueStore();
 
   const [accountMenuOpen, setAccountMenuOpen] = useState(false);
   const [seasonMenuOpen, setSeasonMenuOpen] = useState(false);
@@ -103,12 +105,53 @@ export default function Header() {
   const characterName = session?.characterName || 'JEFHE';
   const fullName = session?.fullName || 'Jefherson';
 
+  // Obter jogador e clube atualizados da store
+  const activePlayer = useMemo(() => {
+    return (
+      players.find(
+        (p) =>
+          p.id === session?.playerId ||
+          p.character_name?.toLowerCase() === characterName.toLowerCase() ||
+          p.ea_Tag?.toLowerCase() === characterName.toLowerCase()
+      ) || players[0]
+    );
+  }, [players, session?.playerId, characterName]);
+
+  const activeTeam = useMemo(() => {
+    return (
+      teams.find(
+        (t) =>
+          t.id === session?.teamId ||
+          t.name?.toLowerCase() === (session?.teamName || 'Furia del Plata').toLowerCase()
+      ) || teams[0]
+    );
+  }, [teams, session?.teamId, session?.teamName]);
+
+  const playerPhoto =
+    activePlayer?.avatar_face_url ||
+    session?.avatarUrl ||
+    '/assets/templates/guest-avatar.png';
+
+  const teamLogo =
+    activeTeam?.logo_url ||
+    '/assets/templates/default-crest.png';
+
+  const adminIcon = '/assets/awards/1st-place.png';
+
+  // Imagem exibida no botão fechado de acordo com o papel ativo
+  const currentAvatarSrc =
+    session?.role === 'player'
+      ? playerPhoto
+      : session?.role === 'captain'
+      ? teamLogo
+      : adminIcon;
+
   const currentRoleLabel =
     session?.role === 'admin'
       ? 'Admin da Liga'
       : session?.role === 'player'
       ? `${characterName} (Atleta)`
-      : 'Furia del Plata';
+      : activeTeam?.name || 'Furia del Plata';
 
   const currentInitials =
     session?.role === 'admin'
@@ -167,10 +210,28 @@ export default function Header() {
               setAccountMenuOpen(!accountMenuOpen);
               setSeasonMenuOpen(false);
             }}
-            className="max-w-[145px] sm:max-w-[200px] h-9 pl-1.5 pr-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-1.5 hover:border-[#7C5CFC] transition-all shrink-0 overflow-hidden"
+            className="max-w-[155px] sm:max-w-[210px] h-9 pl-1 pr-2.5 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/80 dark:border-zinc-800 shadow-xs flex items-center gap-1.5 hover:border-[#7C5CFC] transition-all shrink-0 overflow-hidden"
           >
-            <div className="w-6 h-6 rounded-full bg-[#7C5CFC] text-white font-extrabold text-[10px] flex items-center justify-center shrink-0" suppressHydrationWarning>
-              {mounted ? currentInitials : 'FP'}
+            <div className="w-6 h-6 rounded-full overflow-hidden bg-zinc-100 dark:bg-zinc-800 border border-zinc-200/80 dark:border-zinc-700/80 flex items-center justify-center shrink-0">
+              {mounted ? (
+                <img
+                  src={currentAvatarSrc}
+                  alt={currentRoleLabel}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (session?.role === 'captain') {
+                      target.src = '/assets/templates/default-crest.png';
+                    } else if (session?.role === 'player') {
+                      target.src = '/assets/templates/guest-avatar.png';
+                    } else {
+                      target.src = '/assets/awards/1st-place.png';
+                    }
+                  }}
+                />
+              ) : (
+                <span className="text-[9px] font-black text-[#7C5CFC]">{currentInitials}</span>
+              )}
             </div>
             <span className="text-[11px] font-extrabold text-[#18181B] dark:text-white truncate" suppressHydrationWarning>
               {mounted ? (session?.teamName || currentRoleLabel) : 'Furia del Plata'}
@@ -246,6 +307,7 @@ export default function Header() {
               </button>
             </div>
 
+            {/* 1. Opção Atleta (Foto do Personagem) */}
             <button
               type="button"
               onClick={() => handleSelectRole('player')}
@@ -257,12 +319,19 @@ export default function Header() {
               )}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-[#38C958] text-white flex items-center justify-center font-black text-xs shrink-0">
-                  🏃
+                <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-emerald-500/30 overflow-hidden flex items-center justify-center shrink-0">
+                  <img
+                    src={playerPhoto}
+                    alt={characterName}
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      e.currentTarget.src = '/assets/templates/guest-avatar.png';
+                    }}
+                  />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
-                    🏃 Atleta ({characterName})
+                    Atleta ({characterName})
                   </p>
                   <p className="text-[10px] text-[#38C958] font-semibold truncate">
                     Minha Build, Qualidades, PlayStyles & AcceleRATE
@@ -274,6 +343,7 @@ export default function Header() {
               )}
             </button>
 
+            {/* 2. Opção Capitão (Escudo Real do Clube) */}
             <button
               type="button"
               onClick={() => handleSelectRole('captain')}
@@ -285,12 +355,19 @@ export default function Header() {
               )}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-[#7C5CFC] text-white flex items-center justify-center font-black text-xs shrink-0">
-                  🛡️
+                <div className="w-9 h-9 rounded-full bg-zinc-100 dark:bg-zinc-800 border border-[#7C5CFC]/30 p-1 overflow-hidden flex items-center justify-center shrink-0">
+                  <img
+                    src={teamLogo}
+                    alt={activeTeam?.name || 'Clube'}
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = '/assets/templates/default-crest.png';
+                    }}
+                  />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
-                    🛡️ Capitão (Furia del Plata)
+                    Capitão ({activeTeam?.name || 'Furia del Plata'})
                   </p>
                   <p className="text-[10px] text-[#7C5CFC] font-semibold truncate">
                     Elenco, Escudo/Uniformes & Rateio da Inscrição
@@ -302,6 +379,7 @@ export default function Header() {
               )}
             </button>
 
+            {/* 3. Opção Admin da Liga (Ícone Oficial de Troféu) */}
             <button
               type="button"
               onClick={() => handleSelectRole('admin')}
@@ -313,12 +391,19 @@ export default function Header() {
               )}
             >
               <div className="flex items-center gap-2.5 min-w-0">
-                <div className="w-9 h-9 rounded-full bg-amber-500 text-white flex items-center justify-center font-black text-xs shrink-0">
-                  👑
+                <div className="w-9 h-9 rounded-full bg-amber-500/10 border border-amber-500/30 p-1.5 overflow-hidden flex items-center justify-center shrink-0">
+                  <img
+                    src={adminIcon}
+                    alt="Admin da Liga"
+                    className="w-full h-full object-contain"
+                    onError={(e) => {
+                      e.currentTarget.src = '/assets/templates/default-crest.png';
+                    }}
+                  />
                 </div>
                 <div className="min-w-0">
                   <p className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
-                    👑 Admin da Liga (LPF 5x5)
+                    Admin da Liga ({tournament?.name || 'LPF 5x5'})
                   </p>
                   <p className="text-[10px] text-amber-600 font-semibold truncate">
                     Tesouraria 100%, Chaveamento & E-mails

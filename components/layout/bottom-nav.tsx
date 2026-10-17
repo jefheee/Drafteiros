@@ -11,11 +11,31 @@ import {
   User,
 } from 'lucide-react';
 import { useAuth } from '@/components/auth/auth-context';
+import { useLeagueStore } from '@/lib/data-store';
 import { cn } from '@/lib/utils';
 
 export function BottomNav() {
   const pathname = usePathname();
   const { session } = useAuth();
+  const { players, teams } = useLeagueStore();
+
+  const activePlayer = players.find(
+    (p) =>
+      p.id === session?.playerId ||
+      p.character_name?.toLowerCase() === (session?.characterName || '').toLowerCase()
+  );
+  const activeTeam = teams.find(
+    (t) =>
+      t.id === session?.teamId ||
+      t.name?.toLowerCase() === (session?.teamName || '').toLowerCase()
+  );
+
+  const profileAvatarSrc =
+    session?.role === 'player'
+      ? activePlayer?.avatar_face_url || session?.avatarUrl || '/assets/templates/guest-avatar.png'
+      : session?.role === 'captain'
+      ? activeTeam?.logo_url || '/assets/templates/default-crest.png'
+      : '/assets/awards/1st-place.png';
 
   const profileHref =
     session?.role === 'player'
@@ -105,13 +125,18 @@ export function BottomNav() {
               <span
                 suppressHydrationWarning
                 className={cn(
-                  'w-6 h-6 rounded-full flex items-center justify-center text-[9px] font-black border transition-all shrink-0',
-                  active
-                    ? 'bg-[#7C5CFC] text-white border-[#7C5CFC]'
-                    : 'bg-white/20 text-white border-white/70'
+                  'w-6 h-6 rounded-full overflow-hidden flex items-center justify-center border transition-all shrink-0 bg-white/20',
+                  active ? 'border-[#7C5CFC]' : 'border-white/70'
                 )}
               >
-                {initials}
+                <img
+                  src={profileAvatarSrc}
+                  alt="Perfil"
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
+                />
               </span>
             ) : (
               <Icon className="w-4 h-4 shrink-0" />
