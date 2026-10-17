@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"background":"#fbf8fc","score-capsule":"#F3F4F6","on-surface":"#1b1b1e","surface-container":"#f0edf1","primary":"#5f3add","text-muted":"#71717A","surface-container-high":"#eae7eb","tertiary-fixed-dim":"#c0c1ff","surface-white":"#FFFFFF","tertiary":"#4648d4","on-secondary-fixed":"#002106","primary-container":"#7857f8","secondary-fixed":"#73fe85","surface":"#fbf8fc","on-tertiary":"#ffffff","secondary-fixed-dim":"#54e16c","on-background":"#1b1b1e","inverse-on-surface":"#f3f0f4","error":"#ba1a1a","surface-container-lowest":"#ffffff","tertiary-container":"#6063ee","surface-container-low":"#f6f2f7","outline":"#797587","on-primary-container":"#fffbff","secondary":"#006e26","on-primary-fixed-variant":"#4918c8","canvas-bg":"#F5F6FA","primary-fixed":"#e6deff","on-tertiary-fixed":"#07006c","surface-dim":"#dcd9dd","primary-fixed-dim":"#cabeff","on-error":"#ffffff","border-subtle":"#E4E4E7","emerald-tint":"#E8FAF0","on-secondary-container":"#007328","surface-variant":"#e4e1e6","on-secondary":"#ffffff","secondary-container":"#70fb83","on-secondary-fixed-variant":"#00531a","surface-bright":"#fbf8fc","on-primary":"#ffffff","on-error-container":"#93000a","inverse-primary":"#cabeff","status-emerald":"#10B981","outline-variant":"#c9c4d8","violet-tint":"#F1EEFE","on-tertiary-container":"#fffbff","on-primary-fixed":"#1c0062","tertiary-fixed":"#e1e0ff","on-tertiary-fixed-variant":"#2f2ebe","surface-container-highest":"#e4e1e6","error-container":"#ffdad6","inverse-surface":"#303033","on-surface-variant":"#484555","surface-tint":"#613de0"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin":"1rem","space-md":"0.875rem","space-sm":"0.5rem","space-lg":"1.25rem","margin-md":"1.5rem","gutter-md":"1rem","margin-lg":"2rem","space-xl":"1.75rem","gutter":"0.75rem","gutter-lg":"1.5rem","space-xs":"0.25rem"},fontFamily:{"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"label-lg":["Inter"],"body-md":["Inter"],"body-lg":["Inter"],"score-display":["Plus Jakarta Sans"],"label-sm":["Inter"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"]},fontSize:{"headline-lg":["22px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"600"}],"headline-md":["16px",{lineHeight:"22px",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-lg":["14px",{lineHeight:"18px",fontWeight:"600"}],"body-md":["13px",{lineHeight:"18px",fontWeight:"400"}],"body-lg":["15px",{lineHeight:"22px",fontWeight:"500"}],"score-display":["16px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"800"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"700"}],"headline-xl-mobile":["26px",{lineHeight:"34px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-lg-mobile":["19px",{lineHeight:"25px",letterSpacing:"-0.015em",fontWeight:"700"}]}}}};</script></head><body class="bg-canvas-bg font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-white z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-gutter-lg pt-space-lg pb-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><span class="material-symbols-outlined text-[20px]">sports_soccer</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md tracking-tight text-on-surface">DraftClub<span class="text-primary">Pro</span></span><span class="font-label-sm text-label-sm text-text-muted">EA FC 26 Hub</span></div></div><span class="px-space-xs py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm">LPF 5v5</span></div><div class="px-gutter-lg py-space-sm"><div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-xl"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold">FP</div><div class="flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface leading-tight">Furia del Plata</span><span class="font-label-sm text-label-sm text-status-emerald flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span>Capitão Ativo</span></div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">unfold_more</span></div></div><nav class="px-gutter py-space-sm flex flex-col gap-1" data-active-classes="bg-primary text-on-primary font-bold shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Início</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tabela-e-classificacao" href="#"><span class="material-symbols-outlined text-[20px]">leaderboard</span><span class="font-label-lg text-label-lg">Tabela &amp; Classificação</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="jogos-e-sumula-ia" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span class="font-label-lg text-label-lg">Jogos &amp; Súmula IA</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="sala-de-draft" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-label-lg text-label-lg">Sala de Draft</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="minha-build-e-perfil" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-label-lg text-label-lg">Minha Build &amp; Perfil</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="estudio-banners" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome_motion</span><span class="font-label-lg text-label-lg">Estúdio Banners 4:5</span></a></nav></div><div class="p-gutter-lg"><div class="p-space-md bg-emerald-tint rounded-xl flex items-center justify-between mb-space-sm"><div class="flex items-center gap-space-sm"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-emerald opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-emerald"></span></span><span class="font-label-md text-label-md text-secondary font-bold">Copa Fácil Sync</span></div><span class="material-symbols-outlined text-secondary text-[16px]">sync</span></div><div class="flex items-center justify-between pt-space-xs text-text-muted"><span class="font-body-sm text-body-sm">Versão 5v5 Clausura</span><span class="font-label-sm text-label-sm">v2.6.4</span></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-white/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-gutter-lg"><div class="flex items-center gap-space-md w-96"><div class="w-full flex items-center gap-space-sm px-space-md py-1.5 bg-surface-container-low rounded-xl text-text-muted"><span class="material-symbols-outlined text-[18px]">search</span><input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder:text-text-muted w-full" placeholder="Buscar jogadores, confrontos ou súmulas..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="hidden lg:flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-status-emerald"></span><span class="font-label-sm text-label-sm text-on-surface">Rodada 4 em Andamento</span></div><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden md:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Capitão Mateo</span><span class="font-body-sm text-body-sm text-text-muted leading-none">Admin Clube</span></div></div></div></header><main class="w-full pt-16 bg-canvas-bg min-h-screen"><div class="flex flex-col w-full">
+<div class="px-gutter-lg py-space-md">
+<div class="flex flex-wrap items-center justify-between gap-space-md mb-space-lg">
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs text-text-muted font-body-sm text-body-sm">
+<span>Estúdio Gráfico</span>
+<span>/</span>
+<span class="text-primary font-label-sm text-label-sm">Banners Oficiais 4:5</span>
+<span class="px-space-xs py-0.5 rounded-full bg-emerald-tint text-secondary font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span> IA Render Engine 3.2
+          </span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-surface tracking-tight mt-0.5">Gerador de Pós-Jogo &amp; Cartaz Oficial</h1>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-2 rounded-xl bg-surface-container-high hover:bg-surface-variant text-on-surface font-label-md text-label-md transition-all flex items-center gap-space-xs shadow-sm" id="btn-reset">
+<span class="material-symbols-outlined text-[18px]">restart_alt</span>
+          Restaurar Dados
+        </button>
+<button class="px-space-md py-2 rounded-xl bg-emerald-tint text-secondary hover:bg-secondary-fixed/50 font-label-md text-label-md transition-all flex items-center gap-space-xs shadow-sm" id="btn-export-wa">
+<span class="material-symbols-outlined text-[18px]">share</span>
+          Enviar Grupo WhatsApp
+        </button>
+<button class="px-space-lg py-2 rounded-xl bg-primary text-on-primary font-label-md text-label-md hover:bg-primary-container shadow-md hover:shadow-xl transition-all flex items-center gap-space-xs" id="btn-download">
+<span class="material-symbols-outlined text-[18px]">download</span>
+          Baixar Arte 4:5 (1080x1350 PNG)
+        </button>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-gutter-lg items-start">
+<div class="col-span-12 xl:col-span-5 flex flex-col gap-space-lg">
+<div class="bg-surface-white rounded-xl p-space-lg shadow-sm">
+<label class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider block mb-space-sm">Formato de Produção Visual</label>
+<div class="grid grid-cols-3 gap-space-xs p-1 bg-surface-container-low rounded-xl">
+<button class="art-type-btn flex flex-col items-center justify-center py-2 px-1 rounded-lg bg-primary text-on-primary shadow-sm transition-all" data-art="match">
+<span class="material-symbols-outlined text-[20px] mb-0.5">scoreboard</span>
+<span class="font-label-sm text-label-sm">Placar 4:5</span>
+</button>
+<button class="art-type-btn flex flex-col items-center justify-center py-2 px-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-art="ia-scene">
+<span class="material-symbols-outlined text-[20px] mb-0.5">view_in_ar</span>
+<span class="font-label-sm text-label-sm">Cena IA 3D</span>
+</button>
+<button class="art-type-btn flex flex-col items-center justify-center py-2 px-1 rounded-lg text-on-surface-variant hover:bg-surface-container-high transition-all" data-art="mixed-zone">
+<span class="material-symbols-outlined text-[20px] mb-0.5">mic</span>
+<span class="font-label-sm text-label-sm">Zona Mista</span>
+</button>
+</div>
+</div>
+<div class="bg-surface-white rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">sync_alt</span>
+<span class="font-headline-md text-headline-md text-on-surface">Vínculo com Súmula Oficial</span>
+</div>
+<span class="px-space-xs py-0.5 rounded-full bg-emerald-tint text-secondary font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">verified</span> Validada
+            </span>
+</div>
+<div class="relative">
+<label class="font-label-sm text-label-sm text-text-muted mb-1 block">Confronto Importado da Copa Fácil</label>
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-xl">
+<div class="flex items-center gap-space-sm">
+<span class="w-8 h-8 rounded-lg bg-primary-fixed text-primary flex items-center justify-center font-headline-md text-headline-md">#4</span>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Rodada 4 • Grupo B (5v5 Pro Clubs)</span>
+<span class="font-body-sm text-body-sm text-text-muted">Furia del Plata 2 x 7 La Catimba</span>
+</div>
+</div>
+<button class="p-1 rounded-lg text-primary hover:bg-surface-container-high transition-colors" title="Recarregar Súmula">
+<span class="material-symbols-outlined text-[20px]">refresh</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-2 gap-space-md pt-space-xs">
+<div class="flex flex-col gap-1 p-space-sm bg-surface-container-lowest rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-text-muted">Mandante (Casa)</span>
+<span class="w-2.5 h-2.5 rounded-full bg-primary"></span>
+</div>
+<input class="bg-transparent font-label-lg text-label-lg text-on-surface focus:outline-none w-full" id="input-home-team" type="text" value="Furia del Plata"/>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="font-body-sm text-body-sm text-text-muted">Gols:</span>
+<input class="w-12 px-1.5 py-0.5 rounded-lg bg-surface-container-low font-score-display text-score-display text-on-surface text-center focus:outline-none" id="input-home-score" max="20" min="0" type="number" value="2"/>
+</div>
+</div>
+<div class="flex flex-col gap-1 p-space-sm bg-surface-container-lowest rounded-xl shadow-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-text-muted">Visitante (Fora)</span>
+<span class="w-2.5 h-2.5 rounded-full bg-secondary-fixed-dim"></span>
+</div>
+<input class="bg-transparent font-label-lg text-label-lg text-on-surface focus:outline-none w-full" id="input-away-team" type="text" value="La Catimba"/>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="font-body-sm text-body-sm text-text-muted">Gols:</span>
+<input class="w-12 px-1.5 py-0.5 rounded-lg bg-surface-container-low font-score-display text-score-display text-on-surface text-center focus:outline-none" id="input-away-score" max="20" min="0" type="number" value="7"/>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-space-sm">
+<div>
+<div class="flex items-center justify-between mb-1">
+<label class="font-label-sm text-label-sm text-text-muted">Marcadores do Mandante</label>
+<span class="font-body-sm text-body-sm text-text-muted">Separe por vírgulas</span>
+</div>
+<input class="w-full px-space-md py-2 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:bg-surface-white shadow-sm transition-all" id="input-home-scorers" type="text" value="JEFHE 1, MIGUEL 1"/>
+</div>
+<div>
+<div class="flex items-center justify-between mb-1">
+<label class="font-label-sm text-label-sm text-text-muted">Marcadores do Visitante</label>
+<span class="px-space-xs py-0.2 rounded bg-violet-tint text-primary font-label-sm text-label-sm">Goleada Histórica</span>
+</div>
+<input class="w-full px-space-md py-2 rounded-xl bg-surface-container-low text-on-surface font-body-sm text-body-sm focus:outline-none focus:bg-surface-white shadow-sm transition-all" id="input-away-scorers" type="text" value="HAALANDINHO 5, JOAO VINY 1, TETEU 1"/>
+</div>
+</div>
+</div>
+<div class="bg-surface-white rounded-xl p-space-lg shadow-sm flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-on-surface">Cenário, Iluminação &amp; Estilo Visual</span>
+<span class="material-symbols-outlined text-primary text-[20px]">palette</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<button class="bg-card-theme p-space-sm rounded-xl bg-surface-container-high text-left flex flex-col gap-1 transition-all shadow-sm ring-2 ring-primary" data-theme="noite-de-copa">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Noite de Copa</span>
+<span class="w-3 h-3 rounded-full bg-primary"></span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Refletores ultra-violeta, fumos neon e partículas</span>
+</button>
+<button class="bg-card-theme p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high text-left flex flex-col gap-1 transition-all" data-theme="estadio-pos">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Estádio Pós-Jogo</span>
+<span class="w-3 h-3 rounded-full bg-surface-variant"></span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Gramado molhado e iluminação dourada de holofotes</span>
+</button>
+<button class="bg-card-theme p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high text-left flex flex-col gap-1 transition-all" data-theme="arena-esports">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Arena E-Sports</span>
+<span class="w-3 h-3 rounded-full bg-tertiary"></span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Cabines LED, plateia em desfoque cinemático</span>
+</button>
+<button class="p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container-high text-left flex flex-col items-center justify-center gap-1 border-dashed transition-all" id="btn-custom-bg">
+<span class="material-symbols-outlined text-primary text-[22px]">add_photo_alternate</span>
+<span class="font-label-sm text-label-sm text-on-surface">Subir Foto Personalizada</span>
+</button>
+</div>
+<div class="pt-space-xs flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-body-sm text-body-sm text-text-muted">Intensidade do Brilho / Bloom EA FC</span>
+<span class="font-label-sm text-label-sm text-primary" id="glow-val">75%</span>
+</div>
+<input class="w-full accent-primary h-1.5 bg-surface-container-high rounded-lg cursor-pointer" id="glow-slider" max="100" min="20" type="range" value="75"/>
+</div>
+</div>
+</div>
+<div class="col-span-12 xl:col-span-7 flex flex-col items-center">
+<div class="w-full flex items-center justify-between bg-surface-white p-space-sm rounded-xl shadow-sm mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="px-space-sm py-1 rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px]">aspect_ratio</span> Proporção 4:5 (Instagram / WhatsApp)
+            </span>
+<span class="font-body-sm text-body-sm text-text-muted">1080 x 1350 px nativo</span>
+</div>
+<div class="flex items-center gap-space-xs">
+<button class="w-8 h-8 rounded-lg bg-surface-container-low hover:bg-surface-container-high flex items-center justify-center text-on-surface" id="zoom-out">
+<span class="material-symbols-outlined text-[18px]">zoom_out</span>
+</button>
+<span class="font-label-sm text-label-sm px-2 text-text-muted" id="zoom-level">75%</span>
+<button class="w-8 h-8 rounded-lg bg-surface-container-low hover:bg-surface-container-high flex items-center justify-center text-on-surface" id="zoom-in">
+<span class="material-symbols-outlined text-[18px]">zoom_in</span>
+</button>
+<button class="w-8 h-8 rounded-lg bg-surface-container-low hover:bg-surface-container-high flex items-center justify-center text-on-surface ml-1" id="toggle-fullscreen" title="Visualização Limpa">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+</div>
+</div>
+<div class="relative w-full flex items-center justify-center p-space-md rounded-2xl bg-surface-container-low overflow-hidden min-h-[640px]">
+<div class="relative w-[480px] h-[600px] rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 flex flex-col justify-between p-space-lg select-none" data-alt="Dark high-contrast dynamic esports stadium backdrop for EA FC Pro Clubs broadcast card, neon magenta and deep purple spotlights cutting through stadium haze, high-resolution gaming art style with cinematic stadium bokeh, volumetric lighting, dramatic championship mood, photorealistic grass reflections" id="preview-art" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuA2gYyeLIu8ah4C8_axkY395WlebH3m6M_9aLBhTeUzztCwcdtSoWSUUUeXRWrbnhvp004gHc7RTfpCRI7_HqPhp87aVbHqsD089MEC1Zq-_RhKmcqgulcMrITeokT3grl41B2yIRiVPGXKM4Xlkg_shd4Z0MWOdyUrPGHEI_lbGwOtuGNQV21xPXjNubo22YQrnTCkqQlgMVKWSeC8EYoV3ydOyGjtBbEhUbQcOxH9K7aAFi8Lna3q')">
+<div class="absolute inset-0 bg-gradient-to-t from-on-surface via-on-surface/40 to-on-surface/60 mix-blend-multiply pointer-events-none"></div>
+<div class="absolute inset-0 bg-gradient-to-b from-primary/30 via-transparent to-primary/40 pointer-events-none"></div>
+<div class="relative z-10 flex items-center justify-between">
+<div class="flex items-center gap-space-xs px-space-md py-1 rounded-full bg-on-surface/70 backdrop-blur-md text-surface-white shadow-lg">
+<span class="w-2 h-2 rounded-full bg-status-emerald animate-pulse"></span>
+<span class="font-headline-md text-[13px] tracking-wider text-surface-white">LPF 5v5 PRO CLUBS</span>
+<span class="text-text-muted">|</span>
+<span class="font-label-sm text-label-sm text-violet-tint">CLAUSURA</span>
+</div>
+<div class="flex items-center gap-1.5 px-space-sm py-1 rounded-full bg-emerald-tint/90 backdrop-blur-md shadow-md">
+<span class="material-symbols-outlined text-[16px] text-secondary">verified_user</span>
+<span class="font-label-sm text-label-sm text-secondary tracking-wide">SÚMULA VALIDADA</span>
+</div>
+</div>
+<div class="relative z-10 flex flex-col items-center my-auto w-full">
+<span class="font-label-sm text-label-sm tracking-widest text-violet-tint uppercase mb-space-sm bg-primary/40 px-space-md py-0.5 rounded-full backdrop-blur-sm">Resultado Final • Rodada #4</span>
+<div class="w-full flex items-center justify-between px-space-md">
+<div class="flex flex-col items-center w-2/5 text-center">
+<div class="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-primary via-primary-container to-surface-white/20 p-1 flex items-center justify-center shadow-[0_8px_24px_-4px_rgba(95,58,221,0.6)] mb-2">
+<div class="w-full h-full rounded-xl bg-surface-white flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-primary text-[42px]">shield</span>
+</div>
+<span class="absolute -bottom-2 px-2 py-0.5 rounded-full bg-on-surface text-surface-white font-label-sm text-[10px]">CASA</span>
+</div>
+<span class="font-headline-md text-headline-md text-surface-white tracking-tight uppercase line-clamp-1 drop-shadow-md" id="card-home-name">Furia del Plata</span>
+<span class="font-label-sm text-[11px] text-text-muted tracking-wider uppercase">FDP CLUBS</span>
+</div>
+<div class="flex flex-col items-center justify-center px-space-sm">
+<div class="flex items-center gap-2 px-space-md py-1.5 rounded-2xl bg-on-surface/80 backdrop-blur-lg shadow-2xl border border-white/10">
+<span class="font-headline-xl text-[44px] text-surface-white font-black leading-none drop-shadow" id="card-home-score">2</span>
+<span class="font-label-lg text-headline-md text-primary font-bold opacity-80 px-1">-</span>
+<span class="font-headline-xl text-[44px] text-status-emerald font-black leading-none drop-shadow" id="card-away-score">7</span>
+</div>
+<span class="font-label-sm text-[10px] text-violet-tint mt-1 tracking-widest uppercase">TEMPO TOTAL</span>
+</div>
+<div class="flex flex-col items-center w-2/5 text-center">
+<div class="relative w-20 h-20 rounded-2xl bg-gradient-to-br from-status-emerald via-secondary to-surface-white/20 p-1 flex items-center justify-center shadow-[0_8px_24px_-4px_rgba(16,185,129,0.5)] mb-2">
+<div class="w-full h-full rounded-xl bg-surface-white flex items-center justify-center overflow-hidden">
+<span class="material-symbols-outlined text-secondary text-[42px]">local_fire_department</span>
+</div>
+<span class="absolute -bottom-2 px-2 py-0.5 rounded-full bg-status-emerald text-surface-white font-label-sm text-[10px]">VITÓRIA</span>
+</div>
+<span class="font-headline-md text-headline-md text-surface-white tracking-tight uppercase line-clamp-1 drop-shadow-md" id="card-away-name">La Catimba</span>
+<span class="font-label-sm text-[11px] text-text-muted tracking-wider uppercase">CTB ESPORTS</span>
+</div>
+</div>
+<div class="w-full grid grid-cols-2 gap-space-md mt-space-lg pt-space-md border-t border-white/10">
+<div class="flex flex-col text-left">
+<span class="font-label-sm text-[11px] text-text-muted uppercase tracking-wider mb-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-primary">sports_soccer</span> Gols Furia
+                  </span>
+<p class="font-label-sm text-label-sm text-surface-white leading-relaxed font-semibold" id="card-home-scorers">JEFHE 1, MIGUEL 1</p>
+</div>
+<div class="flex flex-col text-right">
+<span class="font-label-sm text-[11px] text-text-muted uppercase tracking-wider mb-1 flex items-center justify-end gap-1">
+                    Gols Catimba <span class="material-symbols-outlined text-[14px] text-status-emerald">sports_soccer</span>
+</span>
+<p class="font-label-sm text-label-sm text-status-emerald leading-relaxed font-bold" id="card-away-scorers">HAALANDINHO 5, JOAO VINY 1, TETEU 1</p>
+</div>
+</div>
+</div>
+<div class="relative z-10 flex items-center justify-between pt-space-sm border-t border-white/15">
+<div class="flex items-center gap-space-xs">
+<div class="w-6 h-6 rounded-md bg-primary flex items-center justify-center text-on-primary">
+<span class="material-symbols-outlined text-[14px]">sports_soccer</span>
+</div>
+<div class="flex flex-col leading-none">
+<span class="font-headline-md text-[11px] text-surface-white uppercase font-bold tracking-tight">DraftClub<span class="text-primary">Pro</span></span>
+<span class="font-body-sm text-[8px] text-text-muted">Broadcast Engine</span>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-body-sm text-[10px] text-text-muted">Copa Fácil Sync API</span>
+<span class="font-label-sm text-[10px] text-surface-white bg-white/10 px-2 py-0.5 rounded-full">#EA-FC26</span>
+</div>
+</div>
+</div>
+</div>
+<div class="w-full grid grid-cols-3 gap-space-md mt-space-md">
+<div class="p-space-md bg-surface-white rounded-xl shadow-sm flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-violet-tint flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-[20px]">photo_size_select_actual</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Auto-Fit Feed</span>
+<span class="font-body-sm text-body-sm text-text-muted">Sem cortes no carrossel</span>
+</div>
+</div>
+<div class="p-space-md bg-surface-white rounded-xl shadow-sm flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-emerald-tint flex items-center justify-center text-status-emerald">
+<span class="material-symbols-outlined text-[20px]">auto_awesome</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">HDR Glow Ativado</span>
+<span class="font-body-sm text-body-sm text-text-muted">Pós-processamento eSports</span>
+</div>
+</div>
+<div class="p-space-md bg-surface-white rounded-xl shadow-sm flex items-center gap-space-sm">
+<div class="w-10 h-10 rounded-xl bg-surface-container-high flex items-center justify-center text-on-surface">
+<span class="material-symbols-outlined text-[20px]">layers</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Marca D'Água Auto</span>
+<span class="font-body-sm text-body-sm text-text-muted">Liga &amp; Rodada autenticadas</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initBannerStudio() {
+    const inputHomeTeam = document.getElementById('input-home-team');
+    const inputAwayTeam = document.getElementById('input-away-team');
+    const inputHomeScore = document.getElementById('input-home-score');
+    const inputAwayScore = document.getElementById('input-away-score');
+    const inputHomeScorers = document.getElementById('input-home-scorers');
+    const inputAwayScorers = document.getElementById('input-away-scorers');
+
+    const cardHomeName = document.getElementById('card-home-name');
+    const cardAwayName = document.getElementById('card-away-name');
+    const cardHomeScore = document.getElementById('card-home-score');
+    const cardAwayScore = document.getElementById('card-away-score');
+    const cardHomeScorers = document.getElementById('card-home-scorers');
+    const cardAwayScorers = document.getElementById('card-away-scorers');
+
+    const previewArt = document.getElementById('preview-art');
+    const zoomLevelEl = document.getElementById('zoom-level');
+    const zoomInBtn = document.getElementById('zoom-in');
+    const zoomOutBtn = document.getElementById('zoom-out');
+    const glowSlider = document.getElementById('glow-slider');
+    const glowVal = document.getElementById('glow-val');
+
+    let currentZoom = 75;
+
+    function syncInputs() {
+      if (inputHomeTeam && cardHomeName) cardHomeName.textContent = inputHomeTeam.value || 'Casa';
+      if (inputAwayTeam && cardAwayName) cardAwayName.textContent = inputAwayTeam.value || 'Visitante';
+      if (inputHomeScore && cardHomeScore) cardHomeScore.textContent = inputHomeScore.value || '0';
+      if (inputAwayScore && cardAwayScore) cardAwayScore.textContent = inputAwayScore.value || '0';
+      if (inputHomeScorers && cardHomeScorers) cardHomeScorers.textContent = inputHomeScorers.value || '-';
+      if (inputAwayScorers && cardAwayScorers) cardAwayScorers.textContent = inputAwayScorers.value || '-';
+    }
+
+    [inputHomeTeam, inputAwayTeam, inputHomeScore, inputAwayScore, inputHomeScorers, inputAwayScorers].forEach(input => {
+      if (input) input.addEventListener('input', syncInputs);
+    });
+
+    if (glowSlider && glowVal) {
+      glowSlider.addEventListener('input', (e) => {
+        glowVal.textContent = e.target.value + '%';
+        if (previewArt) {
+          previewArt.style.filter = `brightness(${0.8 + (e.target.value / 250)}) saturate(${1 + (e.target.value / 200)})`;
+        }
+      });
+    }
+
+    if (zoomInBtn && zoomOutBtn && zoomLevelEl && previewArt) {
+      zoomInBtn.addEventListener('click', () => {
+        if (currentZoom < 100) {
+          currentZoom += 10;
+          zoomLevelEl.textContent = currentZoom + '%';
+          previewArt.style.transform = `scale(${currentZoom / 75})`;
+        }
+      });
+      zoomOutBtn.addEventListener('click', () => {
+        if (currentZoom > 50) {
+          currentZoom -= 10;
+          zoomLevelEl.textContent = currentZoom + '%';
+          previewArt.style.transform = `scale(${currentZoom / 75})`;
+        }
+      });
+    }
+
+    const artButtons = document.querySelectorAll('.art-type-btn');
+    artButtons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        artButtons.forEach(b => {
+          b.classList.remove('bg-primary', 'text-on-primary', 'shadow-sm');
+          b.classList.add('text-on-surface-variant');
+        });
+        btn.classList.add('bg-primary', 'text-on-primary', 'shadow-sm');
+        btn.classList.remove('text-on-surface-variant');
+      });
+    });
+
+    const themeCards = document.querySelectorAll('.bg-card-theme');
+    themeCards.forEach(theme => {
+      theme.addEventListener('click', () => {
+        themeCards.forEach(t => t.classList.remove('ring-2', 'ring-primary', 'bg-surface-container-high'));
+        theme.classList.add('ring-2', 'ring-primary', 'bg-surface-container-high');
+      });
+    });
+
+    const btnReset = document.getElementById('btn-reset');
+    if (btnReset) {
+      btnReset.addEventListener('click', () => {
+        if (inputHomeTeam) inputHomeTeam.value = 'Furia del Plata';
+        if (inputAwayTeam) inputAwayTeam.value = 'La Catimba';
+        if (inputHomeScore) inputHomeScore.value = '2';
+        if (inputAwayScore) inputAwayScore.value = '7';
+        if (inputHomeScorers) inputHomeScorers.value = 'JEFHE 1, MIGUEL 1';
+        if (inputAwayScorers) inputAwayScorers.value = 'HAALANDINHO 5, JOAO VINY 1, TETEU 1';
+        syncInputs();
+      });
+    }
+
+    const btnDownload = document.getElementById('btn-download');
+    if (btnDownload) {
+      btnDownload.addEventListener('click', () => {
+        const originalText = btnDownload.innerHTML;
+        btnDownload.innerHTML = `<span class="material-symbols-outlined text-[18px] animate-spin">refresh</span> Renderizando 1080x1350...`;
+        btnDownload.disabled = true;
+        setTimeout(() => {
+          btnDownload.innerHTML = `<span class="material-symbols-outlined text-[18px]">done</span> Arte Salva!`;
+          setTimeout(() => {
+            btnDownload.innerHTML = originalText;
+            btnDownload.disabled = false;
+          }, 2000);
+        }, 1200);
+      });
+    }
+
+    const btnExportWa = document.getElementById('btn-export-wa');
+    if (btnExportWa) {
+      btnExportWa.addEventListener('click', () => {
+        const message = `*LPF 5v5 - Resultado Pós-Jogo*\n` +
+          `${inputHomeTeam.value} ${inputHomeScore.value} x ${inputAwayScore.value} ${inputAwayTeam.value}\n` +
+          `Gols ${inputHomeTeam.value}: ${inputHomeScorers.value}\n` +
+          `Gols ${inputAwayTeam.value}: ${inputAwayScorers.value}\n` +
+          `Arte Oficial 4:5 gerada no DraftClub Pro Hub!`;
+        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
+      });
+    }
+  })();
+</script></main></div></body></html>

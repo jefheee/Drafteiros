@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fbf8fc;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'tertiary-container': '#6063ee', 'primary-container': '#7857f8', 'surface-container': '#f0edf1', 'on-tertiary-fixed-variant': '#2f2ebe', 'on-error': '#ffffff', 'secondary-container': '#70fb83', 'surface-tint': '#613de0', 'surface-container-low': '#f6f2f7', 'inverse-surface': '#303033', 'on-primary-fixed-variant': '#4918c8', 'tertiary-fixed-dim': '#c0c1ff', 'primary-fixed-dim': '#cabeff', 'violet-tint': '#F1EEFE', 'surface-container-highest': '#e4e1e6', 'on-tertiary-fixed': '#07006c', 'on-background': '#1b1b1e', 'on-primary-container': '#fffbff', 'surface': '#fbf8fc', 'tertiary-fixed': '#e1e0ff', 'on-secondary': '#ffffff', 'status-emerald': '#10B981', 'on-tertiary': '#ffffff', 'secondary-fixed-dim': '#54e16c', 'on-primary': '#ffffff', 'error': '#ba1a1a', 'surface-bright': '#fbf8fc', 'on-primary-fixed': '#1c0062', 'surface-variant': '#e4e1e6', 'on-surface': '#1b1b1e', 'emerald-tint': '#E8FAF0', 'canvas-bg': '#F5F6FA', 'surface-dim': '#dcd9dd', 'on-error-container': '#93000a', 'surface-white': '#FFFFFF', 'outline-variant': '#c9c4d8', 'border-subtle': '#E4E4E7', 'error-container': '#ffdad6', 'text-muted': '#71717A', 'tertiary': '#4648d4', 'on-secondary-fixed': '#002106', 'secondary-fixed': '#73fe85', 'surface-container-lowest': '#ffffff', 'on-secondary-container': '#007328', 'on-surface-variant': '#484555', 'inverse-primary': '#cabeff', 'primary-fixed': '#e6deff', 'outline': '#797587', 'score-capsule': '#F3F4F6', 'primary': '#5f3add', 'inverse-on-surface': '#f3f0f4', 'on-secondary-fixed-variant': '#00531a', 'surface-container-high': '#eae7eb', 'background': '#fbf8fc', 'on-tertiary-container': '#fffbff', 'secondary': '#006e26' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'space-xl': '1.75rem', 'margin-md': '1.5rem', 'space-xs': '0.25rem', 'space-lg': '1.25rem', 'space-sm': '0.5rem', 'gutter-md': '1rem', 'gutter-lg': '1.5rem', 'gutter': '0.75rem', 'space-md': '0.875rem', 'margin': '1rem', 'margin-lg': '2rem' }, fontFamily: { 'headline-md': ['Plus Jakarta Sans'], 'headline-lg': ['Plus Jakarta Sans'], 'score-display': ['Plus Jakarta Sans'], 'label-md': ['Inter'], 'body-lg': ['Inter'], 'headline-lg-mobile': ['Plus Jakarta Sans'], 'label-lg': ['Inter'], 'body-sm': ['Inter'], 'body-md': ['Inter'], 'headline-xl-mobile': ['Plus Jakarta Sans'], 'headline-xl': ['Plus Jakarta Sans'], 'label-sm': ['Inter'] }, fontSize: { 'headline-md': ['16px', { lineHeight: '22px', fontWeight: '700' }], 'headline-lg': ['22px', { lineHeight: '28px', letterSpacing: '-0.015em', fontWeight: '700' }], 'score-display': ['16px', { lineHeight: '20px', letterSpacing: '0.02em', fontWeight: '800' }], 'label-md': ['12px', { lineHeight: '16px', fontWeight: '600' }], 'body-lg': ['15px', { lineHeight: '22px', fontWeight: '500' }], 'headline-lg-mobile': ['19px', { lineHeight: '25px', letterSpacing: '-0.015em', fontWeight: '700' }], 'label-lg': ['14px', { lineHeight: '18px', fontWeight: '600' }], 'body-sm': ['12px', { lineHeight: '16px', fontWeight: '400' }], 'body-md': ['13px', { lineHeight: '18px', fontWeight: '400' }], 'headline-xl-mobile': ['26px', { lineHeight: '34px', letterSpacing: '-0.02em', fontWeight: '800' }], 'headline-xl': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '800' }], 'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '700' }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-1.5 bg-surface-container-low px-space-sm py-1.5 rounded-full shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)]"><span class="material-symbols-outlined text-primary text-[18px]">sports_soccer</span><select aria-label="Seleccionar Torneo" class="bg-transparent text-on-surface font-label-md text-label-md font-semibold focus:outline-none appearance-none pr-1 cursor-pointer"><option selected="" value="furia-del-plata">Furia del Plata</option><option value="lpf-5x5">LPF 5x5 Pro</option><option value="copa-argentina">Copa Argentina Clubes</option></select><span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span></div><span class="hidden sm:inline-block font-headline-md text-headline-md text-on-surface">Início</span></div><div class="flex items-center gap-space-xs"><button aria-label="Notificaciones" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant relative hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-secondary-container ring-2 ring-surface"></span></button><button aria-label="Filtros y Configuración" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface flex-1"><div class="flex flex-col w-full">
+<!-- Top Stat Badges & Header Banner -->
+<section class="px-gutter pt-space-md pb-space-sm flex flex-col gap-space-sm">
+<div class="flex items-center gap-space-xs flex-wrap">
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-tint shadow-sm">
+<span class="material-symbols-outlined text-primary text-[15px]">groups</span>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wide">Pool Oficial: 40 Atletas Cadastrados</span>
+</div>
+<div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-tint shadow-sm">
+<span class="w-2 h-2 rounded-full bg-status-emerald animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">29 Livres no Mercado</span>
+</div>
+</div>
+<div class="flex flex-col">
+<h1 class="font-headline-xl-mobile text-headline-xl-mobile text-on-surface tracking-tight">
+        Sala de Draft Oficial &amp; Mercadão (+40 Jogadores)
+      </h1>
+<p class="font-body-md text-body-md text-text-muted mt-1">
+        Ordem Snake Draft sorteada por IA • Contratação imediata com Nome do Personagem, Arquétipo e AcceleRATE.
+      </p>
+</div>
+</section>
+<!-- Interactive Snake Draft Timeline Card -->
+<section class="px-gutter my-space-sm">
+<div class="bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col gap-space-md">
+<!-- Lottery Action Bar -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm pb-space-xs">
+<div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold block">Temporada 2026 • R1 → R2</span>
+<p class="font-headline-md text-headline-md text-on-surface">Ordem Oficial (Snake Draft)</p>
+</div>
+<button class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-primary to-primary-container text-on-primary font-label-lg text-label-lg px-space-md py-2.5 rounded-full shadow-[0_4px_12px_-2px_rgba(124,92,252,0.35)] active:scale-95 transition-all" id="lottery-btn" type="button">
+<span class="material-symbols-outlined text-[18px]">casino</span>
+<span>Sortear Ordem (IA Lottery)</span>
+</button>
+</div>
+<!-- Current Turn Highlight Badge -->
+<div class="flex items-center justify-between bg-violet-tint px-3 py-2 rounded-xl">
+<div class="flex items-center gap-2">
+<span class="flex h-2.5 w-2.5 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary"></span>
+</span>
+<span class="font-body-sm text-body-sm text-on-surface">Na vez de escolher:</span>
+<strong class="font-label-lg text-label-lg text-primary">Furia del Plata</strong>
+</div>
+<span class="font-label-sm text-label-sm bg-surface-white px-2 py-0.5 rounded-full text-primary font-bold shadow-xs">Pick Ativo</span>
+</div>
+<!-- Timeline Steps (Picks) -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-1">
+<!-- Pick 1 (Active) -->
+<div class="flex flex-col p-2.5 rounded-xl bg-primary text-on-primary shadow-sm relative overflow-hidden">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-on-primary/80">PICK #1 • R1</span>
+<span class="material-symbols-outlined text-[16px] text-secondary-container">timer</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold truncate">Furia del Plata</span>
+<span class="font-body-sm text-body-sm text-on-primary/75 mt-0.5">Seu Clube (Capitão)</span>
+</div>
+<!-- Pick 2 -->
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-on-surface">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-text-muted">PICK #2 • R1</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">hourglass_empty</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold truncate">La Catimba</span>
+<span class="font-body-sm text-body-sm text-text-muted mt-0.5">Aguardando</span>
+</div>
+<!-- Pick 3 -->
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-on-surface">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-text-muted">PICK #3 • R1</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">hourglass_empty</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold truncate">River Plate</span>
+<span class="font-body-sm text-body-sm text-text-muted mt-0.5">Aguardando</span>
+</div>
+<!-- Pick 4 -->
+<div class="flex flex-col p-2.5 rounded-xl bg-surface-container-low text-on-surface">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm text-text-muted">PICK #4 • R1</span>
+<span class="material-symbols-outlined text-[14px] text-text-muted">hourglass_empty</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold truncate">Boca Juniors FC</span>
+<span class="font-body-sm text-body-sm text-text-muted mt-0.5">Aguardando</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Filter & Search Controls -->
+<section class="px-gutter pt-space-xs pb-space-sm flex flex-col gap-2.5">
+<!-- Status Switcher Chips -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+<button class="status-chip active px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-primary text-on-primary whitespace-nowrap shadow-sm transition-all" data-status="all" type="button">
+        Todos (40)
+      </button>
+<button class="status-chip px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface whitespace-nowrap hover:bg-surface-container transition-all" data-status="free" type="button">
+        Livres (29)
+      </button>
+<button class="status-chip px-3.5 py-1.5 rounded-full font-label-md text-label-md bg-surface-container-low text-on-surface whitespace-nowrap hover:bg-surface-container transition-all" data-status="drafted" type="button">
+        Com Clube (11)
+      </button>
+</div>
+<!-- Position Chips -->
+<div class="flex items-center gap-1.5 overflow-x-auto pb-1 no-scrollbar">
+<button class="pos-chip active px-3 py-1 rounded-full font-label-sm text-label-sm bg-inverse-surface text-inverse-on-surface whitespace-nowrap transition-all" data-pos="all" type="button">
+        Todas Posições
+      </button>
+<button class="pos-chip px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant whitespace-nowrap hover:bg-surface-container-high transition-all" data-pos="ATA" type="button">
+        Atacantes (ST/LW/RW)
+      </button>
+<button class="pos-chip px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant whitespace-nowrap hover:bg-surface-container-high transition-all" data-pos="MEI" type="button">
+        Meias (CAM/CM/CDM)
+      </button>
+<button class="pos-chip px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant whitespace-nowrap hover:bg-surface-container-high transition-all" data-pos="DEF" type="button">
+        Defensores (CB/LB/RB)
+      </button>
+<button class="pos-chip px-3 py-1 rounded-full font-label-sm text-label-sm bg-surface-container text-on-surface-variant whitespace-nowrap hover:bg-surface-container-high transition-all" data-pos="GK" type="button">
+        Goleiros (GK)
+      </button>
+</div>
+</section>
+<!-- Athletes Grid List -->
+<section class="px-gutter pb-space-xl">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-space-md" id="athletes-grid">
+<!-- Athlete 1: Jefhe (Com Clube - Furia) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="MEI" data-status="drafted">
+<div>
+<!-- Card Header & Badges -->
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">MEI</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Prolongada
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity -->
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close-up gaming avatar portrait of pro player Jefhe, stylish gamer headset, purple dynamic esports lighting, EA FC Pro Clubs 3D render styling, sharp focus" src="https://lh3.googleusercontent.com/aida-public/AB6AXuASjCS85cp1CGmpzlm6aRSTCIpy-U9qWfJv63g8GfQGUjFYuJtJjRHwx5lnkciJOBEhK9Dkaao4cvr95d4VlzYEpiw1NThZXKuZX6eI0a8f3cnwSC3-0SiIyJdPXmPPEI59SnM0YEOnhzlGQ1BxQsjZzmwT25ioIQeS4wdrJLWxg_KlMHxSQJbjoWcw7zkzaCOk3B1jqlsLyNEk7fK3lyNFKmLfnCSX4NCE32zcj9bciEXdYQBO30Ux"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Jefhe</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">Jefherson</span> • 190cm / 75kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">psychology</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Maestro</span>
+</div>
+</div>
+</div>
+<!-- Stats Grid -->
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">18</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">24</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">19</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<!-- Footer / Status -->
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-primary">shield</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Clube: <strong>Furia del Plata</strong></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-text-muted font-label-sm text-label-sm">Contratado</span>
+</div>
+</article>
+<!-- Athlete 2: Haalandinho (Com Clube - La Catimba) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="ATA" data-status="drafted">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">ATA</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Prolongada
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Esports profile avatar of aggressive striker Haalandinho, intense focus, athletic headband, neon green and purple rim lighting, modern video game UI card art" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAmwqNJd3nq5eAUnrzkunsblX9gsQJeby5cDddPQSkMqSJeIPzRBmwH78qRDGiQSHa1psfDSkqfJmnp8YkYpkbhnUYe9bD-fhz0ktSt9wa6ZKVMZa6xd6_dvjjfcOMoaBm1YEYc11VW4jvy8j2B_IAQ-bUOBGPKFV9Jlg6rHZk1ICJ5gcWZyqyoEqikX1oPr8V2uzwrdJfpPzW3et5_4-lXMsIVI22s34nVp8z2UcByLqDoDsZBjWIp"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Haalandinho</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">Lucas Andrade</span> • 194cm / 86kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">target</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Alvo</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">16</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">29</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">8</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-text-muted">shield</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Clube: <strong>La Catimba</strong></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-text-muted font-label-sm text-label-sm">Contratado</span>
+</div>
+</article>
+<!-- Athlete 3: Deivy_10 (Com Clube - River Plate) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="MEI" data-status="drafted">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">MEI</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-tint text-status-emerald font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Explosiva
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Playmaker gamer character avatar with tactical visor glasses, clean athletic hair, focused demeanor, deep purple and emerald stadium background, Pro Clubs tournament badge" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBPAsCLzeRbiLNXcEEVn9Ef5LVZDw6tRCQJ4dnvXcxOI13eLu3aPzkYhIPkfjKibjngTUubOCtsw7cgXhRcjsFll3AgSX1feXyzluDxFhfybCrWxHwywlLABY2JBVZhc11JDTo0FIGqgw4KI_1hLRYotLn59WsBC4mKVkI-5KZGg5XbEVH-HJl6AVcvwD1JJpH0YZwRjJ6bqQXyly3iy-fA37CQeN7k_tpXUWQSUJEY5TPYYkgVGn90"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Deivy_10</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">Deivid Oliveira</span> • 176cm / 68kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">neurology</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Cérebro</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">15</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">11</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">22</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-text-muted">shield</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Clube: <strong>River Plate</strong></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-text-muted font-label-sm text-label-sm">Contratado</span>
+</div>
+</article>
+<!-- Athlete 4: Romario_Baixinho (LIVRE PARA DRAFT) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="ATA" data-status="free">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">ATA</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-tint text-status-emerald font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Explosiva
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Confident digital athlete avatar representing classic striker Romario, smiling expression, Brazilian street soccer flair, high definition EA Sports stylized render" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDoL3JMgWI7CHpxrL3og4KmB_XoNPfw3VU6jLjoLm7xl4w1GnSNuq0SclpuXRHsl86voTNjncYMpQJaYqjOw10T13H4JxGnJOT-gTE86uGJI17hOuqdkJSkK_4fb5YmrpcMBqBMb019zDxQuwrU8U-G7xcRoJV4-kjvIj3w6SxpACxxnjliL7b02ImaF4lsHCvLA3xoC1dIoKF450Xau577H9bHpV0bIxeDSKZh956sC4p_iCecEk7d"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Romario_Baixinho</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">Rodrigo Alves</span> • 169cm / 68kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">auto_fix_high</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Bruxo</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">12</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">8</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">7</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-status-emerald animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Agente Livre</span>
+</div>
+<button class="draft-action-btn inline-flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-3.5 py-1.5 rounded-full hover:bg-primary-container shadow-[0_2px_8px_-2px_rgba(124,92,252,0.4)] active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+</article>
+<!-- Athlete 5: Muralha_GK (Com Clube - Furia) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="GK" data-status="drafted">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">GK</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Prolongada
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Tall, imposing goalkeeper avatar wearing modern tech goalkeeper gloves and neon jersey, confident glare, clean cinematic lighting, Pro Clubs gamer identity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDrZhEeRSonDpFBMz74lKHLHV6XYU3ZeUfAsVZnNDCfaueDLazJrqOeemQ9bZ3tLaHXOtY4G7uM-KrtIgm6jlCc0Z-s73MXbVlBFo2L67tXxnVTgn2ZLRkgdDtSCoCdGtIQfCBzWB9uxiOt3puH3FIbcw6X07bJQBXXfwXi-Ve-J8hBuoKYaEBq_4ABrR44UgVb111y6b6r5VLFPUs2Y_rvxxOWEM5I6reDkfcCH2pjdYRr-RjGCz77"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Muralha_GK</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">Marcos Vinícius</span> • 196cm / 88kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">security</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Muralha</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">18</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">0</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">3</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5 min-w-0">
+<span class="material-symbols-outlined text-[18px] text-primary">shield</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Clube: <strong>Furia del Plata</strong></span>
+</div>
+<span class="px-2.5 py-1 rounded-full bg-surface-container text-text-muted font-label-sm text-label-sm">Contratado</span>
+</div>
+</article>
+<!-- Athlete 6: Maldini_ZAG (LIVRE PARA DRAFT) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="DEF" data-status="free">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">ZAG</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Prolongada
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Rugged Italian style central defender avatar, commanding presence, captain armband visible, sharp high-contrast digital art for competitive gaming roster" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDeuY9-aOVsG6iqMem7E-D-2MaZIsbzR7GVSn0W0TM0IYk3MuauZZccMfMmhd3wBJs10HrtAC_x8DqR70m3tPQI_46ZWS6SzXzfKT-mDoJvWs1eN3YcPWvH4_XNYcfw0hYj62FnzBbYO2WbgpsIFVvcP7ZrZSfG1svAg9sINZ2KJVXk8w-SVJ6PSV4LKmFv-Isn__abSDpVbUWlwW_t9etKnb_LYJQgLcm2pxrvG2oXlogMU0al_TwX"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Maldini_ZAG</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">Paulo Victor</span> • 192cm / 86kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">military_tech</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Chefia</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">13</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">2</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">8</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-status-emerald animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Agente Livre</span>
+</div>
+<button class="draft-action-btn inline-flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-3.5 py-1.5 rounded-full hover:bg-primary-container shadow-[0_2px_8px_-2px_rgba(124,92,252,0.4)] active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+</article>
+<!-- Athlete 7: Pirlo_Regista (LIVRE - Controlada) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="MEI" data-status="free">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">VOL</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Controlada
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Refined deep-lying playmaker athlete avatar with calm visionary expression, dark hair, tactical gaming graphics, violet ambient glow" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlOrZo92PybR9_u21XMpizQ62nW5y7fgXy-FHLTV19LNNrGT-7JbYNZlEPACJz48qQctmr1oUbBSTbiPjViv5tQFMAGrk8uyLTL4OKh1h8VpytXjryslsmbwuvLJfKSLeCe__MJTMursYeOF4lJwYmHFOglQVZLTNLmiCZ8rXtf5xrnB_7mLbSLYleYT3GBYn1fR46cgNyX9zB_aHb0UWTSgKa0AHhutcE_wcLwWGXkvVH7o93rp_E"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Pirlo_Regista</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">André Martins</span> • 179cm / 73kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">explore</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Compasso</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">16</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">2</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">3</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-status-emerald animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Agente Livre</span>
+</div>
+<button class="draft-action-btn inline-flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-3.5 py-1.5 rounded-full hover:bg-primary-container shadow-[0_2px_8px_-2px_rgba(124,92,252,0.4)] active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+</article>
+<!-- Athlete 8: Cafu_LD (LIVRE - Lateral Explosivo) -->
+<article class="athlete-card bg-surface-white rounded-xl p-gutter-md shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04),0_1px_3px_-1px_rgba(24,24,27,0.02)] flex flex-col justify-between gap-space-sm" data-pos="DEF" data-status="free">
+<div>
+<div class="flex items-center justify-between mb-2">
+<div class="flex items-center gap-1.5">
+<span class="px-2.5 py-0.5 rounded-full bg-primary text-on-primary font-label-sm text-label-sm font-bold">LD</span>
+<span class="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full bg-emerald-tint text-status-emerald font-label-sm text-label-sm font-bold">
+<span class="text-[13px]">⚡</span> Explosiva
+              </span>
+</div>
+<div class="flex items-center gap-1 bg-surface-container-low px-2 py-0.5 rounded-full">
+<span class="material-symbols-outlined text-[14px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-score-display text-on-surface">8.2</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="w-12 h-12 rounded-full overflow-hidden bg-surface-container-low flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Dynamic full-back digital football player avatar in yellow-and-green details, athletic stamina stance, Pro Clubs esports card illustration" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBSyWt2BCsGELKpSyeaklQh0RGVdpwOWqbBT8Lfe6L93b96srYn7btDny87qYX_SLD5FEF3mnaq91yGRIjb0XqmkfvQhuFH182T5HgdBz0i4D0dJTQN8O8vuElhB1ZwPqzyhTdJEmevr4ueJNesg79Gaa6_HkEeh9YTv80-N1dRiExZ2iIetuFonsyg_U83-dLJWvp8ziYfo3mb8b9fkKOl_tXXFi5OVIDKo4EgJToOpL2hKlrEtA0s"/>
+</div>
+<div class="flex flex-col min-w-0">
+<h3 class="font-headline-md text-headline-md text-on-surface truncate">Cafu_LD</h3>
+<p class="font-body-sm text-body-sm text-text-muted truncate">
+                Atleta: <span class="font-semibold text-on-surface">Carlos Eduardo</span> • 176cm / 72kg
+              </p>
+<div class="inline-flex items-center gap-1 mt-0.5">
+<span class="material-symbols-outlined text-[13px] text-primary">directions_run</span>
+<span class="font-label-sm text-label-sm text-primary font-semibold">Arquétipo: Motorzinho</span>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-4 gap-1.5 mt-3 py-2 px-2.5 rounded-lg bg-surface-container-low text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-score-display text-on-surface">14</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-score-display text-on-surface">0</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-score-display text-on-surface">9</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Média</span>
+<span class="font-score-display text-score-display text-primary font-bold">8.2</span>
+</div>
+</div>
+</div>
+<div class="pt-2 flex items-center justify-between gap-2">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-status-emerald animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Agente Livre</span>
+</div>
+<button class="draft-action-btn inline-flex items-center gap-1.5 bg-primary text-on-primary font-label-md text-label-md px-3.5 py-1.5 rounded-full hover:bg-primary-container shadow-[0_2px_8px_-2px_rgba(124,92,252,0.4)] active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+</article>
+</div>
+<!-- Quick Feedback Toast Container -->
+<div class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-inverse-surface text-inverse-on-surface px-4 py-2.5 rounded-full shadow-xl flex items-center gap-2 text-label-md font-label-md transition-all opacity-0 pointer-events-none translate-y-4 z-50" id="draft-toast">
+<span class="material-symbols-outlined text-status-emerald text-[18px]">check_circle</span>
+<span id="draft-toast-msg">Atleta draftado com sucesso para o Furia!</span>
+</div>
+</section>
+</div>
+<script>
+  (function () {
+    // Interactive Filtering Logic
+    const statusChips = document.querySelectorAll('.status-chip');
+    const posChips = document.querySelectorAll('.pos-chip');
+    const cards = document.querySelectorAll('.athlete-card');
+    const toast = document.getElementById('draft-toast');
+    const toastMsg = document.getElementById('draft-toast-msg');
+    const lotteryBtn = document.getElementById('lottery-btn');
+
+    let currentStatus = 'all';
+    let currentPos = 'all';
+
+    function filterAthletes() {
+      cards.forEach(card => {
+        const cardStatus = card.dataset.status;
+        const cardPos = card.dataset.pos;
+
+        const matchStatus = (currentStatus === 'all') || (cardStatus === currentStatus);
+        const matchPos = (currentPos === 'all') || (cardPos === currentPos);
+
+        if (matchStatus && matchPos) {
+          card.classList.remove('hidden');
+        } else {
+          card.classList.add('hidden');
+        }
+      });
+    }
+
+    statusChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        statusChips.forEach(c => {
+          c.classList.remove('bg-primary', 'text-on-primary');
+          c.classList.add('bg-surface-container-low', 'text-on-surface');
+        });
+        chip.classList.remove('bg-surface-container-low', 'text-on-surface');
+        chip.classList.add('bg-primary', 'text-on-primary');
+        currentStatus = chip.dataset.status;
+        filterAthletes();
+      });
+    });
+
+    posChips.forEach(chip => {
+      chip.addEventListener('click', () => {
+        posChips.forEach(c => {
+          c.classList.remove('bg-inverse-surface', 'text-inverse-on-surface');
+          c.classList.add('bg-surface-container', 'text-on-surface-variant');
+        });
+        chip.classList.remove('bg-surface-container', 'text-on-surface-variant');
+        chip.classList.add('bg-inverse-surface', 'text-inverse-on-surface');
+        currentPos = chip.dataset.pos;
+        filterAthletes();
+      });
+    });
+
+    // Action button feedback (Draftar)
+    document.querySelectorAll('.draft-action-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const card = e.currentTarget.closest('.athlete-card');
+        const playerName = card.querySelector('h3').textContent.trim();
+
+        // Update card appearance to drafted
+        card.dataset.status = 'drafted';
+        const footerDiv = e.currentTarget.parentElement;
+        footerDiv.innerHTML = `
+          <div class="flex items-center gap-1.5 min-w-0">
+            <span class="material-symbols-outlined text-[18px] text-primary">shield</span>
+            <span class="font-body-sm text-body-sm text-on-surface truncate">Clube: <strong>Furia del Plata</strong></span>
+          </div>
+          <span class="px-2.5 py-1 rounded-full bg-emerald-tint text-status-emerald font-label-sm text-label-sm font-bold flex items-center gap-1">
+            <span class="material-symbols-outlined text-[14px]">done</span> Escolhido
+          </span>
+        `;
+
+        // Show Toast
+        toastMsg.textContent = `${playerName} agora defende o Furia del Plata!`;
+        toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+        toast.classList.add('opacity-100', 'translate-y-0');
+
+        setTimeout(() => {
+          toast.classList.remove('opacity-100', 'translate-y-0');
+          toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+        }, 3200);
+
+        filterAthletes();
+      });
+    });
+
+    // IA Lottery Sorter Simulation
+    if (lotteryBtn) {
+      lotteryBtn.addEventListener('click', () => {
+        const originalText = lotteryBtn.innerHTML;
+        lotteryBtn.innerHTML = `
+          <span class="material-symbols-outlined text-[18px] animate-spin">sync</span>
+          <span>Sorteando com IA...</span>
+        `;
+        lotteryBtn.classList.add('opacity-80', 'pointer-events-none');
+
+        setTimeout(() => {
+          lotteryBtn.innerHTML = originalText;
+          lotteryBtn.classList.remove('opacity-80', 'pointer-events-none');
+          toastMsg.textContent = 'Ordem recalculada por IA! Furia del Plata mantém Pick #1.';
+          toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+          toast.classList.add('opacity-100', 'translate-y-0');
+
+          setTimeout(() => {
+            toast.classList.remove('opacity-100', 'translate-y-0');
+            toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+          }, 3000);
+        }, 1200);
+      });
+    }
+  })();
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="bg-primary text-on-primary font-label-md"><div class="flex items-center justify-between h-16 px-gutter gap-1"><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">stadium</span><span class="font-label-sm text-label-sm">Início</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="tabela" href="#"><span class="material-symbols-outlined text-[20px]">leaderboard</span><span class="font-label-sm text-label-sm">Tabela</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="confrontos" href="#"><span class="material-symbols-outlined text-[20px]">sports_score</span><span class="font-label-sm text-label-sm">Jogos</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all relative" data-path="draft" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-label-sm text-label-sm">Draft +40</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="perfil-capitao" href="#"><span class="material-symbols-outlined text-[20px]">shield_person</span><span class="font-label-sm text-label-sm">Capitão</span></a></div></nav></body></html>

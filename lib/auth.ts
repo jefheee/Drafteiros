@@ -28,7 +28,7 @@ export const DEMO_USERS: Record<string, AuthSession> = {
     teamId: 'b3333333-3333-3333-3333-333333333333',
     teamName: 'Furia del Plata',
     tournamentId: '11111111-1111-1111-1111-111111111111',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
+    avatarUrl: '/assets/templates/avatar-placeholder.jpg',
   },
   admin: {
     userId: 'u0000000-0000-0000-0000-000000000001',
@@ -42,7 +42,7 @@ export const DEMO_USERS: Record<string, AuthSession> = {
     teamId: 'b3333333-3333-3333-3333-333333333333',
     teamName: 'Furia del Plata',
     tournamentId: '11111111-1111-1111-1111-111111111111',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
+    avatarUrl: '/assets/templates/avatar-placeholder.jpg',
   },
   player: {
     userId: 'p1111111-1111-1111-1111-111111111111',
@@ -56,7 +56,7 @@ export const DEMO_USERS: Record<string, AuthSession> = {
     teamId: 'b3333333-3333-3333-3333-333333333333',
     teamName: 'Furia del Plata',
     tournamentId: '11111111-1111-1111-1111-111111111111',
-    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&q=80',
+    avatarUrl: '/assets/templates/avatar-placeholder.jpg',
   },
   captain_boca: {
     userId: 'u0000000-0000-0000-0000-000000000002',
@@ -65,7 +65,7 @@ export const DEMO_USERS: Record<string, AuthSession> = {
     fullName: 'Lucas Andrade',
     characterName: 'Haalandinho',
     role: 'captain',
-    roles: ['player', 'captain'],
+    roles: ['player', 'captain', 'admin'],
     playerId: 'p4444444-4444-4444-4444-444444444444',
     teamId: 'b1111111-1111-1111-1111-111111111111',
     teamName: 'La Catimba',
@@ -78,7 +78,7 @@ export const DEMO_USERS: Record<string, AuthSession> = {
     fullName: 'Deivid Oliveira',
     characterName: 'Deivy_10',
     role: 'captain',
-    roles: ['player', 'captain'],
+    roles: ['player', 'captain', 'admin'],
     playerId: 'p2222222-2222-2222-2222-222222222222',
     teamId: 'b2222222-2222-2222-2222-222222222222',
     teamName: 'River Plate eSports',
@@ -111,10 +111,7 @@ export function getStoredSession(): AuthSession | null {
       ...parsed,
       fullName: parsed.fullName || parsed.name || 'Atleta',
       characterName: parsed.characterName || parsed.name || 'Jefhe',
-      roles:
-        parsed.roles && parsed.roles.length > 0
-          ? parsed.roles
-          : ['player', 'captain', 'admin'],
+      roles: ['player', 'captain', 'admin'],
     };
   } catch {
     return null;
@@ -124,12 +121,16 @@ export function getStoredSession(): AuthSession | null {
 export function setStoredSession(session: AuthSession): void {
   if (typeof window === 'undefined') return;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(session));
-    document.cookie = `draftclub-demo-role=${session.role}; path=/; max-age=604800; SameSite=Lax`;
-    document.cookie = `draftclub_role=${session.role}; path=/; max-age=604800; SameSite=Lax`;
+    const normalized: AuthSession = {
+      ...session,
+      roles: ['player', 'captain', 'admin'],
+    };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(normalized));
+    document.cookie = "draftclub-demo-role=" + normalized.role + "; path=/; max-age=604800; SameSite=Lax";
+    document.cookie = "draftclub_role=" + normalized.role + "; path=/; max-age=604800; SameSite=Lax";
     document.cookie = `sb-access-token=demo-session-token; path=/; max-age=604800; SameSite=Lax`;
-    if (session.teamId) {
-      document.cookie = `draftclub_team=${session.teamId}; path=/; max-age=604800; SameSite=Lax`;
+    if (normalized.teamId) {
+      document.cookie = `draftclub_team=${normalized.teamId}; path=/; max-age=604800; SameSite=Lax`;
     }
   } catch (err) {
     console.warn('Erro ao salvar sessão local:', err);

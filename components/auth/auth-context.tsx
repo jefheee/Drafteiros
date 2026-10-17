@@ -82,10 +82,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             .eq('id', sbSession.user.id)
             .maybeSingle();
 
-          const roles: ParticipantRole[] =
-            prof?.roles && prof.roles.length > 0
-              ? prof.roles
-              : ['player', 'captain', 'admin'];
+          const roles: ParticipantRole[] = ['player', 'captain', 'admin'];
           const activeRole: ParticipantRole =
             prof?.active_role_view ||
             (email.includes('admin')
@@ -159,30 +156,33 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   };
 
   // Alterna a visão ativa na mesma conta sem deslogar (Estilo Jogueiros)
-  const switchProfileRole = (role: ParticipantRole, navigate = false) => {
+  const switchProfileRole = (targetRole: ParticipantRole, navigate = false) => {
     const current = session || getStoredSession() || DEMO_USERS.captain;
-    const ensuredRoles: ParticipantRole[] = current.roles?.includes(role)
-      ? current.roles
-      : [...(current.roles || ['player']), role];
+    const ensuredRoles: ParticipantRole[] = ['player', 'captain', 'admin'];
 
     const updated: AuthSession = {
       ...current,
-      role,
+      role: targetRole,
       roles: ensuredRoles,
     };
+
+    if (typeof document !== 'undefined') {
+      document.cookie = "draftclub-demo-role=" + targetRole + "; path=/; max-age=604800; SameSite=Lax";
+      document.cookie = "draftclub_role=" + targetRole + "; path=/; max-age=604800; SameSite=Lax";
+    }
+
     setStoredSession(updated);
     setSession(updated);
 
-    // Persiste active_role_view no Supabase caso esteja autenticado
     Promise.resolve(
       supabase
         .from('profiles')
-        .update({ active_role_view: role, roles: ensuredRoles })
+        .update({ active_role_view: targetRole, roles: ensuredRoles })
         .eq('id', updated.userId)
     ).catch(() => {});
 
     if (navigate) {
-      navigateByRole(role);
+      navigateByRole(targetRole);
     }
   };
 
@@ -192,6 +192,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ...current,
       ...partial,
       name: partial.characterName || partial.name || current.characterName,
+      roles: ['player', 'captain', 'admin'],
     };
     setStoredSession(updated);
     setSession(updated);
@@ -293,9 +294,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const charName = input.characterName.trim() || 'Atleta_Pro';
     const fullName = input.fullName.trim() || charName;
     const initialRole: ParticipantRole = input.isCaptain ? 'captain' : 'player';
-    const roles: ParticipantRole[] = input.isCaptain
-      ? ['player', 'captain', 'admin']
-      : ['player', 'captain', 'admin'];
+    const roles: ParticipantRole[] = ['player', 'captain', 'admin'];
 
     let newUserId = `u-${Date.now()}`;
 

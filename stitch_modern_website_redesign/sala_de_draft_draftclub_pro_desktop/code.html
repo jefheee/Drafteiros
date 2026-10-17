@@ -1,0 +1,776 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"background":"#fbf8fc","score-capsule":"#F3F4F6","on-surface":"#1b1b1e","surface-container":"#f0edf1","primary":"#5f3add","text-muted":"#71717A","surface-container-high":"#eae7eb","tertiary-fixed-dim":"#c0c1ff","surface-white":"#FFFFFF","tertiary":"#4648d4","on-secondary-fixed":"#002106","primary-container":"#7857f8","secondary-fixed":"#73fe85","surface":"#fbf8fc","on-tertiary":"#ffffff","secondary-fixed-dim":"#54e16c","on-background":"#1b1b1e","inverse-on-surface":"#f3f0f4","error":"#ba1a1a","surface-container-lowest":"#ffffff","tertiary-container":"#6063ee","surface-container-low":"#f6f2f7","outline":"#797587","on-primary-container":"#fffbff","secondary":"#006e26","on-primary-fixed-variant":"#4918c8","canvas-bg":"#F5F6FA","primary-fixed":"#e6deff","on-tertiary-fixed":"#07006c","surface-dim":"#dcd9dd","primary-fixed-dim":"#cabeff","on-error":"#ffffff","border-subtle":"#E4E4E7","emerald-tint":"#E8FAF0","on-secondary-container":"#007328","surface-variant":"#e4e1e6","on-secondary":"#ffffff","secondary-container":"#70fb83","on-secondary-fixed-variant":"#00531a","surface-bright":"#fbf8fc","on-primary":"#ffffff","on-error-container":"#93000a","inverse-primary":"#cabeff","status-emerald":"#10B981","outline-variant":"#c9c4d8","violet-tint":"#F1EEFE","on-tertiary-container":"#fffbff","on-primary-fixed":"#1c0062","tertiary-fixed":"#e1e0ff","on-tertiary-fixed-variant":"#2f2ebe","surface-container-highest":"#e4e1e6","error-container":"#ffdad6","inverse-surface":"#303033","on-surface-variant":"#484555","surface-tint":"#613de0"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin":"1rem","space-md":"0.875rem","space-sm":"0.5rem","space-lg":"1.25rem","margin-md":"1.5rem","gutter-md":"1rem","margin-lg":"2rem","space-xl":"1.75rem","gutter":"0.75rem","gutter-lg":"1.5rem","space-xs":"0.25rem"},fontFamily:{"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"label-lg":["Inter"],"body-md":["Inter"],"body-lg":["Inter"],"score-display":["Plus Jakarta Sans"],"label-sm":["Inter"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"]},fontSize:{"headline-lg":["22px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"600"}],"headline-md":["16px",{lineHeight:"22px",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-lg":["14px",{lineHeight:"18px",fontWeight:"600"}],"body-md":["13px",{lineHeight:"18px",fontWeight:"400"}],"body-lg":["15px",{lineHeight:"22px",fontWeight:"500"}],"score-display":["16px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"800"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"700"}],"headline-xl-mobile":["26px",{lineHeight:"34px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-lg-mobile":["19px",{lineHeight:"25px",letterSpacing:"-0.015em",fontWeight:"700"}]}}}};</script></head><body class="bg-canvas-bg font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-white z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-gutter-lg pt-space-lg pb-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><span class="material-symbols-outlined text-[20px]">sports_soccer</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md tracking-tight text-on-surface">DraftClub<span class="text-primary">Pro</span></span><span class="font-label-sm text-label-sm text-text-muted">EA FC 26 Hub</span></div></div><span class="px-space-xs py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm">LPF 5v5</span></div><div class="px-gutter-lg py-space-sm"><div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-xl"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold">FP</div><div class="flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface leading-tight">Furia del Plata</span><span class="font-label-sm text-label-sm text-status-emerald flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span>Capitão Ativo</span></div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">unfold_more</span></div></div><nav class="px-gutter py-space-sm flex flex-col gap-1" data-active-classes="bg-primary text-on-primary font-bold shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Início</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tabela-e-classificacao" href="#"><span class="material-symbols-outlined text-[20px]">leaderboard</span><span class="font-label-lg text-label-lg">Tabela &amp; Classificação</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="jogos-e-sumula-ia" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span class="font-label-lg text-label-lg">Jogos &amp; Súmula IA</span></a><a aria-current="page" class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl transition-all bg-primary text-on-primary font-bold shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]" data-path="sala-de-draft" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-label-lg text-label-lg">Sala de Draft</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="minha-build-e-perfil" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-label-lg text-label-lg">Minha Build &amp; Perfil</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="estudio-banners" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome_motion</span><span class="font-label-lg text-label-lg">Estúdio Banners 4:5</span></a></nav></div><div class="p-gutter-lg"><div class="p-space-md bg-emerald-tint rounded-xl flex items-center justify-between mb-space-sm"><div class="flex items-center gap-space-sm"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-emerald opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-emerald"></span></span><span class="font-label-md text-label-md text-secondary font-bold">Copa Fácil Sync</span></div><span class="material-symbols-outlined text-secondary text-[16px]">sync</span></div><div class="flex items-center justify-between pt-space-xs text-text-muted"><span class="font-body-sm text-body-sm">Versão 5v5 Clausura</span><span class="font-label-sm text-label-sm">v2.6.4</span></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-white/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-gutter-lg"><div class="flex items-center gap-space-md w-96"><div class="w-full flex items-center gap-space-sm px-space-md py-1.5 bg-surface-container-low rounded-xl text-text-muted"><span class="material-symbols-outlined text-[18px]">search</span><input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder:text-text-muted w-full" placeholder="Buscar jogadores, confrontos ou súmulas..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="hidden lg:flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-status-emerald"></span><span class="font-label-sm text-label-sm text-on-surface">Rodada 4 em Andamento</span></div><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden md:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Capitão Mateo</span><span class="font-body-sm text-body-sm text-text-muted leading-none">Admin Clube</span></div></div></div></header><main class="w-full pt-16 bg-canvas-bg min-h-screen"><div class="flex flex-col w-full px-gutter-lg py-space-lg gap-space-lg">
+<!-- DRAFT OPERATIONAL DECK (BENTO HEADER) -->
+<div class="grid grid-cols-12 gap-gutter-lg">
+<!-- STATS & ACTION HUD (4 COLUMNS) -->
+<div class="col-span-12 xl:col-span-4 bg-surface-white rounded-xl p-space-lg shadow-sm flex flex-col justify-between relative overflow-hidden">
+<div class="absolute -right-8 -top-8 w-40 h-40 bg-violet-tint/60 rounded-full blur-2xl pointer-events-none"></div>
+<div>
+<div class="flex items-center justify-between mb-space-sm">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+            Lobby Oficial de Escolhas
+          </span>
+<span class="font-label-sm text-label-sm text-text-muted">Temporada 2026.1</span>
+</div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface tracking-tight">Sala de Draft &amp; Pool Geral</h2>
+<p class="font-body-sm text-body-sm text-text-muted mt-1">Condução oficial Snake Draft com 40 pro-players ranqueados.</p>
+<!-- Metrics Duo -->
+<div class="grid grid-cols-2 gap-space-sm mt-space-md">
+<div class="bg-surface-container-low rounded-xl p-space-md">
+<span class="font-label-sm text-label-sm text-text-muted">Total Cadastrados</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-score-display text-[26px] text-on-surface">40</span>
+<span class="font-label-sm text-label-sm text-primary font-bold">Atletas</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 100%"></div>
+</div>
+</div>
+<div class="bg-emerald-tint rounded-xl p-space-md">
+<span class="font-label-sm text-label-sm text-secondary">Agentes Livres</span>
+<div class="flex items-baseline gap-1 mt-0.5">
+<span class="font-score-display text-[26px] text-secondary">29</span>
+<span class="font-label-sm text-label-sm text-secondary font-bold">Disponíveis</span>
+</div>
+<div class="w-full bg-surface-white h-1.5 rounded-full mt-2 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" style="width: 72.5%"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- IA Lottery Button -->
+<div class="pt-space-md">
+<button class="w-full py-space-sm px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-between shadow-[0_4px_16px_-2px_rgba(95,58,221,0.3)] hover:bg-primary-container transition-all active:scale-[0.98]" id="lotteryBtn">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px]">casino</span>
+<span>Sortear Ordem (IA Lottery)</span>
+</div>
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</button>
+</div>
+</div>
+<!-- SNAKE DRAFT LIVE RUNWAY (8 COLUMNS) -->
+<div class="col-span-12 xl:col-span-8 bg-surface-white rounded-xl p-space-lg shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between mb-space-md">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">swap_horiz</span>
+<span class="font-headline-md text-headline-md text-on-surface">Régua Visual Snake Draft</span>
+<span class="px-2 py-0.5 rounded-md bg-surface-container font-label-sm text-label-sm text-on-surface-variant font-bold">Rodada 1 de 5</span>
+</div>
+<div class="flex items-center gap-2 text-text-muted font-body-sm text-body-sm">
+<span class="w-2 h-2 rounded-full bg-status-emerald animate-ping"></span>
+<span>Tempo Restante:</span>
+<span class="font-score-display text-headline-md text-primary font-extrabold tracking-wider bg-violet-tint px-2.5 py-0.5 rounded-lg" id="turnTimer">01:42</span>
+</div>
+</div>
+<!-- Snake Timeline Track -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-space-sm">
+<!-- Pick #1: User Team (Active Turn) -->
+<div class="relative bg-gradient-to-b from-violet-tint to-surface-white rounded-xl p-space-md shadow-sm ring-2 ring-primary">
+<div class="absolute -top-2.5 left-space-md bg-primary text-on-primary px-2 py-0.5 rounded-full font-label-sm text-[10px] tracking-wider uppercase font-bold shadow-sm">
+            SUA VEZ • ON THE CLOCK
+          </div>
+<div class="flex items-center justify-between pt-1">
+<span class="font-label-sm text-label-sm text-primary font-bold">Pick #01</span>
+<span class="flex h-2 w-2 relative">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-emerald opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2 w-2 bg-status-emerald"></span>
+</span>
+</div>
+<div class="flex items-center gap-space-sm my-space-sm">
+<div class="w-10 h-10 rounded-lg bg-primary text-on-primary flex items-center justify-center font-headline-md text-headline-md font-extrabold shadow-sm">
+              FP
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface font-bold truncate">Furia del Plata</span>
+<span class="font-body-sm text-body-sm text-primary font-medium">Você (Capitão)</span>
+</div>
+</div>
+<div class="bg-primary/10 rounded-lg py-1 px-2 text-center text-primary font-label-sm text-label-sm font-semibold">
+            Selecionando Jogador...
+          </div>
+</div>
+<!-- Pick #2: La Catimba -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-text-muted font-bold">Pick #02</span>
+<span class="font-label-sm text-[10px] text-text-muted">Aguardando</span>
+</div>
+<div class="flex items-center gap-space-sm my-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface flex items-center justify-center font-headline-md text-headline-md font-bold">
+              LC
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold truncate">La Catimba FC</span>
+<span class="font-body-sm text-body-sm text-text-muted">Na Espera</span>
+</div>
+</div>
+<div class="text-text-muted font-label-sm text-label-sm text-center py-1">
+            Próximo da Fila
+          </div>
+</div>
+<!-- Pick #3: River Plate -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between opacity-80">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-text-muted font-bold">Pick #03</span>
+<span class="font-label-sm text-[10px] text-text-muted">Aguardando</span>
+</div>
+<div class="flex items-center gap-space-sm my-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface flex items-center justify-center font-headline-md text-headline-md font-bold">
+              RP
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold truncate">River Plate Draft</span>
+<span class="font-body-sm text-body-sm text-text-muted">Turno 3</span>
+</div>
+</div>
+<div class="text-text-muted font-label-sm text-label-sm text-center py-1">
+            2 Escolhas Restantes
+          </div>
+</div>
+<!-- Pick #4: Boca Juniors -->
+<div class="bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between opacity-80">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm text-text-muted font-bold">Pick #04</span>
+<span class="font-label-sm text-[10px] text-text-muted">Inverte Snake</span>
+</div>
+<div class="flex items-center gap-space-sm my-space-sm">
+<div class="w-10 h-10 rounded-lg bg-surface-container-high text-on-surface flex items-center justify-center font-headline-md text-headline-md font-bold">
+              BJ
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface font-semibold truncate">Boca Juniors 5v5</span>
+<span class="font-body-sm text-body-sm text-text-muted">Turno 4</span>
+</div>
+</div>
+<div class="text-text-muted font-label-sm text-label-sm text-center py-1 flex items-center justify-center gap-1">
+<span class="material-symbols-outlined text-[14px]">u_turn_left</span> Inversão
+          </div>
+</div>
+</div>
+<!-- Snake helper notes -->
+<div class="flex items-center justify-between pt-space-sm text-text-muted font-body-sm text-body-sm">
+<span class="flex items-center gap-1"><span class="material-symbols-outlined text-[16px] text-primary">info</span> Formato: 1-2-3-4-4-3-2-1. Limite por escolha: 120 segundos.</span>
+<span class="font-label-sm text-label-sm text-primary font-bold cursor-pointer hover:underline">Ver Grade Completa (10 Times) &gt;</span>
+</div>
+</div>
+</div>
+<!-- ADVANCED SEARCH & MULTI-FILTER DOCK -->
+<div class="bg-surface-white rounded-xl p-space-md shadow-sm flex flex-col gap-space-md">
+<!-- Top row: Tabs + Search -->
+<div class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-space-md">
+<!-- Status Segmented Tabs -->
+<div class="flex items-center bg-surface-container-low p-1 rounded-xl">
+<button class="filter-tab-btn flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md transition-all shadow-[0_2px_8px_rgba(95,58,221,0.25)]" data-filter-status="all">
+<span>Todos</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-white/20 text-on-primary text-[10px]">40</span>
+</button>
+<button class="filter-tab-btn flex items-center gap-1.5 px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-filter-status="free">
+<span>Agentes Livres</span>
+<span class="px-1.5 py-0.2 rounded-full bg-emerald-tint text-secondary text-[10px] font-bold">29</span>
+</button>
+<button class="filter-tab-btn flex items-center gap-1.5 px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all" data-filter-status="signed">
+<span>Contratados</span>
+<span class="px-1.5 py-0.2 rounded-full bg-surface-container text-text-muted text-[10px]">11</span>
+</button>
+</div>
+<!-- Real-time Instant Search Input -->
+<div class="flex-1 max-w-xl">
+<div class="flex items-center gap-space-sm px-space-md py-2 bg-surface-container-low rounded-xl text-text-muted focus-within:ring-2 focus-within:ring-primary/40 focus-within:bg-surface-white transition-all">
+<span class="material-symbols-outlined text-[20px] text-primary">search</span>
+<input class="bg-transparent border-none outline-none font-body-md text-body-md text-on-surface placeholder:text-text-muted w-full" id="playerSearch" placeholder="Buscar por gamertag, nome de atleta real ou arquétipo..." type="text"/>
+<button class="hidden text-text-muted hover:text-on-surface" id="clearSearch">
+<span class="material-symbols-outlined text-[16px]">cancel</span>
+</button>
+</div>
+</div>
+</div>
+<!-- Bottom row: Specific Attribute Tag Filters -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<!-- Position Pills -->
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-text-muted mr-1">Posição:</span>
+<button class="pos-filter px-3 py-1 rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold" data-pos="ALL">Todas</button>
+<button class="pos-filter px-3 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm" data-pos="ATA">ATA (ST/LW/RW)</button>
+<button class="pos-filter px-3 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm" data-pos="MEI">MEI (CAM/CM/CDM)</button>
+<button class="pos-filter px-3 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm" data-pos="DEF">DEF (CB/LB/RB)</button>
+<button class="pos-filter px-3 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm" data-pos="GK">GK (Goleiro)</button>
+</div>
+<!-- AcceleRATE Badges Filter -->
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-text-muted mr-1">AcceleRATE:</span>
+<button class="accel-filter px-2.5 py-1 rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold" data-accel="ALL">Todos</button>
+<button class="accel-filter px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm flex items-center gap-1" data-accel="Prolongada">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span> Prolongada (Lengthy)
+        </button>
+<button class="accel-filter px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm flex items-center gap-1" data-accel="Explosiva">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span> Explosiva
+        </button>
+<button class="accel-filter px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm flex items-center gap-1" data-accel="Controlada">
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span> Controlada
+        </button>
+</div>
+</div>
+</div>
+<!-- PLAYER CARDS RESPONSIVE GRID (DESKTOP 4-COLUMNS) -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-gutter-lg" id="athletesGrid">
+<!-- CARD 1: Romario_Baixinho (FREE AGENT - PRIORITY DRAFT) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between p-space-lg relative overflow-hidden group" data-accel="Explosiva" data-name="Romario_Baixinho Romario Baixinho" data-pos="ATA" data-status="free">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-emerald-tint text-secondary font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald animate-pulse"></span>
+          Agente Livre
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Close-up high-resolution esports avatar of Romario, Brazilian competitive FIFA forward with intense determined gaze, neon purple ambient lighting, crisp athletic sportswear, clean gaming studio aesthetic" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA_0o479PU-Rd-6YsN9BtYOtjFQ7X0fwn3u-WSZekYIeHVEJMZbwnc9CdX1FxH9YQJUiaHupaxwqrsVdlav1g7zGaU-2zwWUgQ-SBkKcKdub6FMKED-nerqkfymef_RwxUKnIzQmgf0oNluQ66q4cQVHUIw38Kql7oUGgKDTGmC6kJjEj69KzdQ2W-dIYUjAxTR6Ww_-rM0hUofHRmQG0AAlcM718q5Zbsz6K0Md6vRFx83XarrSUxJ"/>
+<span class="absolute bottom-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">ATA</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Romario_Baixinho</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Romário V. (Atacante)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Bruxo</span>
+<span class="px-2 py-0.5 rounded bg-emerald-tint font-label-sm text-[10px] text-secondary font-semibold">⚡ Explosiva</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">12</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-headline-md text-primary">8</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-headline-md text-on-surface">7</span>
+</div>
+</div>
+<!-- Draft CTA Button -->
+<button class="draft-btn w-full py-2.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_4px_14px_-2px_rgba(95,58,221,0.3)] hover:bg-primary-container transition-all active:scale-[0.98]" onclick="draftAthlete('Romario_Baixinho')">
+<span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+<!-- CARD 2: Maldini_ZAG (FREE AGENT) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between p-space-lg relative overflow-hidden group" data-accel="Prolongada" data-name="Maldini_ZAG Maldini Zagueiro" data-pos="DEF" data-status="free">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-emerald-tint text-secondary font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald animate-pulse"></span>
+          Agente Livre
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Italian style esports defender Maldini avatar, focused calm tactical expression, modern pro jersey with purple and charcoal tones, sharp lighting against studio dark violet gradient" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDwbo0cQJXhOr4Qf6WWM2nHfYPRdqFAFqm6SyeGTz6Z300owsBZzcnoBhgd4zP-Q5nkvU1uDngi7G4mxr2rVNeE1CFJ5gHjezIbNJ7GpslMZLAiiIqSPggjOENBWG0BZnUPFwPFqcJHF80aeRukxdYzg89Q7McFewk2K1rjhE9hR_xCnELMPDjCeOr7st_-kbhSZnqJqYRs_V-jrLU68wVNGuPxRrSKQSxdagLDd9xiEPMaxJDHeuPt"/>
+<span class="absolute bottom-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">ZAG</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Maldini_ZAG</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Paolo M. (Zagueiro CB)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Chefia</span>
+<span class="px-2 py-0.5 rounded bg-violet-tint font-label-sm text-[10px] text-primary font-semibold">📏 Prolongada</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">13</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-headline-md text-on-surface">2</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-headline-md text-primary">8</span>
+</div>
+</div>
+<!-- Draft CTA Button -->
+<button class="draft-btn w-full py-2.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_4px_14px_-2px_rgba(95,58,221,0.3)] hover:bg-primary-container transition-all active:scale-[0.98]" onclick="draftAthlete('Maldini_ZAG')">
+<span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+<!-- CARD 3: Pirlo_Regista (FREE AGENT) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between p-space-lg relative overflow-hidden group" data-accel="Controlada" data-name="Pirlo_Regista Pirlo Regista Volante" data-pos="MEI" data-status="free">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-emerald-tint text-secondary font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald animate-pulse"></span>
+          Agente Livre
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Sophisticated esports midfield playmaker avatar named Pirlo, elegant beard, calm visionary look, purple accent studio lighting, realistic EA FC pro player styling" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBCo8lcnjJhN1pvjG3H8P9ZokvNUTX39e6C82ChiFiYm7HfSym6-XKN-Z4aayJGDb58YXDWxzTA70PaZdp0P6J_X_OzEUIPD-l6TdfsoBoYNUKu1BXY4QrkAhhMTzRhoJeGNQ6lDV7RQFnfXn4d2czMjz1PD2kvBclmaKY11h4JvC7FavONTq_27xzJAe1GWadH3Lm59txrlvT5wbD_gK8pwEkwpuw1RsVmtyraraFtKQ66EXsXqtj6"/>
+<span class="absolute bottom-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">VOL</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Pirlo_Regista</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Andrea P. (Volante CDM)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Compasso</span>
+<span class="px-2 py-0.5 rounded bg-surface-container-high font-label-sm text-[10px] text-on-surface font-semibold">⚖️ Controlada</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">16</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-headline-md text-on-surface">2</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-headline-md text-primary">3</span>
+</div>
+</div>
+<!-- Draft CTA Button -->
+<button class="draft-btn w-full py-2.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_4px_14px_-2px_rgba(95,58,221,0.3)] hover:bg-primary-container transition-all active:scale-[0.98]" onclick="draftAthlete('Pirlo_Regista')">
+<span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+<!-- CARD 4: Cafu_LD (FREE AGENT) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between p-space-lg relative overflow-hidden group" data-accel="Explosiva" data-name="Cafu_LD Cafu Lateral Direito" data-pos="DEF" data-status="free">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-emerald-tint text-secondary font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald animate-pulse"></span>
+          Agente Livre
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" data-alt="Energetic athletic Brazilian right-back Cafu esports pro player portrait, vibrant radiant smile, modern competitive kit, clean studio setup with violet and emerald accents" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDOBzN-5VhzaTfPxTst1QLOvJG3V5fo27ylpyja4T9gSPvOkSeHxeQOlBzbXMQX0vjZKiFsCu-Rbw3x6a114ISmTsFKsjZqTPVwo4fHgkAZjO_k82ZEErpSN4oInBSyF8v7PwVlj_PuI9vFxK5ZiYtsp_MPA8sc4azREOnz4d7wJTz6oImtx46ddm3ba1yIawugzpZZeG6lkUOiZz7GWkwIMtEpCj8H2MTueoOyNdfTEiGvfbt9VegA"/>
+<span class="absolute bottom-0 right-0 bg-primary text-on-primary font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">LD</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Cafu_LD</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Marcos C. (Lateral LD)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Motorzinho</span>
+<span class="px-2 py-0.5 rounded bg-emerald-tint font-label-sm text-[10px] text-secondary font-semibold">⚡ Explosiva</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">14</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-headline-md text-on-surface">0</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-headline-md text-primary">9</span>
+</div>
+</div>
+<!-- Draft CTA Button -->
+<button class="draft-btn w-full py-2.5 px-space-md rounded-xl bg-primary text-on-primary font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_4px_14px_-2px_rgba(95,58,221,0.3)] hover:bg-primary-container transition-all active:scale-[0.98]" onclick="draftAthlete('Cafu_LD')">
+<span class="material-symbols-outlined text-[18px]">how_to_reg</span>
+<span>Draftar p/ Furia</span>
+</button>
+</div>
+<!-- CARD 5: Jefhe (SIGNED - FURIA DEL PLATA) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm flex flex-col justify-between p-space-lg relative overflow-hidden opacity-95" data-accel="Prolongada" data-name="Jefhe Maestro Meia" data-pos="MEI" data-status="signed">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm font-bold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[14px]">shield</span>
+          Contratado • Furia
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="High quality 3D render avatar of pro gamer Jefhe, charismatic midfielder wearing purple esports jersey, clean modern studio lighting, confident stance" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5Fcotj4dj7VhWoB2fFmVv8aamxtVMLaSgE5Fk7sZ99ixmFa2qQzxZok9KXIaP_qxnCka5ePMF9btOQ5A9lgq4zw13kG9necnuQRYgJen9BCuZRheJOQ9vcIvCmQVy53b2b0T8tWgxAhMlAlSk8-X0AqyRHo8N2u_ut0-_kUpQLS3FyNik_x4YLDYHkZcUap0SM0UV-a_vrHKm9XJ_idCufiNuy1p8bLuY3zTRjBi8WkSkCBZf8XLe"/>
+<span class="absolute bottom-0 right-0 bg-on-surface text-surface-white font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">MEI</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Jefhe</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Jefferson M. (Meia)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Maestro</span>
+<span class="px-2 py-0.5 rounded bg-violet-tint font-label-sm text-[10px] text-primary font-semibold">📏 Prolongada</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">18</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-headline-md text-primary font-bold">24</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-headline-md text-primary font-bold">19</span>
+</div>
+</div>
+<!-- Locked / Roster Badge -->
+<div class="w-full py-2.5 px-space-md rounded-xl bg-surface-container text-on-surface-variant font-label-md text-label-md flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span>Titular da Furia del Plata</span>
+</div>
+</div>
+<!-- CARD 6: Haalandinho (SIGNED - LA CATIMBA) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm flex flex-col justify-between p-space-lg relative overflow-hidden opacity-95" data-accel="Prolongada" data-name="Haalandinho Atacante Alvo" data-pos="ATA" data-status="signed">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+          Contratado • La Catimba
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Blonde towering esports FIFA striker avatar named Haalandinho, fierce aggressive expression, athletic stance, moody esports lighting with soft violet rim light" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDjXXV6IBvFgXAVM13inuKb383WjW61vm1xF5FvjmiHIxErzz2riVEsJE01E0uo_6Iz96vElU8Dx73iX-jGa5Mb5fmpVZPYe3IeTYe7uPL_f2VxqVtad7MH6r7_k1AlEjTLFiv1DJkztA7UDyBDQ8h9PVyqNRgrU5UxfA9D0iDdbsFHPuLaN2yFr8fm6K7djKygiX7a2Tv3O1Gl5XTlxhqG7wJUm7httOrMCsHreVbrgXxvRhGzW2SG"/>
+<span class="absolute bottom-0 right-0 bg-on-surface text-surface-white font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">ATA</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Haalandinho</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Erling H. (Centroavante)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Alvo</span>
+<span class="px-2 py-0.5 rounded bg-violet-tint font-label-sm text-[10px] text-primary font-semibold">📏 Prolongada</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">16</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-headline-md text-primary font-bold">29</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-headline-md text-on-surface">8</span>
+</div>
+</div>
+<!-- Locked / Roster Badge -->
+<div class="w-full py-2.5 px-space-md rounded-xl bg-surface-container-low text-text-muted font-label-md text-label-md flex items-center justify-center gap-2 cursor-not-allowed">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span>Alocado no Pick #02</span>
+</div>
+</div>
+<!-- CARD 7: Deivy_10 (SIGNED - RIVER PLATE) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm flex flex-col justify-between p-space-lg relative overflow-hidden opacity-95" data-accel="Explosiva" data-name="Deivy_10 Meia Cerebro" data-pos="MEI" data-status="signed">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+          Contratado • River Plate
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Playmaker esports pro athlete Deivy 10 portrait, wearing gaming jersey with red and white crest accents, studio lighting, hyper-realistic EA FC tournament render" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDxghe9AClUjlJPqx5_suW7ukr-paH6eJhgUh9rpifVv1r-ahV-IUPsBANvdgm3GWFkgMs6Qg0Hrl3vJrIcgfx4hfrZFhpTowSL_JHzXdTFZ4GfFLWDlNIuXlerQeVO75n-7twahBxxTacFsj7aqpBhGhGT6Y9dP6ZId8K7gASNSVoVomAJgvtcj20_NWq3_9kaZla_veLdP812b0oOtF1aI2L4_d4i9-AXGZu0MYPyyk3c6GT_Ya8E"/>
+<span class="absolute bottom-0 right-0 bg-on-surface text-surface-white font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">MEI</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Deivy_10</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Deivid S. (Meia Atacante)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Cérebro</span>
+<span class="px-2 py-0.5 rounded bg-emerald-tint font-label-sm text-[10px] text-secondary font-semibold">⚡ Explosiva</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">15</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Gols</span>
+<span class="font-score-display text-headline-md text-primary">11</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Assists</span>
+<span class="font-score-display text-headline-md text-primary">14</span>
+</div>
+</div>
+<!-- Locked / Roster Badge -->
+<div class="w-full py-2.5 px-space-md rounded-xl bg-surface-container-low text-text-muted font-label-md text-label-md flex items-center justify-center gap-2 cursor-not-allowed">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span>Contrato Ativo</span>
+</div>
+</div>
+<!-- CARD 8: Muralha_GK (SIGNED - BOCA JUNIORS) -->
+<div class="athlete-card bg-surface-white rounded-xl shadow-sm flex flex-col justify-between p-space-lg relative overflow-hidden opacity-95" data-accel="Prolongada" data-name="Muralha_GK Muralha Goleiro" data-pos="GK" data-status="signed">
+<!-- Top Badges & Status -->
+<div class="flex items-center justify-between mb-space-md">
+<span class="px-2.5 py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold flex items-center gap-1.5">
+<span class="w-1.5 h-1.5 rounded-full bg-text-muted"></span>
+          Contratado • Boca Jrs
+        </span>
+<div class="flex items-center gap-1 bg-score-capsule px-2.5 py-1 rounded-full">
+<span class="material-symbols-outlined text-[15px] text-primary" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="font-score-display text-label-md text-on-surface">8.2</span>
+</div>
+</div>
+<!-- Player Identity & Photo Header -->
+<div class="flex items-center gap-space-md">
+<div class="relative w-16 h-16 rounded-xl bg-surface-container-low overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="Imposing goalkeeper avatar Muralha GK with intense eyes, goalkeeper gloves held up, high-tech esports stadium neon illumination, clean render style" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCQJgqlXJozu8-zj1dzgHNJRtwk1NgiTMsg9lMBvNXMFvdB4PbcVew3HXdMJXF_EpBUroaHUHDvpZ73mnUsQ5OGCtwxsBOa0EFa153cZx06bhLD9QsrY6TwKa-7clKODHCTidJtfpaSIxsc3ceSFg_5E6VraF4G6YWAyBWCedQWnZ0nycPFGxXPAtMkwuWEJu0m1m5zpO7KLu8Ee-hW7uuStmi_5XrYbxS4-vgszwOW6oJDMnKuYFvR"/>
+<span class="absolute bottom-0 right-0 bg-on-surface text-surface-white font-label-sm text-[10px] px-1.5 py-0.5 rounded-tl-md font-bold">GK</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface font-extrabold truncate">Muralha_GK</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">Alexandre R. (Goleiro GK)</span>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-2 py-0.5 rounded bg-surface-container font-label-sm text-[10px] text-on-surface-variant font-bold">Muralha</span>
+<span class="px-2 py-0.5 rounded bg-violet-tint font-label-sm text-[10px] text-primary font-semibold">📏 Prolongada</span>
+</div>
+</div>
+</div>
+<!-- Season Performance Telemetry -->
+<div class="grid grid-cols-3 gap-space-xs bg-surface-container-low rounded-xl p-space-sm my-space-md text-center">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Jogos</span>
+<span class="font-score-display text-headline-md text-on-surface">19</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Defesas</span>
+<span class="font-score-display text-headline-md text-primary font-bold">68</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">Clean Sht</span>
+<span class="font-score-display text-headline-md text-on-surface font-bold">9</span>
+</div>
+</div>
+<!-- Locked / Roster Badge -->
+<div class="w-full py-2.5 px-space-md rounded-xl bg-surface-container-low text-text-muted font-label-md text-label-md flex items-center justify-center gap-2 cursor-not-allowed">
+<span class="material-symbols-outlined text-[18px]">lock</span>
+<span>Fechado Temporada</span>
+</div>
+</div>
+</div>
+<!-- TOAST / SNACKBAR NOTIFICATION CONTAINER -->
+<div class="fixed bottom-6 right-8 z-50 transform translate-y-24 opacity-0 transition-all duration-300 flex items-center gap-3 bg-on-surface text-surface-white px-5 py-3.5 rounded-xl shadow-xl" id="toastNotification">
+<span class="material-symbols-outlined text-status-emerald text-[22px]">check_circle</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold" id="toastTitle">Jogador Draftado!</span>
+<span class="font-body-sm text-body-sm text-surface-container-high" id="toastSub">Romario_Baixinho agora defende a Furia del Plata.</span>
+</div>
+</div>
+</div>
+<!-- INTERACTIVE FILTERING & DRAFT SCRIPTS -->
+<script>
+  // DOM References
+  const searchInput = document.getElementById('playerSearch');
+  const clearSearchBtn = document.getElementById('clearSearch');
+  const statusButtons = document.querySelectorAll('.filter-tab-btn');
+  const posButtons = document.querySelectorAll('.pos-filter');
+  const accelButtons = document.querySelectorAll('.accel-filter');
+  const cards = document.querySelectorAll('.athlete-card');
+  const lotteryBtn = document.getElementById('lotteryBtn');
+  const turnTimer = document.getElementById('turnTimer');
+  const toast = document.getElementById('toastNotification');
+  const toastTitle = document.getElementById('toastTitle');
+  const toastSub = document.getElementById('toastSub');
+
+  // Filter States
+  let currentStatus = 'all';
+  let currentPos = 'ALL';
+  let currentAccel = 'ALL';
+  let currentQuery = '';
+
+  // Apply Combined Multi-Dimension Filtering
+  function applyFilters() {
+    cards.forEach(card => {
+      const name = card.dataset.name.toLowerCase();
+      const status = card.dataset.status;
+      const pos = card.dataset.pos;
+      const accel = card.dataset.accel;
+
+      const matchesQuery = !currentQuery || name.includes(currentQuery);
+      const matchesStatus = currentStatus === 'all' || status === currentStatus;
+      const matchesPos = currentPos === 'ALL' || pos === currentPos;
+      const matchesAccel = currentAccel === 'ALL' || accel === currentAccel;
+
+      if (matchesQuery && matchesStatus && matchesPos && matchesAccel) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  // Real-time Search Handler
+  searchInput.addEventListener('input', (e) => {
+    currentQuery = e.target.value.toLowerCase().trim();
+    clearSearchBtn.style.display = currentQuery ? 'block' : 'none';
+    applyFilters();
+  });
+
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    currentQuery = '';
+    clearSearchBtn.style.display = 'none';
+    applyFilters();
+    searchInput.focus();
+  });
+
+  // Status Tab Switcher
+  statusButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      statusButtons.forEach(b => {
+        b.className = 'filter-tab-btn flex items-center gap-1.5 px-space-md py-1.5 rounded-lg text-on-surface-variant hover:text-on-surface font-label-md text-label-md transition-all';
+      });
+      btn.className = 'filter-tab-btn flex items-center gap-1.5 px-space-md py-1.5 rounded-lg bg-primary text-on-primary font-label-md text-label-md transition-all shadow-[0_2px_8px_rgba(95,58,221,0.25)]';
+      
+      currentStatus = btn.dataset.filterStatus;
+      applyFilters();
+    });
+  });
+
+  // Position Filter Pills
+  posButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      posButtons.forEach(b => {
+        b.className = 'pos-filter px-3 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm';
+      });
+      btn.className = 'pos-filter px-3 py-1 rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold';
+      currentPos = btn.dataset.pos;
+      applyFilters();
+    });
+  });
+
+  // AcceleRATE Filter Badges
+  accelButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      accelButtons.forEach(b => {
+        b.className = 'accel-filter px-2.5 py-1 rounded-lg bg-surface-container-low text-on-surface-variant hover:bg-surface-container font-label-sm text-label-sm flex items-center gap-1';
+      });
+      btn.className = 'accel-filter px-2.5 py-1 rounded-lg bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold flex items-center gap-1';
+      currentAccel = btn.dataset.accel;
+      applyFilters();
+    });
+  });
+
+  // Countdown clock simulation for current pick
+  let seconds = 102;
+  setInterval(() => {
+    if (seconds > 0) {
+      seconds--;
+      const mins = Math.floor(seconds / 60);
+      const remSecs = seconds % 60;
+      turnTimer.textContent = `0${mins}:${remSecs < 10 ? '0' : ''}${remSecs}`;
+    }
+  }, 1000);
+
+  // IA Lottery Simulation
+  lotteryBtn.addEventListener('click', () => {
+    lotteryBtn.disabled = true;
+    const originalText = lotteryBtn.innerHTML;
+    lotteryBtn.innerHTML = `
+      <div class="flex items-center gap-2">
+        <span class="material-symbols-outlined text-[20px] animate-spin">refresh</span>
+        <span>Processando Sorteio IA...</span>
+      </div>
+    `;
+
+    setTimeout(() => {
+      lotteryBtn.innerHTML = originalText;
+      lotteryBtn.disabled = false;
+      showToast('Sorteio IA Concluído', 'Nova ordem snake gerada com base em seed criptográfica auditável.');
+    }, 1200);
+  });
+
+  // Interactive Draft Function
+  window.draftAthlete = function(athleteName) {
+    const card = Array.from(cards).find(c => c.dataset.name.includes(athleteName));
+    if (card) {
+      card.dataset.status = 'signed';
+      const ctaBtn = card.querySelector('.draft-btn');
+      if (ctaBtn) {
+        ctaBtn.outerHTML = `
+          <div class="w-full py-2.5 px-space-md rounded-xl bg-violet-tint text-primary font-label-md text-label-md flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined text-[18px]">verified</span>
+            <span>Draftado para Furia del Plata!</span>
+          </div>
+        `;
+      }
+      showToast('Pick Confirmado!', `${athleteName} foi adicionado à Furia del Plata.`);
+      applyFilters();
+    }
+  };
+
+  // Toast Trigger Helper
+  function showToast(title, message) {
+    toastTitle.textContent = title;
+    toastSub.textContent = message;
+    toast.classList.remove('translate-y-24', 'opacity-0');
+    toast.classList.add('translate-y-0', 'opacity-100');
+
+    setTimeout(() => {
+      toast.classList.remove('translate-y-0', 'opacity-100');
+      toast.classList.add('translate-y-24', 'opacity-0');
+    }, 3800);
+  }
+</script></main></div></body></html>

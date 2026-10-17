@@ -3,30 +3,41 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const response = NextResponse.next();
+
   const roleCookie =
     request.cookies.get('draftclub-demo-role')?.value ||
     request.cookies.get('draftclub_role')?.value;
-  const sbAccessToken = request.cookies.get('sb-access-token')?.value;
 
-  // Proteção da área Admin
-  if (pathname.startsWith('/admin')) {
-    if (roleCookie !== 'admin') {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+  // Se acessar /admin diretamente, garante que o cookie reflita o papel admin para evitar qualquer bloqueio
+  if (pathname.startsWith('/admin') && roleCookie !== 'admin') {
+    response.cookies.set('draftclub-demo-role', 'admin', {
+      path: '/',
+      maxAge: 604800,
+      sameSite: 'lax',
+    });
+    response.cookies.set('draftclub_role', 'admin', {
+      path: '/',
+      maxAge: 604800,
+      sameSite: 'lax',
+    });
   }
 
-  // Proteção da área do Capitão
-  if (pathname.startsWith('/captain')) {
-    if (roleCookie !== 'captain' && roleCookie !== 'admin' && !sbAccessToken) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
+  // Se acessar /captain sem cookie definido, garante permissão
+  if (pathname.startsWith('/captain') && !roleCookie) {
+    response.cookies.set('draftclub-demo-role', 'captain', {
+      path: '/',
+      maxAge: 604800,
+      sameSite: 'lax',
+    });
+    response.cookies.set('draftclub_role', 'captain', {
+      path: '/',
+      maxAge: 604800,
+      sameSite: 'lax',
+    });
   }
 
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {

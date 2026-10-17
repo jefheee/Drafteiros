@@ -31,13 +31,6 @@ export interface PlayStyleAsset {
   plusIconUrl: string;
 }
 
-export interface CardDesignAsset {
-  id: string;
-  name: string;
-  category: string;
-  url: string;
-}
-
 export interface AwardAssetItem {
   id: string;
   name: string;
@@ -501,28 +494,76 @@ export const PLATFORM_ASSETS = {
   OldGen: '/assets/platforms/playstation.png',
 };
 
+export interface CardDesignAsset {
+  id: string;
+  name: string;
+  category: 'Padrão' | 'Especial' | 'TOTY & TOTS' | 'Herói & Ídolo';
+  url: string;
+  textTheme: 'dark' | 'light'; // 'dark' (#2b2210) para cartas claras como Gold Rare/Icon; 'light' (#ffffff) para cartas escuras como TOTY/Promo
+  rarity: 'common' | 'rare' | 'epic' | 'legendary';
+  unlockRequirement: string;
+  minOvr?: number;
+}
+
 export const TEMPLATE_ASSETS = Object.assign(
   [
     {
-      id: 'matchday',
-      name: 'Estádio Pós-Jogo',
-      imageUrl: '/assets/fc-26-clean-card-designs/toty/toty.webp',
+      id: 'noite-de-copa',
+      name: 'Noite de Copa (Refletores)',
+      imageUrl:
+        'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&q=85',
     },
     {
-      id: 'champions',
-      name: 'Noite de Copa',
-      imageUrl: '/assets/fc-26-clean-card-designs/tots/tots-champions.webp',
+      id: 'estadio-pos',
+      name: 'Estádio Pós-Jogo (Gramado)',
+      imageUrl:
+        'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200&q=85',
     },
     {
-      id: 'fc-pro',
-      name: 'Arena E-Sports',
-      imageUrl: '/assets/fc-26-clean-card-designs/other/fc-pro.webp',
+      id: 'arena-esports',
+      name: 'Arena E-Sports (Holofotes)',
+      imageUrl:
+        'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=85',
+    },
+    {
+      id: 'caldeirao-sulamericano',
+      name: 'Caldeirão Sul-Americano',
+      imageUrl:
+        'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=85',
     },
   ] as TemplateAssetItem[],
   {
     captainBand: '/assets/tactics/captain-band.png',
-    defaultCrest: '/assets/templates/default-crest.png',
-    guestAvatar: '/assets/templates/guest-avatar.png',
+    defaultCrest: '/assets/templates/crest-placeholder.png',
+    crestPlaceholder: '/assets/templates/crest-placeholder.png',
+    guestAvatar: '/assets/templates/avatar-placeholder.jpg',
+    avatarPlaceholder: '/assets/templates/avatar-placeholder.jpg',
+    postGameBackgrounds: [
+      {
+        id: 'noite-de-copa',
+        name: 'Noite de Copa (Refletores)',
+        url: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&q=85',
+        imageUrl: 'https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=1200&q=85',
+      },
+      {
+        id: 'estadio-pos',
+        name: 'Estádio Pós-Jogo (Gramado)',
+        url: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200&q=85',
+        imageUrl: 'https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=1200&q=85',
+      },
+      {
+        id: 'arena-esports',
+        name: 'Arena E-Sports (Holofotes)',
+        url: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=85',
+        imageUrl: 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=1200&q=85',
+      },
+      {
+        id: 'caldeirao-sulamericano',
+        name: 'Caldeirão Sul-Americano',
+        url: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=85',
+        imageUrl: 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=1200&q=85',
+      },
+    ],
   }
 );
 
@@ -530,50 +571,192 @@ export const TEMPLATE_ASSETS = Object.assign(
 export const CARD_DESIGN_ASSETS: CardDesignAsset[] = [
   {
     id: 'gold-rare',
-    name: 'Ouro Raro',
+    name: 'Ouro Raro (Padrão Van Dijk)',
     category: 'Padrão',
     url: '/assets/fc-26-clean-card-designs/default/gold-rare.webp',
+    textTheme: 'dark',
+    rarity: 'common',
+    unlockRequirement: 'Liberada para todos os atletas (OVR 75+)',
+    minOvr: 75,
   },
   {
-    id: 'toty',
-    name: 'Team of the Year (TOTY)',
-    category: 'Especial',
-    url: '/assets/fc-26-clean-card-designs/toty/toty.webp',
+    id: 'silver-rare',
+    name: 'Prata Raro',
+    category: 'Padrão',
+    url: '/assets/fc-26-clean-card-designs/default/silver-rare.webp',
+    textTheme: 'dark',
+    rarity: 'common',
+    unlockRequirement: 'Liberada para todos os atletas',
+    minOvr: 65,
   },
   {
-    id: 'tots-champions',
-    name: 'TOTS Champions',
-    category: 'Especial',
-    url: '/assets/fc-26-clean-card-designs/tots/tots-champions.webp',
+    id: 'bronze-rare',
+    name: 'Bronze Raro',
+    category: 'Padrão',
+    url: '/assets/fc-26-clean-card-designs/default/bronze-rare.webp',
+    textTheme: 'dark',
+    rarity: 'common',
+    unlockRequirement: 'Liberada para todos os atletas',
+    minOvr: 60,
   },
   {
-    id: 'joga-bonito',
-    name: 'Joga Bonito',
+    id: 'team-of-the-week',
+    name: 'Seleção da Semana (TOTW)',
     category: 'Especial',
-    url: '/assets/fc-26-clean-card-designs/other/joga-bonito.webp',
+    url: '/assets/fc-26-clean-card-designs/other/team-of-the-week.webp',
+    textTheme: 'light',
+    rarity: 'rare',
+    unlockRequirement: 'Ser eleito Craque da Partida (MOTM) 1 vez',
+    minOvr: 82,
   },
   {
     id: 'future-stars',
     name: 'Future Stars',
     category: 'Especial',
     url: '/assets/fc-26-clean-card-designs/other/future-stars.webp',
+    textTheme: 'light',
+    rarity: 'rare',
+    unlockRequirement: 'Disputar 5 partidas oficiais na liga',
+    minOvr: 84,
   },
   {
-    id: 'icon',
-    name: 'Ídolo (Icon)',
-    category: 'Lenda',
-    url: '/assets/fc-26-clean-card-designs/icons/icon.webp',
+    id: 'joga-bonito',
+    name: 'Joga Bonito',
+    category: 'Especial',
+    url: '/assets/fc-26-clean-card-designs/other/joga-bonito.webp',
+    textTheme: 'light',
+    rarity: 'rare',
+    unlockRequirement: '5★ de Finta ou 5 assistências na carreira',
+    minOvr: 85,
   },
   {
-    id: 'prime-heroes',
-    name: 'Prime Hero',
-    category: 'Lenda',
-    url: '/assets/fc-26-clean-card-designs/heroes/prime-heroes.webp',
+    id: 'ucl-primetime',
+    name: 'UCL Primetime',
+    category: 'Especial',
+    url: '/assets/fc-26-clean-card-designs/other/ucl-primetime.webp',
+    textTheme: 'light',
+    rarity: 'epic',
+    unlockRequirement: 'Classificar para os Playoffs Ouro (G4)',
+    minOvr: 86,
+  },
+  {
+    id: 'knockout-royalty',
+    name: 'Knockout Royalty',
+    category: 'Especial',
+    url: '/assets/fc-26-clean-card-designs/other/knockout-royalty.webp',
+    textTheme: 'light',
+    rarity: 'epic',
+    unlockRequirement: 'Marcar em fase eliminatória ou 8+ gols',
+    minOvr: 87,
+  },
+  {
+    id: 'thunderstruck',
+    name: 'Thunderstruck',
+    category: 'Especial',
+    url: '/assets/fc-26-clean-card-designs/other/thunderstruck.webp',
+    textTheme: 'light',
+    rarity: 'epic',
+    unlockRequirement: 'Alcançar OVR 88+ ou abrir em Pack Promo',
+    minOvr: 88,
   },
   {
     id: 'fc-pro',
     name: 'FC Pro Live',
-    category: 'E-Sports',
+    category: 'Especial',
     url: '/assets/fc-26-clean-card-designs/other/fc-pro.webp',
+    textTheme: 'light',
+    rarity: 'epic',
+    unlockRequirement: 'Atleta verificado com Build completa',
+    minOvr: 86,
+  },
+  {
+    id: 'potm-premier-league',
+    name: 'Player of the Month (POTM)',
+    category: 'Especial',
+    url: '/assets/fc-26-clean-card-designs/potm/potm-premier-league.webp',
+    textTheme: 'light',
+    rarity: 'epic',
+    unlockRequirement: 'Conquistar 3 prêmios de MVP (Craque)',
+    minOvr: 88,
+  },
+  {
+    id: 'fantasy-fc-hero',
+    name: 'Fantasy FC Hero',
+    category: 'Herói & Ídolo',
+    url: '/assets/fc-26-clean-card-designs/heroes/fantasy-fc-hero.webp',
+    textTheme: 'light',
+    rarity: 'legendary',
+    unlockRequirement: 'Ser MVP 3 vezes ou abrir no Pack Herói',
+    minOvr: 89,
+  },
+  {
+    id: 'prime-heroes',
+    name: 'Prime Hero',
+    category: 'Herói & Ídolo',
+    url: '/assets/fc-26-clean-card-designs/heroes/prime-heroes.webp',
+    textTheme: 'light',
+    rarity: 'legendary',
+    unlockRequirement: '15+ participações em gols na liga',
+    minOvr: 90,
+  },
+  {
+    id: 'fut-birthday-hero',
+    name: 'FUT Birthday Hero',
+    category: 'Herói & Ídolo',
+    url: '/assets/fc-26-clean-card-designs/heroes/fut-birthday-hero.webp',
+    textTheme: 'light',
+    rarity: 'legendary',
+    unlockRequirement: 'Desbloqueio via Pack Especial ou 1 Título',
+    minOvr: 90,
+  },
+  {
+    id: 'icon',
+    name: 'Ídolo Oficial (Icon)',
+    category: 'Herói & Ídolo',
+    url: '/assets/fc-26-clean-card-designs/icons/icon.webp',
+    textTheme: 'dark',
+    rarity: 'legendary',
+    unlockRequirement: 'Campeão Oficial da Liga ou Lenda do Clube',
+    minOvr: 91,
+  },
+  {
+    id: 'toty-icon',
+    name: 'TOTY Icon',
+    category: 'Herói & Ídolo',
+    url: '/assets/fc-26-clean-card-designs/icons/toty-icon.webp',
+    textTheme: 'dark',
+    rarity: 'legendary',
+    unlockRequirement: 'Campeão + Artilheiro/Garçom ou Pack Ídolo',
+    minOvr: 93,
+  },
+  {
+    id: 'tots-champions',
+    name: 'TOTS Champions',
+    category: 'TOTY & TOTS',
+    url: '/assets/fc-26-clean-card-designs/tots/tots-champions.webp',
+    textTheme: 'light',
+    rarity: 'legendary',
+    unlockRequirement: '10+ gols ou assistências em campeonatos',
+    minOvr: 91,
+  },
+  {
+    id: 'toty',
+    name: 'Team of the Year (TOTY)',
+    category: 'TOTY & TOTS',
+    url: '/assets/fc-26-clean-card-designs/toty/toty.webp',
+    textTheme: 'light',
+    rarity: 'legendary',
+    unlockRequirement: 'Marcar 10+ gols ou alcançar OVR 92+',
+    minOvr: 92,
   },
 ];
+
+export function getCardDesignByUrlOrId(urlOrId?: string): CardDesignAsset {
+  if (!urlOrId) return CARD_DESIGN_ASSETS[0];
+  return (
+    CARD_DESIGN_ASSETS.find(
+      (c) => c.id === urlOrId || c.url === urlOrId || urlOrId.includes(c.id)
+    ) || CARD_DESIGN_ASSETS[0]
+  );
+}
+

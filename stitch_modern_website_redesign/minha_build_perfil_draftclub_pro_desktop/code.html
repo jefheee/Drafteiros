@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"background":"#fbf8fc","score-capsule":"#F3F4F6","on-surface":"#1b1b1e","surface-container":"#f0edf1","primary":"#5f3add","text-muted":"#71717A","surface-container-high":"#eae7eb","tertiary-fixed-dim":"#c0c1ff","surface-white":"#FFFFFF","tertiary":"#4648d4","on-secondary-fixed":"#002106","primary-container":"#7857f8","secondary-fixed":"#73fe85","surface":"#fbf8fc","on-tertiary":"#ffffff","secondary-fixed-dim":"#54e16c","on-background":"#1b1b1e","inverse-on-surface":"#f3f0f4","error":"#ba1a1a","surface-container-lowest":"#ffffff","tertiary-container":"#6063ee","surface-container-low":"#f6f2f7","outline":"#797587","on-primary-container":"#fffbff","secondary":"#006e26","on-primary-fixed-variant":"#4918c8","canvas-bg":"#F5F6FA","primary-fixed":"#e6deff","on-tertiary-fixed":"#07006c","surface-dim":"#dcd9dd","primary-fixed-dim":"#cabeff","on-error":"#ffffff","border-subtle":"#E4E4E7","emerald-tint":"#E8FAF0","on-secondary-container":"#007328","surface-variant":"#e4e1e6","on-secondary":"#ffffff","secondary-container":"#70fb83","on-secondary-fixed-variant":"#00531a","surface-bright":"#fbf8fc","on-primary":"#ffffff","on-error-container":"#93000a","inverse-primary":"#cabeff","status-emerald":"#10B981","outline-variant":"#c9c4d8","violet-tint":"#F1EEFE","on-tertiary-container":"#fffbff","on-primary-fixed":"#1c0062","tertiary-fixed":"#e1e0ff","on-tertiary-fixed-variant":"#2f2ebe","surface-container-highest":"#e4e1e6","error-container":"#ffdad6","inverse-surface":"#303033","on-surface-variant":"#484555","surface-tint":"#613de0"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin":"1rem","space-md":"0.875rem","space-sm":"0.5rem","space-lg":"1.25rem","margin-md":"1.5rem","gutter-md":"1rem","margin-lg":"2rem","space-xl":"1.75rem","gutter":"0.75rem","gutter-lg":"1.5rem","space-xs":"0.25rem"},fontFamily:{"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"label-lg":["Inter"],"body-md":["Inter"],"body-lg":["Inter"],"score-display":["Plus Jakarta Sans"],"label-sm":["Inter"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"]},fontSize:{"headline-lg":["22px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"600"}],"headline-md":["16px",{lineHeight:"22px",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-lg":["14px",{lineHeight:"18px",fontWeight:"600"}],"body-md":["13px",{lineHeight:"18px",fontWeight:"400"}],"body-lg":["15px",{lineHeight:"22px",fontWeight:"500"}],"score-display":["16px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"800"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"700"}],"headline-xl-mobile":["26px",{lineHeight:"34px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-lg-mobile":["19px",{lineHeight:"25px",letterSpacing:"-0.015em",fontWeight:"700"}]}}}};</script></head><body class="bg-canvas-bg font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-white z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-gutter-lg pt-space-lg pb-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><span class="material-symbols-outlined text-[20px]">sports_soccer</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md tracking-tight text-on-surface">DraftClub<span class="text-primary">Pro</span></span><span class="font-label-sm text-label-sm text-text-muted">EA FC 26 Hub</span></div></div><span class="px-space-xs py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm">LPF 5v5</span></div><div class="px-gutter-lg py-space-sm"><div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-xl"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold">FP</div><div class="flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface leading-tight">Furia del Plata</span><span class="font-label-sm text-label-sm text-status-emerald flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span>Capitão Ativo</span></div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">unfold_more</span></div></div><nav class="px-gutter py-space-sm flex flex-col gap-1" data-active-classes="bg-primary text-on-primary font-bold shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Início</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tabela-e-classificacao" href="#"><span class="material-symbols-outlined text-[20px]">leaderboard</span><span class="font-label-lg text-label-lg">Tabela &amp; Classificação</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="jogos-e-sumula-ia" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span class="font-label-lg text-label-lg">Jogos &amp; Súmula IA</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="sala-de-draft" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-label-lg text-label-lg">Sala de Draft</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="minha-build-e-perfil" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-label-lg text-label-lg">Minha Build &amp; Perfil</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="estudio-banners" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome_motion</span><span class="font-label-lg text-label-lg">Estúdio Banners 4:5</span></a></nav></div><div class="p-gutter-lg"><div class="p-space-md bg-emerald-tint rounded-xl flex items-center justify-between mb-space-sm"><div class="flex items-center gap-space-sm"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-emerald opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-emerald"></span></span><span class="font-label-md text-label-md text-secondary font-bold">Copa Fácil Sync</span></div><span class="material-symbols-outlined text-secondary text-[16px]">sync</span></div><div class="flex items-center justify-between pt-space-xs text-text-muted"><span class="font-body-sm text-body-sm">Versão 5v5 Clausura</span><span class="font-label-sm text-label-sm">v2.6.4</span></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-white/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-gutter-lg"><div class="flex items-center gap-space-md w-96"><div class="w-full flex items-center gap-space-sm px-space-md py-1.5 bg-surface-container-low rounded-xl text-text-muted"><span class="material-symbols-outlined text-[18px]">search</span><input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder:text-text-muted w-full" placeholder="Buscar jogadores, confrontos ou súmulas..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="hidden lg:flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-status-emerald"></span><span class="font-label-sm text-label-sm text-on-surface">Rodada 4 em Andamento</span></div><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden md:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Capitão Mateo</span><span class="font-body-sm text-body-sm text-text-muted leading-none">Admin Clube</span></div></div></div></header><main class="w-full pt-16 bg-canvas-bg min-h-screen"><div class="flex flex-col w-full">
+<div class="p-gutter-lg max-w-[1360px] mx-auto w-full flex flex-col gap-space-lg">
+<!-- Top Action Bar -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md bg-surface-white p-space-lg rounded-xl shadow-sm">
+<div class="flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-violet-tint text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[28px]">sports_martial_arts</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-sm">
+<span class="font-headline-md text-headline-md text-on-surface">Laboratório de Build &amp; Atleta</span>
+<span class="px-space-xs py-0.5 rounded-full bg-emerald-tint text-secondary font-label-sm text-label-sm flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span>Meta Engine 26.2
+            </span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Configuração competitiva sincronizada com o elenco oficial da LPF 5v5</span>
+</div>
+</div>
+<div class="flex items-center gap-space-sm flex-wrap">
+<div class="hidden sm:flex items-center gap-space-xs px-space-md py-space-sm bg-surface-container-low rounded-xl">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface">ID LPF: #FC26-9941</span>
+</div>
+<button class="flex items-center gap-space-sm px-space-lg py-space-md bg-primary hover:bg-primary-container text-on-primary font-label-lg text-label-lg rounded-xl shadow-md transition-all" id="save-build-btn">
+<span class="material-symbols-outlined text-[20px]">cloud_sync</span>
+<span>Salvar Build &amp; Sincronizar Clube</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</div>
+<!-- Main 2-Column Responsive Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT COLUMN: Profile, OCR, AcceleRATE, Archetypes (5 Cols on large) -->
+<div class="lg:col-span-5 flex flex-col gap-space-lg">
+<!-- Athlete Presentation Card -->
+<div class="relative bg-surface-white rounded-xl shadow-sm overflow-hidden p-space-lg">
+<div class="absolute -right-12 -top-12 w-48 h-48 rounded-full bg-primary/5 blur-2xl pointer-events-none"></div>
+<div class="flex items-start justify-between relative z-10">
+<div class="flex items-center gap-space-md">
+<div class="relative">
+<div class="w-20 h-20 rounded-xl overflow-hidden bg-surface-container-high shadow-inner">
+<img class="w-full h-full object-cover" data-alt="Intense close up cinematic portrait of a competitive male esports athlete wearing a modern purple and white digital soccer team jersey, dynamic studio lighting with soft purple highlights, photorealistic, sharp focus, gaming tournament mood" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCa2G9f3ByfMKB4oMrjDa9o9fe4V3g3M5dRu-qiUWFq7PKW1-hwN3HhFWi4erSw98mY6f2SBf3BjzV9Bz8yKyS6uOyk8nTqHDkZcOmO2rZOuq5KFZx7k6aqzdgPwCcorcGpMytOSg1oN9amU1hMguzYyr68GLLCpzSwzwcTEK0-D6UxWtrHEgySkzNYhovH6R0A8CdXf2ve12yO26lDck6To1XJEmZJc_QaUfimb_KcF3TMaJ8LtOi6"/>
+</div>
+<div class="absolute -bottom-2 -right-2 px-1.5 py-0.5 rounded-lg bg-primary text-on-primary font-score-display text-score-display shadow-sm">
+                  #10
+                </div>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-space-xs">
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Jefhe</h1>
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Jefherson Santos • MEI Clássico</span>
+<div class="flex items-center gap-space-xs mt-1">
+<span class="px-space-xs py-0.5 bg-violet-tint text-primary font-label-sm text-label-sm rounded-md font-bold">Arquétipo Maestro</span>
+<span class="font-body-sm text-body-sm text-text-muted">• Destro</span>
+</div>
+</div>
+</div>
+<!-- OVR Badge -->
+<div class="flex flex-col items-center justify-center bg-surface-container-low px-space-md py-space-sm rounded-xl">
+<span class="font-label-sm text-label-sm text-text-muted leading-none uppercase">OVR</span>
+<span class="font-headline-xl text-headline-xl text-primary font-extrabold leading-none" id="player-ovr">92</span>
+<span class="font-label-sm text-label-sm text-status-emerald mt-1 font-semibold">Tier S</span>
+</div>
+</div>
+<!-- Quick Metrics Banner -->
+<div class="grid grid-cols-4 gap-space-xs mt-space-lg pt-space-md bg-surface-container-low/70 rounded-xl p-space-sm text-center">
+<div class="flex flex-col items-center">
+<span class="font-body-sm text-body-sm text-text-muted">Altura</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold" id="label-height">190 cm</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-body-sm text-body-sm text-text-muted">Peso</span>
+<span class="font-label-lg text-label-lg text-on-surface font-bold" id="label-weight">75 kg</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-body-sm text-body-sm text-text-muted">Perna Ruim</span>
+<div class="flex items-center text-primary">
+<span class="font-label-lg text-label-lg font-bold mr-0.5">5</span>
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-body-sm text-body-sm text-text-muted">Dribles</span>
+<div class="flex items-center text-primary">
+<span class="font-label-lg text-label-lg font-bold mr-0.5">4</span>
+<span class="material-symbols-outlined text-[13px]" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+</div>
+</div>
+</div>
+<!-- OCR Scan Module -->
+<div class="bg-surface-white rounded-xl shadow-sm p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">document_scanner</span>
+<span class="font-headline-md text-headline-md text-on-surface">Importar Súmula / Qualidades</span>
+</div>
+<span class="px-space-xs py-0.5 bg-violet-tint text-primary font-label-sm text-label-sm rounded-full">OCR IA</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted">
+            Carregue o print das telas de atributos do Pro Clubs EA FC 26 para calibrar automaticamente todos os 29 atributos da build.
+          </p>
+<div class="p-space-lg bg-surface-container-low rounded-xl flex flex-col items-center justify-center text-center cursor-pointer hover:bg-violet-tint/40 transition-all" id="drop-zone">
+<div class="w-10 h-10 rounded-full bg-surface-white shadow-sm flex items-center justify-center text-primary mb-space-sm">
+<span class="material-symbols-outlined text-[24px]">add_photo_alternate</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Clique para enviar print de atributos</span>
+<span class="font-body-sm text-body-sm text-text-muted mt-0.5">Formatos suportados: PNG, JPG ou WebP até 15MB</span>
+</div>
+</div>
+<!-- AcceleRATE 2.0 Official Calculator -->
+<div class="bg-surface-white rounded-xl shadow-sm p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">speed</span>
+<span class="font-headline-md text-headline-md text-on-surface">Calculadora AcceleRATE 2.0</span>
+</div>
+<span class="font-label-sm text-label-sm text-text-muted">EA FC 26 Engine</span>
+</div>
+<!-- Dynamic Status Banner -->
+<div class="p-space-md rounded-xl bg-violet-tint flex items-center justify-between">
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-primary uppercase font-bold tracking-wider">Aceleração Ativa</span>
+<span class="font-headline-md text-headline-md text-primary font-black" id="accelerate-title">Controlled Lengthy</span>
+</div>
+<span class="px-space-sm py-1 bg-surface-white text-primary font-label-sm text-label-sm rounded-lg shadow-sm font-bold">
+              50% Prolongada / 50% Controlada
+            </span>
+</div>
+<!-- Visual Balance Ruler -->
+<div class="flex flex-col gap-space-xs mt-1">
+<div class="flex justify-between font-label-sm text-label-sm text-text-muted">
+<span>Controlada</span>
+<span class="text-primary font-bold">Controlled Lengthy</span>
+<span>Prolongada Pura</span>
+</div>
+<div class="w-full h-3 bg-surface-container rounded-full overflow-hidden relative">
+<div class="absolute inset-y-0 left-0 bg-primary/20 w-1/3"></div>
+<div class="absolute inset-y-0 left-1/3 bg-primary w-1/3"></div>
+<div class="absolute inset-y-0 right-0 bg-status-emerald/30 w-1/3"></div>
+<div class="absolute top-0 bottom-0 w-2 bg-on-surface rounded-full shadow-md" id="accelerate-pin" style="left: 48%;"></div>
+</div>
+</div>
+<!-- Rule Breakdown Card -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface">Diferença Força x Agilidade:</span>
+<span class="font-score-display text-score-display text-primary font-extrabold" id="diff-calc-text">+6 (Força 85 - Agi 79)</span>
+</div>
+<div class="flex items-center gap-space-xs text-secondary font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[16px] text-status-emerald">check_circle</span>
+<span>Elegível para Prolongada: Exigência mínima cumprida (mín. +4 e Altura ≥ 188cm)</span>
+</div>
+</div>
+<!-- Interactive Sliders -->
+<div class="flex flex-col gap-space-md pt-space-xs">
+<!-- Height Slider -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface">Altura do Atleta</span>
+<span class="font-label-md text-label-md text-primary font-bold" id="val-height">190 cm</span>
+</div>
+<input class="w-full accent-primary bg-surface-container rounded-lg h-2 cursor-pointer" id="input-height" max="205" min="160" type="range" value="190"/>
+</div>
+<!-- Weight Slider -->
+<div class="flex flex-col gap-1">
+<div class="flex justify-between items-center">
+<span class="font-label-md text-label-md text-on-surface">Peso do Atleta</span>
+<span class="font-label-md text-label-md text-primary font-bold" id="val-weight">75 kg</span>
+</div>
+<input class="w-full accent-primary bg-surface-container rounded-lg h-2 cursor-pointer" id="input-weight" max="100" min="50" type="range" value="75"/>
+</div>
+</div>
+</div>
+<!-- Archetype Selector -->
+<div class="bg-surface-white rounded-xl shadow-sm p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<span class="font-headline-md text-headline-md text-on-surface">Arquétipos Disponíveis</span>
+<span class="font-body-sm text-body-sm text-text-muted">1 Ativo</span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm" id="archetypes-container">
+<!-- Maestro (Active) -->
+<button class="archetype-btn active flex items-start gap-space-sm p-space-md rounded-xl bg-violet-tint text-left transition-all">
+<div class="w-8 h-8 rounded-lg bg-primary text-on-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">auto_fix_high</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-primary font-bold">Maestro</span>
+<span class="font-body-sm text-body-sm text-text-muted">+6 Visão, +5 Lançamento</span>
+</div>
+</button>
+<!-- Alvo -->
+<button class="archetype-btn flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-low text-left hover:bg-surface-container transition-all">
+<div class="w-8 h-8 rounded-lg bg-surface-white text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">adjust</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Alvo</span>
+<span class="font-body-sm text-body-sm text-text-muted">+8 Força, +6 Finalização</span>
+</div>
+</button>
+<!-- Bruxo -->
+<button class="archetype-btn flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-low text-left hover:bg-surface-container transition-all">
+<div class="w-8 h-8 rounded-lg bg-surface-white text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">cyclone</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Bruxo</span>
+<span class="font-body-sm text-body-sm text-text-muted">+8 Drible, 5★ Fintas</span>
+</div>
+</button>
+<!-- Capitão -->
+<button class="archetype-btn flex items-start gap-space-sm p-space-md rounded-xl bg-surface-container-low text-left hover:bg-surface-container transition-all">
+<div class="w-8 h-8 rounded-lg bg-surface-white text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Capitão</span>
+<span class="font-body-sm text-body-sm text-text-muted">+5 Reação, +6 Compostura</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+<!-- RIGHT COLUMN: PlayStyles & Attributes Grid (7 Cols on large) -->
+<div class="lg:col-span-7 flex flex-col gap-space-lg">
+<!-- PlayStyles & PlayStyles+ Zone -->
+<div class="bg-surface-white rounded-xl shadow-sm p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">workspace_premium</span>
+<span class="font-headline-md text-headline-md text-on-surface">PlayStyles &amp; PlayStyles+ Oficiais</span>
+</div>
+<span class="px-space-xs py-0.5 bg-surface-container rounded-full font-label-sm text-label-sm text-text-muted">1 Ouro / 3 Prata</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-md">
+<!-- PlayStyle+ Gold: Chute Colocado -->
+<div class="p-space-md rounded-xl bg-gradient-to-r from-amber-50 to-amber-100/60 flex items-center gap-space-md shadow-sm">
+<div class="w-12 h-12 rounded-xl bg-amber-400 text-on-surface flex items-center justify-center shadow-md shrink-0">
+<span class="material-symbols-outlined text-[26px]">flare</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Chute Colocado</span>
+<span class="px-1.5 py-0.2 bg-amber-500 text-surface-white font-label-sm text-[10px] rounded font-black uppercase">Plus</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant leading-tight">Curva máxima e velocidade de execução instantânea da entrada da área.</span>
+</div>
+</div>
+<!-- PlayStyle Silver: Superchute -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">bolt</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Superchute</span>
+<span class="px-1.5 py-0.2 bg-surface-dim text-on-surface-variant font-label-sm text-[10px] rounded font-bold uppercase">Prata</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted leading-tight">Animação acelerada de finalização potente de longa distância.</span>
+</div>
+</div>
+<!-- PlayStyle Silver: Chute Direto -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">target</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Chute Direto</span>
+<span class="px-1.5 py-0.2 bg-surface-dim text-on-surface-variant font-label-sm text-[10px] rounded font-bold uppercase">Prata</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted leading-tight">Precisão absoluta em finalizações de primeira e voleios.</span>
+</div>
+</div>
+<!-- PlayStyle Silver: Passe Teleguiado -->
+<div class="p-space-md rounded-xl bg-surface-container-low flex items-center gap-space-md">
+<div class="w-12 h-12 rounded-xl bg-surface-container-highest text-on-surface-variant flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[24px]">near_me</span>
+</div>
+<div class="flex flex-col">
+<div class="flex items-center gap-1">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Passe Teleguiado</span>
+<span class="px-1.5 py-0.2 bg-surface-dim text-on-surface-variant font-label-sm text-[10px] rounded font-bold uppercase">Prata</span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted leading-tight">Lançamentos precisos em profundidade curvando em torno de zagueiros.</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Official EA FC 26 Attributes Grid -->
+<div class="bg-surface-white rounded-xl shadow-sm p-space-lg flex flex-col gap-space-lg">
+<div class="flex items-center justify-between pb-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[22px]">bar_chart</span>
+<span class="font-headline-md text-headline-md text-on-surface">Grade Completa de Atributos Oficiais</span>
+</div>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-text-muted">
+<span class="w-2.5 h-2.5 rounded bg-primary"></span> ≥ 90 Elite
+              <span class="w-2.5 h-2.5 rounded bg-status-emerald ml-2"></span> 80-89 Pro
+            </div>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-x-space-lg gap-y-space-lg">
+<!-- GROUP 1: PASSE (PAS 94 - Elite) -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">PASSE (PAS)</span>
+<span class="px-space-xs py-0.5 rounded-full bg-primary text-on-primary font-score-display text-score-display">94</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Visão de Jogo</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">96</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 96%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Passe Curto</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">95</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 95%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Lançamento</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">92</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 92%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Curva</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">93</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 93%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- GROUP 2: DRIBLE (DRI 91) -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">DRIBLE (DRI)</span>
+<span class="px-space-xs py-0.5 rounded-full bg-primary text-on-primary font-score-display text-score-display">91</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Controle de Bola</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">94</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 94%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Condução / Drible</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">90</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 90%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Agilidade</span>
+<span class="font-label-md text-label-md text-on-surface font-bold" id="attr-agi">79</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" id="bar-agi" style="width: 79%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Compostura</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">92</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 92%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- GROUP 3: FINALIZAÇÃO (SHO 89) -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">FINALIZAÇÃO (SHO)</span>
+<span class="px-space-xs py-0.5 rounded-full bg-status-emerald text-on-primary font-score-display text-score-display">89</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Finalização</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">90</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 90%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Força do Chute</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">91</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 91%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Chutes de Longe</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">92</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-primary h-full rounded-full" style="width: 92%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Posicionamento de Ataque</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">85</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" style="width: 85%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- GROUP 4: RITMO (PAC 88) -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">RITMO (PAC)</span>
+<span class="px-space-xs py-0.5 rounded-full bg-status-emerald text-on-primary font-score-display text-score-display">88</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Aceleração</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">87</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" style="width: 87%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Pique / Velocidade</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">89</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" style="width: 89%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Sprint em Corrida Aberta</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">88</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" style="width: 88%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- GROUP 5: FÍSICO (PHY 85) -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">FÍSICO (PHY)</span>
+<span class="px-space-xs py-0.5 rounded-full bg-status-emerald text-on-primary font-score-display text-score-display">85</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Força</span>
+<span class="font-label-md text-label-md text-on-surface font-bold" id="attr-str">85</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" id="bar-str" style="width: 85%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Fôlego</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">88</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" style="width: 88%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Impulsão</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">78</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-status-emerald h-full rounded-full" style="width: 78%;"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- GROUP 6: DEFESA (DEF 65) -->
+<div class="bg-surface-container-low p-space-md rounded-xl flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">DEFESA (DEF)</span>
+<span class="px-space-xs py-0.5 rounded-full bg-surface-container-high text-on-surface font-score-display text-score-display">65</span>
+</div>
+<div class="flex flex-col gap-space-xs">
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Interceptações</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">68</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-on-surface-variant h-full rounded-full" style="width: 68%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Dividida em Pé</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">66</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-on-surface-variant h-full rounded-full" style="width: 66%;"></div>
+</div>
+</div>
+<div>
+<div class="flex justify-between font-body-sm text-body-sm text-text-muted">
+<span>Noção Defensiva</span>
+<span class="font-label-md text-label-md text-on-surface font-bold">62</span>
+</div>
+<div class="w-full bg-surface-container h-1.5 rounded-full mt-1 overflow-hidden">
+<div class="bg-on-surface-variant h-full rounded-full" style="width: 62%;"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Notification Toast (Hidden initially) -->
+<div class="fixed bottom-6 right-6 bg-on-surface text-surface-white px-space-lg py-space-md rounded-xl shadow-xl flex items-center gap-space-md transform translate-y-24 opacity-0 transition-all z-50" id="toast">
+<span class="material-symbols-outlined text-status-emerald text-[24px]">verified</span>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg font-bold">Build Sincronizada!</span>
+<span class="font-body-sm text-body-sm text-text-muted">Furia del Plata atualizado com sucesso.</span>
+</div>
+</div>
+</div>
+</div>
+<script>
+  (function initBuildLab() {
+    // Height & Weight Elements
+    const inputHeight = document.getElementById('input-height');
+    const inputWeight = document.getElementById('input-weight');
+    const labelHeight = document.getElementById('label-height');
+    const labelWeight = document.getElementById('label-weight');
+    const valHeight = document.getElementById('val-height');
+    const valWeight = document.getElementById('val-weight');
+    
+    // AcceleRATE Elements
+    const diffCalcText = document.getElementById('diff-calc-text');
+    const accelerateTitle = document.getElementById('accelerate-title');
+    const acceleratePin = document.getElementById('accelerate-pin');
+    
+    // Attributes
+    const attrAgi = document.getElementById('attr-agi');
+    const attrStr = document.getElementById('attr-str');
+
+    function updateAcceleRATE() {
+      const h = parseInt(inputHeight.value, 10);
+      const w = parseInt(inputWeight.value, 10);
+
+      labelHeight.textContent = h + ' cm';
+      valHeight.textContent = h + ' cm';
+      labelWeight.textContent = w + ' kg';
+      valWeight.textContent = w + ' kg';
+
+      // Weight impact on strength & agility simulation
+      // Base strength: 85 + weight bonus/penalty
+      const strVal = Math.min(99, Math.max(50, 85 + Math.round((w - 75) * 0.3)));
+      const agiVal = Math.min(99, Math.max(50, 79 - Math.round((w - 75) * 0.2) - Math.round((h - 190) * 0.15)));
+      
+      attrStr.textContent = strVal;
+      attrAgi.textContent = agiVal;
+      
+      const diff = strVal - agiVal;
+      diffCalcText.textContent = (diff >= 0 ? '+' : '') + diff + ' (Força ' + strVal + ' - Agi ' + agiVal + ')';
+
+      // EA FC AcceleRATE 2.0 Rules
+      // Lengthy require Height >= 188 cm & Strength - Agility >= 14
+      // Controlled Lengthy require Height >= 188 cm & Strength - Agility >= 4 (or 4 to 13)
+      if (h >= 188 && diff >= 14) {
+        accelerateTitle.textContent = 'Mostly Lengthy (Prolongada)';
+        acceleratePin.style.left = '85%';
+      } else if (h >= 188 && diff >= 4) {
+        accelerateTitle.textContent = 'Controlled Lengthy (50/50)';
+        acceleratePin.style.left = '48%';
+      } else if (diff <= -14 && h <= 178) {
+        accelerateTitle.textContent = 'Mostly Explosive (Explosiva)';
+        acceleratePin.style.left = '15%';
+      } else {
+        accelerateTitle.textContent = 'Controlled (Controlada Pura)';
+        acceleratePin.style.left = '32%';
+      }
+    }
+
+    inputHeight.addEventListener('input', updateAcceleRATE);
+    inputWeight.addEventListener('input', updateAcceleRATE);
+
+    // Archetype selection
+    const buttons = document.querySelectorAll('.archetype-btn');
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        buttons.forEach(b => {
+          b.classList.remove('bg-violet-tint');
+          b.classList.add('bg-surface-container-low');
+          const title = b.querySelector('.font-label-lg');
+          if (title) {
+            title.classList.remove('text-primary');
+            title.classList.add('text-on-surface');
+          }
+          const iconContainer = b.querySelector('.w-8');
+          if (iconContainer) {
+            iconContainer.classList.remove('bg-primary', 'text-on-primary');
+            iconContainer.classList.add('bg-surface-white', 'text-on-surface-variant');
+          }
+        });
+
+        btn.classList.remove('bg-surface-container-low');
+        btn.classList.add('bg-violet-tint');
+        const title = btn.querySelector('.font-label-lg');
+        if (title) {
+          title.classList.remove('text-on-surface');
+          title.classList.add('text-primary');
+        }
+        const iconContainer = btn.querySelector('.w-8');
+        if (iconContainer) {
+          iconContainer.classList.remove('bg-surface-white', 'text-on-surface-variant');
+          iconContainer.classList.add('bg-primary', 'text-on-primary');
+        }
+      });
+    });
+
+    // Save Button Simulation
+    const saveBtn = document.getElementById('save-build-btn');
+    const toast = document.getElementById('toast');
+    if (saveBtn && toast) {
+      saveBtn.addEventListener('click', () => {
+        toast.classList.remove('translate-y-24', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+        setTimeout(() => {
+          toast.classList.add('translate-y-24', 'opacity-0');
+          toast.classList.remove('translate-y-0', 'opacity-100');
+        }, 3200);
+      });
+    }
+
+    // Dropzone Visual Interaction
+    const dropZone = document.getElementById('drop-zone');
+    if (dropZone) {
+      dropZone.addEventListener('click', () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = () => {
+          const toast = document.getElementById('toast');
+          if (toast) {
+            const label = toast.querySelector('.font-label-lg');
+            const desc = toast.querySelector('.font-body-sm');
+            if (label) label.textContent = 'OCR Processado!';
+            if (desc) desc.textContent = '29 atributos lidos e calibrados via IA com sucesso.';
+            toast.classList.remove('translate-y-24', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+              toast.classList.add('translate-y-24', 'opacity-0');
+              toast.classList.remove('translate-y-0', 'opacity-100');
+            }, 3500);
+          }
+        };
+        input.click();
+      });
+    }
+  })();
+</script></main></div></body></html>

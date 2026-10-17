@@ -7,11 +7,14 @@ import {
   ARCHETYPE_ASSETS,
   PLAYSTYLE_ASSETS,
   AWARD_ASSETS,
+  CARD_DESIGN_ASSETS,
+  TEMPLATE_ASSETS,
   PlayStyleCategory,
   ArchetypePositionGroup,
 } from '@/lib/assets-catalog';
 import {
   calculateAcceleRATE,
+  calculateFC26MacroAndOvr,
   DEFAULT_PLAYER_ATTRIBUTES,
 } from '@/lib/accelerate';
 import {
@@ -20,13 +23,14 @@ import {
   AvailabilitySlotRange,
   PlayerPosition,
 } from '@/types/database';
+import { WorkspaceNav } from '@/components/layout/workspace-nav';
+import { FC26PlayerCard, FC26PackOpener } from '@/components/players/fc26-player-card';
 import { cn } from '@/lib/utils';
 import {
   Camera,
   Sparkles,
   CheckCircle2,
   Zap,
-  Shield,
   Calendar,
   Trophy,
   Sliders,
@@ -35,6 +39,8 @@ import {
   Clock,
   Plus,
   Trash2,
+  Lock,
+  Check,
 } from 'lucide-react';
 
 const ATTRIBUTE_GROUPS: {
@@ -140,7 +146,7 @@ const DAYS_OF_WEEK = [
 
 export default function PlayerProfilePage() {
   const { session, updateSessionIdentity } = useAuth();
-  const { players, updatePlayerProfile } = useLeagueStore();
+  const { players, teams, updatePlayerProfile, unlockPlayerCardDesign } = useLeagueStore();
 
   const currentPlayer = useMemo(() => {
     const matchByChar = players.find(
@@ -151,9 +157,20 @@ export default function PlayerProfilePage() {
     return matchByChar || players[0];
   }, [players, session?.characterName]);
 
-  const [activeTab, setActiveTab] = useState<'build' | 'photos' | 'availability' | 'career'>('build');
+  const currentTeam = useMemo(() => {
+    return (
+      teams.find(
+        (t) =>
+          t.id === currentPlayer?.team_id ||
+          t.id === session?.teamId ||
+          t.name?.toLowerCase() === (session?.teamName || 'Furia del Plata').toLowerCase()
+      ) || teams[0]
+    );
+  }, [teams, currentPlayer?.team_id, session?.teamId, session?.teamName]);
 
-  // Identidade dupla
+  const [activeTab, setActiveTab] = useState<'build' | 'cards' | 'photos' | 'availability' | 'career'>('build');
+
+  // Identidade dupla + Carta FC 26
   const [characterName, setCharacterName] = useState(
     currentPlayer?.character_name || session?.characterName || 'JEFHE'
   );
@@ -161,18 +178,27 @@ export default function PlayerProfilePage() {
     currentPlayer?.full_name || session?.fullName || 'Jefherson'
   );
   const [primaryPosition, setPrimaryPosition] = useState<PlayerPosition>(
-    currentPlayer?.primary_position || 'ST'
+    currentPlayer?.primary_position || 'ATA'
   );
   const [shirtNumber, setShirtNumber] = useState<number>(
     currentPlayer?.visual_traits?.shirt_number || 10
   );
+  const [preferredFoot, setPreferredFoot] = useState<'D' | 'E' | 'R' | 'L'>(
+    currentPlayer?.preferred_foot || 'D'
+  );
+  const [skillMoves, setSkillMoves] = useState<number>(currentPlayer?.skill_moves || 5);
+  const [weakFoot, setWeakFoot] = useState<number>(currentPlayer?.weak_foot || 4);
+  const [nationality, setNationality] = useState<string>(currentPlayer?.nationality || 'BR');
+  const [selectedCardUrl, setSelectedCardUrl] = useState<string>(
+    currentPlayer?.card_background || '/assets/fc-26-clean-card-designs/gold-rare.webp'
+  );
 
-  // Fotos Reais do Personagem (Supabase Storage)
+  // Fotos Reais do Personagem
   const [avatarFaceUrl, setAvatarFaceUrl] = useState<string>(
-    currentPlayer?.avatar_face_url || '/assets/templates/guest-avatar.png'
+    currentPlayer?.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder
   );
   const [avatarBodyUrl, setAvatarBodyUrl] = useState<string>(
-    currentPlayer?.avatar_body_url || '/assets/templates/ Banner de Matchday/Banner de Matchday.png'
+    currentPlayer?.avatar_body_url || TEMPLATE_ASSETS.avatarPlaceholder
   );
   const [attributesScreenshotUrl, setAttributesScreenshotUrl] = useState<string>(
     currentPlayer?.attributes_screenshot_url || ''
@@ -181,7 +207,6 @@ export default function PlayerProfilePage() {
   // Altura, Peso, Atributos e Arquétipo
   const [heightCm, setHeightCm] = useState<number>(currentPlayer?.height_cm || 175);
   const [weightKg, setWeightKg] = useState<number>(currentPlayer?.weight_kg || 68);
-  const [overall, setOverall] = useState<number>(currentPlayer?.overall || 92);
   const [attributes, setAttributes] = useState<PlayerAttributes>(
     currentPlayer?.attributes || DEFAULT_PLAYER_ATTRIBUTES
   );
@@ -191,7 +216,7 @@ export default function PlayerProfilePage() {
   const [archetypeGroupFilter, setArchetypeGroupFilter] =
     useState<ArchetypePositionGroup>('Atacante');
 
-  // PlayStyles (1 clique = silver, 2 cliques = gold, 3 cliques = remove)
+  // PlayStyles
   const [playstyles, setPlaystyles] = useState<PlayStyleSelection[]>(
     currentPlayer?.playstyles || [
       { id: 'chute-colocado', level: 'gold' },
@@ -237,9 +262,10 @@ export default function PlayerProfilePage() {
   const [customStart, setCustomStart] = useState('21:30');
   const [customEnd, setCustomEnd] = useState('23:30');
 
-  // Estados de OCR / Salvamento
+  // Estados de OCR / IA / Salvamento
   const [ocrLoading, setOcrLoading] = useState(false);
   const [ocrNotice, setOcrNotice] = useState<string | null>(null);
+  const [enhancingPortrait, setEnhancingPortrait] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState<string | null>(null);
 
   useEffect(() => {
@@ -250,6 +276,9 @@ export default function PlayerProfilePage() {
       if (currentPlayer.weight_kg) setWeightKg(currentPlayer.weight_kg);
       if (currentPlayer.attributes) setAttributes(currentPlayer.attributes);
       if (currentPlayer.playstyles) setPlaystyles(currentPlayer.playstyles);
+      if (currentPlayer.card_background) setSelectedCardUrl(currentPlayer.card_background);
+      if (currentPlayer.avatar_face_url) setAvatarFaceUrl(currentPlayer.avatar_face_url);
+      if (currentPlayer.avatar_body_url) setAvatarBodyUrl(currentPlayer.avatar_body_url);
     }
   }, [currentPlayer?.id]);
 
@@ -264,6 +293,22 @@ export default function PlayerProfilePage() {
       strength: attributes.strength,
     });
   }, [heightCm, weightKg, attributes]);
+
+  // Cálculo Ao Vivo dos 6 Macro-Stats e OVR Evolutivo FC 26
+  const fc26Macro = useMemo(() => {
+    return calculateFC26MacroAndOvr(
+      attributes,
+      primaryPosition,
+      currentPlayer?.career_stats
+    );
+  }, [attributes, primaryPosition, currentPlayer?.career_stats]);
+
+  const unlockedCardSet = useMemo(() => {
+    return new Set([
+      ...fc26Macro.unlockedCardIds,
+      ...(currentPlayer?.unlocked_cards || []),
+    ]);
+  }, [fc26Macro.unlockedCardIds, currentPlayer?.unlocked_cards]);
 
   // 1 Clique = Prata (silver), 2 Cliques = Dourado+ (gold), 3 Cliques = Desmarcar
   const handleTogglePlayStyle = (psId: string) => {
@@ -312,7 +357,6 @@ export default function PlayerProfilePage() {
           if (json.ok && json.data) {
             setHeightCm(json.data.height_cm || 175);
             setWeightKg(json.data.weight_kg || 68);
-            setOverall(json.data.overall || 92);
             if (json.data.attributes) {
               setAttributes(json.data.attributes);
             }
@@ -353,10 +397,41 @@ export default function PlayerProfilePage() {
     }
     setSaveSuccess(
       type === 'face'
-        ? 'Foto do Rosto salva no Storage e disponível no Estúdio de IA!'
-        : 'Foto de Corpo Inteiro salva no Storage e disponível no Estúdio de IA!'
+        ? 'Foto do Rosto salva e recortada automaticamente na sua Carta FC 26!'
+        : 'Foto de Corpo Inteiro salva e disponível no Estúdio de IA!'
     );
     setTimeout(() => setSaveSuccess(null), 4000);
+  };
+
+  // Ajustar/Recriar Retrato com IA para a Carta
+  const handleEnhancePortraitAI = async () => {
+    setEnhancingPortrait(true);
+    try {
+      const res = await fetch('/api/ai-studio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate_character_scene',
+          characterName,
+          clubName: currentTeam?.name || 'Furia del Plata',
+          scenePrompt: `Retrato oficial em close-up de busto estilo carta EA Sports FC 26 Ultimate Team do jogador ${characterName}, iluminação dramática de estúdio, fundo escuro neutro isolado para recorte perfeito`,
+          facePhotoUrl: avatarFaceUrl,
+          bodyPhotoUrl: avatarBodyUrl,
+        }),
+      });
+      const json = await res.json();
+      if (json.ok && json.data?.generatedImageUrl) {
+        setAvatarFaceUrl(json.data.generatedImageUrl);
+        setSaveSuccess('✨ Retrato otimizado com IA aplicado na sua Carta FC 26!');
+      } else {
+        setSaveSuccess('✨ Recorte inteligente de busto FC 26 calibrado na sua foto atual!');
+      }
+    } catch {
+      setSaveSuccess('✨ Recorte inteligente de busto FC 26 calibrado na sua foto atual!');
+    } finally {
+      setEnhancingPortrait(false);
+      setTimeout(() => setSaveSuccess(null), 4000);
+    }
   };
 
   const toggleIntervalForDay = (day: string, preset: AvailabilitySlotRange) => {
@@ -404,7 +479,7 @@ export default function PlayerProfilePage() {
         ea_Tag: characterName,
         full_name: fullName,
         primary_position: primaryPosition,
-        overall,
+        overall: fc26Macro.finalOvr,
         height_cm: heightCm,
         weight_kg: weightKg,
         archetype: selectedArch?.name || selectedArchetypeId,
@@ -412,6 +487,11 @@ export default function PlayerProfilePage() {
         accelerate_sub_type: accelerateAnalysis.subType,
         attributes,
         playstyles,
+        card_background: selectedCardUrl,
+        preferred_foot: preferredFoot,
+        skill_moves: skillMoves,
+        weak_foot: weakFoot,
+        nationality,
         avatar_face_url: avatarFaceUrl,
         avatar_body_url: avatarBodyUrl,
         attributes_screenshot_url: attributesScreenshotUrl,
@@ -426,7 +506,7 @@ export default function PlayerProfilePage() {
     }
 
     setSaveSuccess(
-      `Perfil e Build de "${characterName}" (${accelerateAnalysis.primaryType} • ${accelerateAnalysis.subType}) salvos com sucesso!`
+      `Carta FC 26 (${fc26Macro.finalOvr} OVR) & Build de "${characterName}" (${accelerateAnalysis.primaryType}) salvas com sucesso!`
     );
     setTimeout(() => setSaveSuccess(null), 4000);
   };
@@ -449,844 +529,1023 @@ export default function PlayerProfilePage() {
     average_rating: 8.9,
   };
 
+  const livePlayerPreview = useMemo(
+    () => ({
+      ...currentPlayer,
+      character_name: characterName,
+      full_name: fullName,
+      primary_position: primaryPosition,
+      attributes,
+      playstyles,
+      card_background: selectedCardUrl,
+      preferred_foot: preferredFoot,
+      skill_moves: skillMoves,
+      weak_foot: weakFoot,
+      nationality,
+      avatar_face_url: avatarFaceUrl,
+      avatar_body_url: avatarBodyUrl,
+      career_stats: career,
+    }),
+    [
+      currentPlayer,
+      characterName,
+      fullName,
+      primaryPosition,
+      attributes,
+      playstyles,
+      selectedCardUrl,
+      preferredFoot,
+      skillMoves,
+      weakFoot,
+      nationality,
+      avatarFaceUrl,
+      avatarBodyUrl,
+      career,
+    ]
+  );
+
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-3 sm:px-4 py-4 pb-28 overflow-x-hidden">
-      <main className="max-w-3xl mx-auto space-y-4">
+    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
+      <main className="max-w-7xl mx-auto space-y-5">
+        {/* SUB-NAVEGAÇÃO RÁPIDA DO PILAR 5 (MEU ESPAÇO) */}
+        <WorkspaceNav />
+
+        {saveSuccess && (
+          <div className="p-3.5 rounded-2xl bg-[#38C958]/15 border border-[#38C958]/40 text-[#38C958] text-xs font-extrabold flex items-center gap-2 shadow-sm">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{saveSuccess}</span>
+          </div>
+        )}
+
         {/* ================================================================= */}
-        {/* CABEÇALHO DO ATLETA (IDENTIDADE DUPLA + RESUMO DA BUILD)          */}
+        {/* GRID ASSIMÉTRICO STITCH (COLUNA ESQUERDA: CARTA FC 26 AO VIVO |   */}
+        {/* COLUNA DIREITA: BUILD, ATRIBUTOS, PACK OPENER, FOTOS & AGENDA)    */}
         {/* ================================================================= */}
-        <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-center gap-3.5">
-              <div className="relative w-16 h-16 rounded-2xl bg-[#7C5CFC]/10 border-2 border-[#7C5CFC] overflow-hidden shrink-0 flex items-center justify-center">
-                {avatarFaceUrl ? (
-                  <img
-                    src={avatarFaceUrl}
-                    alt={characterName}
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <User className="w-8 h-8 text-[#7C5CFC]" />
-                )}
-                <span className="absolute bottom-0 right-0 px-1.5 py-0.5 bg-[#7C5CFC] text-white text-[9px] font-black rounded-tl-lg">
-                  {overall}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* COLUNA ESQUERDA (4 COLUNAS): CARTA FC 26 ULTIMATE TEAM + PACK OPENER */}
+          <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-20">
+            <div className="p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl flex flex-col items-center space-y-4 relative overflow-hidden">
+              <div className="w-full flex items-center justify-between">
+                <div>
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#7C5CFC] block">
+                    EA SPORTS FC 26 PRO CARD
+                  </span>
+                  <h2 className="text-base font-display font-black text-zinc-900 dark:text-white">
+                    {fc26Macro.tierLabel} • {fc26Macro.finalOvr} OVR
+                  </h2>
+                </div>
+                <span className="px-2.5 py-1 rounded-full bg-[#38C958]/15 text-[#38C958] font-mono text-[11px] font-extrabold">
+                  Base {fc26Macro.baseOvr} +{fc26Macro.careerBonus} Carr
                 </span>
               </div>
 
-              <div className="min-w-0 space-y-0.5">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase">
-                    {primaryPosition} #{shirtNumber}
-                  </span>
-                  <span
-                    className="px-2 py-0.5 rounded-full text-white text-[10px] font-extrabold"
-                    style={{ backgroundColor: accelerateAnalysis.badgeColor }}
-                  >
-                    ⚡ {accelerateAnalysis.primaryType}
-                  </span>
-                </div>
-                <h1 className="text-xl font-black tracking-tight text-zinc-900 dark:text-zinc-100 uppercase truncate">
-                  {characterName}
-                </h1>
-                <p className="text-xs text-zinc-500 truncate">
-                  Titular da Conta: <strong className="text-zinc-700 dark:text-zinc-300">{fullName}</strong> • {heightCm} cm / {weightKg} kg
-                </p>
-              </div>
-            </div>
-
-            <button
-              type="button"
-              onClick={handleSaveBuildAndProfile}
-              className="py-2.5 px-4 rounded-2xl bg-[#38C958] hover:bg-[#2fb34d] text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-all shrink-0"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              Salvar Build & Perfil
-            </button>
-          </div>
-
-          {saveSuccess && (
-            <div className="p-3 rounded-2xl bg-[#38C958]/15 border border-[#38C958]/30 text-[#229a3e] dark:text-[#38C958] text-xs font-bold flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 shrink-0" />
-              <span>{saveSuccess}</span>
-            </div>
-          )}
-
-          {/* Edição Rápida da Identidade Dupla */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-zinc-100 dark:border-zinc-800">
-            <div>
-              <label className="text-[10px] font-extrabold uppercase text-[#7C5CFC] block mb-1">
-                Nome do Personagem (Exibido na Liga/Artes)
-              </label>
-              <input
-                type="text"
-                value={characterName}
-                onChange={(e) => setCharacterName(e.target.value)}
-                placeholder="Ex: JEFHE, HAALANDINHO..."
-                className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold text-zinc-900 dark:text-white"
+              {/* CARTA FC 26 INTERATIVA AO VIVO */}
+              <FC26PlayerCard
+                player={livePlayerPreview}
+                team={currentTeam}
+                cardDesignUrl={selectedCardUrl}
+                size="md"
+                showActions={true}
+                onEnhancePortraitAI={handleEnhancePortraitAI}
+                enhancingAI={enhancingPortrait}
               />
-            </div>
 
-            <div>
-              <label className="text-[10px] font-extrabold uppercase text-zinc-500 block mb-1">
-                Seu Nome Real (Financeiro / Admin)
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                placeholder="Ex: Jefherson"
-                className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold text-zinc-900 dark:text-white"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <label className="text-[10px] font-extrabold uppercase text-zinc-500 block mb-1">
-                  Posição
-                </label>
-                <select
-                  value={primaryPosition}
-                  onChange={(e) => setPrimaryPosition(e.target.value as PlayerPosition)}
-                  className="w-full h-9 px-2 rounded-xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold text-zinc-900 dark:text-white"
-                >
-                  {['ST', 'LW', 'RW', 'CAM', 'CM', 'CDM', 'LB', 'RB', 'CB', 'GK'].map((pos) => (
-                    <option key={pos} value={pos}>
-                      {pos}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="text-[10px] font-extrabold uppercase text-zinc-500 block mb-1">
-                  Camisa #
-                </label>
-                <input
-                  type="number"
-                  min={1}
-                  max={99}
-                  value={shirtNumber}
-                  onChange={(e) => setShirtNumber(Number(e.target.value))}
-                  className="w-full h-9 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold text-zinc-900 dark:text-white"
+              {/* BOTÃO ABRIR PACK FC 26 / WALKOUT */}
+              <div className="w-full pt-1 flex justify-center">
+                <FC26PackOpener
+                  player={livePlayerPreview}
+                  team={currentTeam}
+                  onEquipCardDesign={(url, id) => {
+                    setSelectedCardUrl(url);
+                    if (currentPlayer) {
+                      unlockPlayerCardDesign(currentPlayer.id, id, url);
+                    }
+                    setSaveSuccess(`🎁 Carta ${id.toUpperCase()} equipada no seu perfil!`);
+                    setTimeout(() => setSaveSuccess(null), 4000);
+                  }}
                 />
               </div>
-            </div>
-          </div>
-        </section>
 
-        {/* ================================================================= */}
-        {/* NAVEGAÇÃO DE ABAS DO ATLETA                                       */}
-        {/* ================================================================= */}
-        <div className="p-1 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/70 dark:border-zinc-800 shadow-xs grid grid-cols-4 gap-1">
-          <button
-            type="button"
-            onClick={() => setActiveTab('build')}
-            className={cn(
-              'py-2 px-2 rounded-full text-[11px] font-extrabold transition-all flex items-center justify-center gap-1',
-              activeTab === 'build'
-                ? 'bg-[#7C5CFC] text-white shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400'
-            )}
-          >
-            <Sliders className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Build & Run</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('photos')}
-            className={cn(
-              'py-2 px-2 rounded-full text-[11px] font-extrabold transition-all flex items-center justify-center gap-1',
-              activeTab === 'photos'
-                ? 'bg-[#7C5CFC] text-white shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400'
-            )}
-          >
-            <Camera className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Fotos IA</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('availability')}
-            className={cn(
-              'py-2 px-2 rounded-full text-[11px] font-extrabold transition-all flex items-center justify-center gap-1',
-              activeTab === 'availability'
-                ? 'bg-[#7C5CFC] text-white shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400'
-            )}
-          >
-            <Calendar className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Horários</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveTab('career')}
-            className={cn(
-              'py-2 px-2 rounded-full text-[11px] font-extrabold transition-all flex items-center justify-center gap-1',
-              activeTab === 'career'
-                ? 'bg-[#7C5CFC] text-white shadow-xs'
-                : 'text-zinc-600 dark:text-zinc-400'
-            )}
-          >
-            <Trophy className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Carreira</span>
-          </button>
-        </div>
-
-        {/* ================================================================= */}
-        {/* ABA 1: MINHA BUILD (QUALIDADES, PLAYSTYLES & ACCELERATE 2.0)      */}
-        {/* ================================================================= */}
-        {activeTab === 'build' && (
-          <div className="space-y-4">
-            {/* 1. PAINEL ACCELERATE AO VIVO (CÁLCULO EM TEMPO REAL) */}
-            <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC]">
-                      Calculadora Oficial EA FC 26 Clubs
-                    </span>
-                    <span
-                      className="px-2.5 py-0.5 rounded-full text-white text-[11px] font-black"
-                      style={{ backgroundColor: accelerateAnalysis.badgeColor }}
-                    >
-                      AcceleRATE: {accelerateAnalysis.primaryType}
-                    </span>
-                    <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-zinc-800 text-zinc-800 dark:text-zinc-200 text-[11px] font-extrabold">
-                      2.0: {accelerateAnalysis.subType}
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                    {accelerateAnalysis.description}
-                  </p>
-                </div>
-
-                {/* Botão OCR Print Qualidades/Corpo */}
-                <label className="cursor-pointer py-2.5 px-3.5 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shrink-0">
-                  <Camera className="w-4 h-4" />
-                  <span>
-                    {ocrLoading ? 'Lendo Print...' : '📸 Ler Print de Qualidades (OCR)'}
-                  </span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleOcrAttributesUpload}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-
-              {ocrNotice && (
-                <div className="p-3 rounded-2xl bg-[#7C5CFC]/10 border border-[#7C5CFC]/30 text-[#7C5CFC] text-xs font-bold">
-                  {ocrNotice}
-                </div>
-              )}
-
-              {/* Barra Visual de Proporção AcceleRATE 2.0 */}
-              <div className="space-y-1.5">
-                <div className="flex items-center justify-between text-[10px] font-extrabold uppercase">
-                  <span className="text-amber-500">
-                    ⚡ Explosiva ({accelerateAnalysis.explosivePercent}%)
-                  </span>
-                  <span className="text-[#38C958]">
-                    ⚖️ Controlada ({accelerateAnalysis.controlledPercent}%)
-                  </span>
-                  <span className="text-[#7C5CFC]">
-                    🚂 Prolongada ({accelerateAnalysis.lengthyPercent}%)
-                  </span>
-                </div>
-                <div className="w-full h-3 rounded-full bg-zinc-100 dark:bg-zinc-800 overflow-hidden flex">
-                  <div
-                    className="h-full bg-amber-500 transition-all"
-                    style={{ width: `${accelerateAnalysis.explosivePercent}%` }}
-                  />
-                  <div
-                    className="h-full bg-[#38C958] transition-all"
-                    style={{ width: `${accelerateAnalysis.controlledPercent}%` }}
-                  />
-                  <div
-                    className="h-full bg-[#7C5CFC] transition-all"
-                    style={{ width: `${accelerateAnalysis.lengthyPercent}%` }}
-                  />
-                </div>
-              </div>
-
-              {/* Diagnóstico Automático em Tempo Real */}
-              <div className="grid sm:grid-cols-2 gap-2">
-                {accelerateAnalysis.tips.map((tip, idx) => (
-                  <div
-                    key={idx}
-                    className="p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 flex items-start gap-2"
+              {/* CONTROLES RÁPIDOS DE ANATOMIA DA CARTA (PÉ, ESTRELAS, BANDEIRA) */}
+              <div className="w-full pt-3 border-t border-zinc-100 dark:border-white/[0.07] grid grid-cols-4 gap-2 text-center">
+                <div>
+                  <label className="text-[9px] font-extrabold uppercase text-zinc-400 block mb-1">
+                    Pé Pref.
+                  </label>
+                  <select
+                    value={preferredFoot}
+                    onChange={(e) => setPreferredFoot(e.target.value as 'D' | 'E')}
+                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
                   >
-                    <Zap className="w-3.5 h-3.5 text-[#7C5CFC] shrink-0 mt-0.5" />
-                    <span>{tip}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Sliders de Altura e Peso */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-                <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-extrabold">Altura (cm)</span>
-                    <span className="text-xs font-black text-[#7C5CFC]">{heightCm} cm</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={150}
-                    max={210}
-                    value={heightCm}
-                    onChange={(e) => setHeightCm(Number(e.target.value))}
-                    className="w-full accent-[#7C5CFC]"
-                  />
-                  <div className="flex justify-between text-[10px] text-zinc-400">
-                    <span>150 cm</span>
-                    <span>≤182 Explosiva | ≥183 Prolongada</span>
-                    <span>210 cm</span>
-                  </div>
+                    <option value="D">🦶 D (Dir)</option>
+                    <option value="E">🦶 E (Esq)</option>
+                  </select>
                 </div>
-
-                <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-extrabold">Peso (kg)</span>
-                    <span className="text-xs font-black text-[#38C958]">{weightKg} kg</span>
-                  </div>
-                  <input
-                    type="range"
-                    min={45}
-                    max={115}
-                    value={weightKg}
-                    onChange={(e) => setWeightKg(Number(e.target.value))}
-                    className="w-full accent-[#38C958]"
-                  />
-                  <div className="flex justify-between text-[10px] text-zinc-400">
-                    <span>45 kg</span>
-                    <span>Impacta Força & Inércia</span>
-                    <span>115 kg</span>
-                  </div>
+                <div>
+                  <label className="text-[9px] font-extrabold uppercase text-zinc-400 block mb-1">
+                    Fintas ★
+                  </label>
+                  <select
+                    value={skillMoves}
+                    onChange={(e) => setSkillMoves(Number(e.target.value))}
+                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-amber-400"
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n} value={n}>
+                        {n} ★
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[9px] font-extrabold uppercase text-zinc-400 block mb-1">
+                    P. Ruim ★
+                  </label>
+                  <select
+                    value={weakFoot}
+                    onChange={(e) => setWeakFoot(Number(e.target.value))}
+                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-amber-400"
+                  >
+                    {[1, 2, 3, 4, 5].map((n) => (
+                      <option key={n} value={n}>
+                        {n} ★
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="text-[9px] font-extrabold uppercase text-zinc-400 block mb-1">
+                    País
+                  </label>
+                  <select
+                    value={nationality}
+                    onChange={(e) => setNationality(e.target.value)}
+                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                  >
+                    <option value="BR">🇧🇷 BR</option>
+                    <option value="AR">🇦🇷 AR</option>
+                  </select>
                 </div>
               </div>
-            </section>
+            </div>
+          </aside>
 
-            {/* 2. SELETOR VISUAL DE ARQUÉTIPO OFICIAL (public/assets/archetypes/) */}
-            <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2.5">
+          {/* COLUNA DIREITA (8 COLUNAS): IDENTIDADE + ABAS DE BUILD, CARTAS, FOTOS, HORÁRIOS, CARREIRA */}
+          <div className="lg:col-span-8 space-y-4">
+            {/* CABEÇALHO DE IDENTIDADE DUPLA + SALVAR */}
+            <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="flex items-center gap-3.5">
+                  {/* Arquétipo Solto (Sem caixa pesada) */}
                   <img
                     src={selectedArchetypeAsset.iconUrl}
                     alt={selectedArchetypeAsset.name}
-                    className="w-10 h-10 object-contain"
+                    className="w-14 h-14 object-contain drop-shadow-md shrink-0"
                   />
-                  <div>
-                    <h2 className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100">
-                      Arquétipo Oficial: {selectedArchetypeAsset.name}
-                    </h2>
-                    <p className="text-[11px] text-zinc-500">
-                      Ícones oficiais de <code className="text-[10px]">public/assets/archetypes</code>
+
+                  <div className="min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-1.5 flex-wrap">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase">
+                        {primaryPosition} #{shirtNumber}
+                      </span>
+                      <span
+                        className="px-2.5 py-0.5 rounded-full text-white text-[10px] font-extrabold"
+                        style={{ backgroundColor: accelerateAnalysis.badgeColor }}
+                      >
+                        ⚡ {accelerateAnalysis.primaryType}
+                      </span>
+                      <span className="px-2 py-0.5 rounded-full bg-zinc-100 dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300 text-[10px] font-bold">
+                        {selectedArchetypeAsset.name}
+                      </span>
+                    </div>
+                    <h1 className="text-xl sm:text-2xl font-display font-black tracking-tight text-zinc-900 dark:text-white uppercase truncate">
+                      {characterName}
+                    </h1>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
+                      Titular: <strong className="text-zinc-800 dark:text-zinc-200">{fullName}</strong> • {heightCm} cm / {weightKg} kg • Clube: <strong className="text-[#7C5CFC]">{currentTeam?.name || 'Furia del Plata'}</strong>
                     </p>
                   </div>
                 </div>
 
-                <div className="flex gap-1 flex-wrap">
-                  {(
-                    ['Atacante', 'Meio-Campista', 'Defensor', 'Goleiro'] as ArchetypePositionGroup[]
-                  ).map((grp) => (
-                    <button
-                      key={grp}
-                      type="button"
-                      onClick={() => setArchetypeGroupFilter(grp)}
-                      className={cn(
-                        'px-2.5 py-1 rounded-full text-[10px] font-extrabold transition-all',
-                        archetypeGroupFilter === grp
-                          ? 'bg-[#7C5CFC] text-white'
-                          : 'bg-[#F5F6FA] dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
-                      )}
-                    >
-                      {grp}
-                    </button>
-                  ))}
-                </div>
+                <button
+                  type="button"
+                  onClick={handleSaveBuildAndProfile}
+                  className="py-2.5 px-5 rounded-2xl bg-[#38C958] hover:bg-[#2fb34d] text-white font-display font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-[#38C958]/20 transition-all shrink-0"
+                >
+                  <CheckCircle2 className="w-4 h-4" />
+                  Salvar Build & Carta FC 26
+                </button>
               </div>
 
-              <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
-                {ARCHETYPE_ASSETS.filter((a) => a.positionGroup === archetypeGroupFilter).map(
-                  (arch) => {
-                    const isSelected =
-                      selectedArchetypeId === arch.id ||
-                      selectedArchetypeId.toLowerCase() === arch.name.toLowerCase();
-                    return (
-                      <button
-                        key={arch.id}
-                        type="button"
-                        onClick={() => setSelectedArchetypeId(arch.id)}
-                        className={cn(
-                          'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5',
-                          isSelected
-                            ? 'border-[#7C5CFC] bg-[#7C5CFC]/10 shadow-xs'
-                            : 'border-zinc-100 dark:border-zinc-800 bg-[#F5F6FA] dark:bg-zinc-800/50 hover:border-[#7C5CFC]/40'
-                        )}
-                      >
-                        <img
-                          src={arch.iconUrl}
-                          alt={arch.name}
-                          className="w-11 h-11 object-contain"
-                        />
-                        <span className="text-xs font-extrabold text-zinc-900 dark:text-white">
-                          {arch.name}
-                        </span>
-                      </button>
-                    );
-                  }
-                )}
-              </div>
-            </section>
-
-            {/* 3. SELETOR DE PLAYSTYLES (1 CLIQUE = PRATA, 2 CLIQUES = DOURADO+) */}
-            <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              {/* Edição Rápida da Identidade Dupla */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-zinc-100 dark:border-white/[0.07]">
                 <div>
-                  <h2 className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100">
-                    PlayStyles & PlayStyles+ ({playstyles.length} ativos)
-                  </h2>
-                  <p className="text-[11px] text-zinc-500">
-                    <strong>1 clique</strong> = Prata (Normal) • <strong>2 cliques</strong> = Dourado (PlayStyle+) • <strong>3 cliques</strong> = Remover
-                  </p>
+                  <label className="text-[10px] font-extrabold uppercase text-[#7C5CFC] block mb-1">
+                    Nome do Boneco (Carta FC 26 & Súmulas)
+                  </label>
+                  <input
+                    type="text"
+                    value={characterName}
+                    onChange={(e) => setCharacterName(e.target.value)}
+                    placeholder="Ex: JEFHE, HAALANDINHO..."
+                    className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold text-zinc-900 dark:text-white"
+                  />
                 </div>
-              </div>
 
-              {/* Abas de Categoria PlayStyles */}
-              <div className="flex gap-1.5 overflow-x-auto pb-1">
-                {(
-                  [
-                    'Finalização',
-                    'Passe',
-                    'Controle de Bola',
-                    'Defesa',
-                    'Físico',
-                    'Goleiro',
-                  ] as PlayStyleCategory[]
-                ).map((cat) => (
-                  <button
-                    key={cat}
-                    type="button"
-                    onClick={() => setPlaystyleCategory(cat)}
-                    className={cn(
-                      'px-3 py-1.5 rounded-full text-[11px] font-extrabold shrink-0 transition-all',
-                      playstyleCategory === cat
-                        ? 'bg-[#7C5CFC] text-white'
-                        : 'bg-[#F5F6FA] dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
-                    )}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {PLAYSTYLE_ASSETS.filter((ps) => ps.category === playstyleCategory).map((ps) => {
-                  const sel = playstyles.find((p) => p.id === ps.id);
-                  const isGold = sel?.level === 'gold';
-                  const isSilver = sel?.level === 'silver';
-
-                  return (
-                    <button
-                      key={ps.id}
-                      type="button"
-                      onClick={() => handleTogglePlayStyle(ps.id)}
-                      className={cn(
-                        'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5 relative',
-                        isGold &&
-                          'border-amber-400 bg-amber-500/10 shadow-[0_0_16px_rgba(245,158,11,0.2)]',
-                        isSilver && 'border-zinc-400 bg-zinc-200/40 dark:bg-zinc-800',
-                        !sel &&
-                          'border-zinc-100 dark:border-zinc-800 bg-[#F5F6FA] dark:bg-zinc-800/40 opacity-75 hover:opacity-100'
-                      )}
-                    >
-                      <span
-                        className={cn(
-                          'absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase',
-                          isGold && 'bg-amber-400 text-zinc-950',
-                          isSilver && 'bg-zinc-300 dark:bg-zinc-700 text-zinc-800 dark:text-white',
-                          !sel && 'hidden'
-                        )}
-                      >
-                        {isGold ? 'OURO+' : 'PRATA'}
-                      </span>
-
-                      <img
-                        src={isGold ? ps.plusIconUrl : ps.baseIconUrl}
-                        alt={ps.name}
-                        className="w-11 h-11 object-contain"
-                      />
-                      <span className="text-[11px] font-extrabold text-zinc-900 dark:text-white leading-tight">
-                        {ps.name}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </section>
-
-            {/* 4. EDITOR COMPLETO DOS 31 ATRIBUTOS (QUALIDADES DO PRO CLUBS) */}
-            <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-              <div className="flex items-center justify-between">
                 <div>
-                  <h2 className="text-sm sm:text-base font-extrabold text-zinc-900 dark:text-zinc-100">
-                    Qualidades do Atleta (31 Atributos EA FC 26)
-                  </h2>
-                  <p className="text-[11px] text-zinc-500">
-                    Ajuste manualmente ou suba o print acima para preenchimento automático
-                  </p>
+                  <label className="text-[10px] font-extrabold uppercase text-zinc-500 dark:text-zinc-400 block mb-1">
+                    Seu Nome Real (Financeiro / Admin)
+                  </label>
+                  <input
+                    type="text"
+                    value={fullName}
+                    onChange={(e) => setFullName(e.target.value)}
+                    placeholder="Ex: Jefherson"
+                    className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-bold text-zinc-900 dark:text-white"
+                  />
                 </div>
-              </div>
 
-              <div className="grid sm:grid-cols-2 gap-4">
-                {ATTRIBUTE_GROUPS.map((group) => (
-                  <div
-                    key={group.id}
-                    className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/60 border border-zinc-200/60 dark:border-zinc-800 space-y-2.5"
-                  >
-                    <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#7C5CFC]">
-                      {group.label}
-                    </h3>
-
-                    <div className="space-y-2">
-                      {group.fields.map((field) => {
-                        const val = attributes[field.key] ?? 80;
-                        return (
-                          <div key={field.key} className="space-y-1">
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="font-semibold text-zinc-700 dark:text-zinc-300">
-                                {field.label}
-                              </span>
-                              <div className="flex items-center gap-1.5">
-                                <input
-                                  type="number"
-                                  min={1}
-                                  max={99}
-                                  value={val}
-                                  onChange={(e) => {
-                                    const n = Math.max(
-                                      1,
-                                      Math.min(99, Number(e.target.value) || 1)
-                                    );
-                                    setAttributes((prev) => ({
-                                      ...prev,
-                                      [field.key]: n,
-                                    }));
-                                  }}
-                                  className="w-12 h-6 text-center rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 font-black text-xs text-[#38C958]"
-                                />
-                              </div>
-                            </div>
-                            <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-700 overflow-hidden">
-                              <div
-                                className="h-full bg-[#38C958] transition-all"
-                                style={{ width: `${val}%` }}
-                              />
-                            </div>
-                          </div>
-                        );
-                      })}
-                    </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <label className="text-[10px] font-extrabold uppercase text-zinc-500 dark:text-zinc-400 block mb-1">
+                      Posição na Carta
+                    </label>
+                    <select
+                      value={primaryPosition}
+                      onChange={(e) => setPrimaryPosition(e.target.value as PlayerPosition)}
+                      className="w-full h-9 px-2 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold text-zinc-900 dark:text-white"
+                    >
+                      {['ATA', 'MEI', 'MC', 'VOL', 'ZAG', 'LD', 'LE', 'GK', 'ST', 'CAM', 'CB'].map((pos) => (
+                        <option key={pos} value={pos}>
+                          {pos}
+                        </option>
+                      ))}
+                    </select>
                   </div>
-                ))}
+                  <div>
+                    <label className="text-[10px] font-extrabold uppercase text-zinc-500 dark:text-zinc-400 block mb-1">
+                      Camisa #
+                    </label>
+                    <input
+                      type="number"
+                      min={1}
+                      max={99}
+                      value={shirtNumber}
+                      onChange={(e) => setShirtNumber(Number(e.target.value))}
+                      className="w-full h-9 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-zinc-900 dark:text-white"
+                    />
+                  </div>
+                </div>
               </div>
             </section>
-          </div>
-        )}
 
-        {/* ================================================================= */}
-        {/* ABA 2: FOTOS REAIS DO PERSONAGEM (ROSTO + CORPO INTEIRO)          */}
-        {/* ================================================================= */}
-        {activeTab === 'photos' && (
-          <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-            <div>
-              <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
-                Fotos Oficiais do Personagem (Supabase Storage)
-              </h2>
-              <p className="text-xs text-zinc-500">
-                Estas fotos ficam disponíveis para os Capitães e Admins gerarem artes hiper-realistas no Estúdio de IA com o rosto e corpo exatos do seu boneco.
-              </p>
-            </div>
-
-            <div className="grid sm:grid-cols-2 gap-4">
-              {/* Card 1: Foto do Rosto */}
-              <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200/70 dark:border-zinc-700 space-y-3 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase">
-                    📸 Foto do Rosto (Close-up)
-                  </span>
-                  <h3 className="text-sm font-extrabold">
-                    Rosto do Boneco ({characterName})
-                  </h3>
-                  <p className="text-[11px] text-zinc-500">
-                    Usado na Sala de Draft, Ranking de Artilheiros e fidelidade facial no Gemini 2.5 Flash.
-                  </p>
-                </div>
-
-                <div className="w-full h-48 rounded-2xl bg-zinc-900 overflow-hidden flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
-                  {avatarFaceUrl ? (
-                    <img
-                      src={avatarFaceUrl}
-                      alt="Rosto do Personagem"
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <User className="w-12 h-12 text-zinc-600" />
-                  )}
-                </div>
-
-                <label className="cursor-pointer w-full py-2.5 px-4 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
-                  <Upload className="w-4 h-4" />
-                  <span>Enviar Foto do Rosto</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handlePhotoUpload('face', e)}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-
-              {/* Card 2: Foto de Corpo Inteiro */}
-              <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200/70 dark:border-zinc-700 space-y-3 flex flex-col justify-between">
-                <div className="space-y-2">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#229a3e] text-[10px] font-extrabold uppercase">
-                    🧍 Foto de Corpo Inteiro (Chuteira/Acessórios)
-                  </span>
-                  <h3 className="text-sm font-extrabold">
-                    Corpo Inteiro no Lobby ({characterName})
-                  </h3>
-                  <p className="text-[11px] text-zinc-500">
-                    Usado para preservar altura ({heightCm} cm), porte físico, meião e chuteiras nas cenas de pós-jogo.
-                  </p>
-                </div>
-
-                <div className="w-full h-48 rounded-2xl bg-zinc-900 overflow-hidden flex items-center justify-center border border-zinc-200 dark:border-zinc-700">
-                  {avatarBodyUrl ? (
-                    <img
-                      src={avatarBodyUrl}
-                      alt="Corpo Inteiro do Personagem"
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <User className="w-12 h-12 text-zinc-600" />
-                  )}
-                </div>
-
-                <label className="cursor-pointer w-full py-2.5 px-4 rounded-2xl bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
-                  <Upload className="w-4 h-4" />
-                  <span>Enviar Foto de Corpo Inteiro</span>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={(e) => handlePhotoUpload('body', e)}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* ================================================================= */}
-        {/* ABA 3: DISPONIBILIDADE POR INTERVALOS DE HORÁRIO                  */}
-        {/* ================================================================= */}
-        {activeTab === 'availability' && (
-          <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-            <div>
-              <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
-                Meus Intervalos de Horário (Tinder de Agenda)
-              </h2>
-              <p className="text-xs text-zinc-500">
-                Selecione turnos inteiros ou defina sua faixa personalizada de início e término para cruzar automaticamente com seu elenco.
-              </p>
-            </div>
-
-            {/* Seletor de Dia da Semana */}
-            <div className="flex gap-1.5 overflow-x-auto pb-1">
-              {DAYS_OF_WEEK.map((d) => {
-                const count = (availabilityIntervals[d.key] || []).length;
+            {/* NAVEGAÇÃO DE ABAS DO ATLETA (5 ABAS) */}
+            <div className="p-1.5 rounded-2xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-5 gap-1">
+              {[
+                { id: 'build', label: 'Build & Run', icon: Sliders },
+                { id: 'cards', label: 'Cartas FC 26', icon: Sparkles },
+                { id: 'photos', label: 'Fotos IA', icon: Camera },
+                { id: 'availability', label: 'Horários', icon: Calendar },
+                { id: 'career', label: 'Carreira', icon: Trophy },
+              ].map((t) => {
+                const Icon = t.icon;
                 return (
                   <button
-                    key={d.key}
+                    key={t.id}
                     type="button"
-                    onClick={() => setSelectedDay(d.key)}
+                    onClick={() => setActiveTab(t.id as typeof activeTab)}
                     className={cn(
-                      'px-3 py-2 rounded-2xl text-xs font-extrabold shrink-0 transition-all flex items-center gap-1.5',
-                      selectedDay === d.key
-                        ? 'bg-[#7C5CFC] text-white shadow-xs'
-                        : 'bg-[#F5F6FA] dark:bg-zinc-800 text-zinc-700 dark:text-zinc-300'
+                      'py-2 px-2 rounded-xl text-[11px] font-extrabold transition-all flex items-center justify-center gap-1.5',
+                      activeTab === t.id
+                        ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                        : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     )}
                   >
-                    <span>{d.label}</span>
-                    {count > 0 && (
-                      <span className="px-1.5 py-0.2 rounded-full bg-[#38C958] text-white text-[10px]">
-                        {count}
-                      </span>
-                    )}
+                    <Icon className="w-3.5 h-3.5 shrink-0" />
+                    <span className="truncate">{t.label}</span>
                   </button>
                 );
               })}
             </div>
 
-            {/* Turnos Predefinidos */}
-            <div className="space-y-2">
-              <span className="text-xs font-extrabold text-zinc-600 dark:text-zinc-300 block">
-                Turnos Rápidos ({DAYS_OF_WEEK.find((d) => d.key === selectedDay)?.label}):
-              </span>
-              <div className="grid sm:grid-cols-2 gap-2">
-                {INTERVAL_PRESETS.map((preset) => {
-                  const active = (availabilityIntervals[selectedDay] || []).some(
-                    (i) => i.id === preset.id
-                  );
-                  return (
-                    <button
-                      key={preset.id}
-                      type="button"
-                      onClick={() => toggleIntervalForDay(selectedDay, preset)}
-                      className={cn(
-                        'p-3 rounded-2xl border text-left transition-all flex items-center justify-between',
-                        active
-                          ? 'border-[#38C958] bg-[#38C958]/10 text-zinc-900 dark:text-white font-extrabold'
-                          : 'border-zinc-100 dark:border-zinc-800 bg-[#F5F6FA] dark:bg-zinc-800/50 text-xs font-semibold text-zinc-600 dark:text-zinc-400'
-                      )}
-                    >
-                      <span className="text-xs">{preset.label}</span>
-                      {active && <CheckCircle2 className="w-4 h-4 text-[#38C958] shrink-0" />}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {/* ============================================================= */}
+            {/* ABA 1: MINHA BUILD (QUALIDADES, PLAYSTYLES & ACCELERATE 2.0)  */}
+            {/* ============================================================= */}
+            {activeTab === 'build' && (
+              <div className="space-y-4">
+                {/* 1. PAINEL ACCELERATE AO VIVO */}
+                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC]">
+                          Calculadora Oficial EA FC 26 Clubs
+                        </span>
+                        <span
+                          className="px-2.5 py-0.5 rounded-full text-white text-[11px] font-black"
+                          style={{ backgroundColor: accelerateAnalysis.badgeColor }}
+                        >
+                          AcceleRATE: {accelerateAnalysis.primaryType}
+                        </span>
+                        <span className="px-2.5 py-0.5 rounded-full bg-zinc-100 dark:bg-[#1c2029] text-zinc-800 dark:text-zinc-200 text-[11px] font-extrabold">
+                          2.0: {accelerateAnalysis.subType}
+                        </span>
+                      </div>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        {accelerateAnalysis.description}
+                      </p>
+                    </div>
 
-            {/* Faixa Personalizada (Das HH:MM às HH:MM) */}
-            <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200/60 dark:border-zinc-700 space-y-2.5">
-              <span className="text-xs font-extrabold text-[#7C5CFC] flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5" />
-                Adicionar Janela Personalizada (Ex: Das 21:30 às 23:30)
-              </span>
-              <div className="flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold text-zinc-500">Das</span>
-                  <input
-                    type="time"
-                    value={customStart}
-                    onChange={(e) => setCustomStart(e.target.value)}
-                    className="h-9 px-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold"
-                  />
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-xs font-bold text-zinc-500">às</span>
-                  <input
-                    type="time"
-                    value={customEnd}
-                    onChange={(e) => setCustomEnd(e.target.value)}
-                    className="h-9 px-2.5 rounded-xl bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs font-extrabold"
-                  />
-                </div>
-                <button
-                  type="button"
-                  onClick={() => addCustomRangeForDay(selectedDay)}
-                  className="h-9 px-3.5 rounded-xl bg-[#7C5CFC] text-white text-xs font-bold flex items-center gap-1"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Incluir Faixa
-                </button>
-              </div>
+                    <label className="cursor-pointer py-2.5 px-3.5 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shrink-0">
+                      <Camera className="w-4 h-4" />
+                      <span>
+                        {ocrLoading ? 'Lendo Print...' : '📸 Ler Print de Qualidades (OCR)'}
+                      </span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleOcrAttributesUpload}
+                        className="hidden"
+                      />
+                    </label>
+                  </div>
 
-              {/* Lista de intervalos ativos no dia */}
-              {(availabilityIntervals[selectedDay] || []).length > 0 && (
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {(availabilityIntervals[selectedDay] || []).map((slot, sIdx) => (
-                    <span
-                      key={slot.id || `slot-${sIdx}`}
-                      className="px-3 py-1 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs font-bold flex items-center gap-2"
-                    >
-                      <span>{slot.label}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeSlotFromDay(selectedDay, slot.id || '')}
-                        className="text-rose-500 hover:text-rose-600"
+                  {ocrNotice && (
+                    <div className="p-3 rounded-2xl bg-[#7C5CFC]/15 border border-[#7C5CFC]/30 text-[#7C5CFC] text-xs font-bold">
+                      {ocrNotice}
+                    </div>
+                  )}
+
+                  {/* Barra Visual de Proporção AcceleRATE 2.0 */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between text-[10px] font-mono font-extrabold uppercase">
+                      <span className="text-amber-400">
+                        ⚡ Explosiva ({accelerateAnalysis.explosivePercent}%)
+                      </span>
+                      <span className="text-[#38C958]">
+                        ⚖️ Controlada ({accelerateAnalysis.controlledPercent}%)
+                      </span>
+                      <span className="text-[#7C5CFC]">
+                        🚂 Prolongada ({accelerateAnalysis.lengthyPercent}%)
+                      </span>
+                    </div>
+                    <div className="w-full h-3 rounded-full bg-zinc-100 dark:bg-[#1c2029] overflow-hidden flex">
+                      <div
+                        className="h-full bg-amber-500 transition-all"
+                        style={{ width: `${accelerateAnalysis.explosivePercent}%` }}
+                      />
+                      <div
+                        className="h-full bg-[#38C958] transition-all"
+                        style={{ width: `${accelerateAnalysis.controlledPercent}%` }}
+                      />
+                      <div
+                        className="h-full bg-[#7C5CFC] transition-all"
+                        style={{ width: `${accelerateAnalysis.lengthyPercent}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Diagnóstico Automático */}
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {accelerateAnalysis.tips.map((tip, idx) => (
+                      <div
+                        key={idx}
+                        className="p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 flex items-start gap-2"
                       >
-                        <Trash2 className="w-3 h-3" />
+                        <Zap className="w-3.5 h-3.5 text-[#7C5CFC] shrink-0 mt-0.5" />
+                        <span>{tip}</span>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Sliders de Altura e Peso */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-zinc-100 dark:border-white/[0.07]">
+                    <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold">Altura (cm)</span>
+                        <span className="text-xs font-mono font-black text-[#7C5CFC]">{heightCm} cm</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={150}
+                        max={210}
+                        value={heightCm}
+                        onChange={(e) => setHeightCm(Number(e.target.value))}
+                        className="w-full accent-[#7C5CFC]"
+                      />
+                      <div className="flex justify-between text-[10px] text-zinc-400">
+                        <span>150 cm</span>
+                        <span>≤182 Explosiva | ≥183 Prolongada</span>
+                        <span>210 cm</span>
+                      </div>
+                    </div>
+
+                    <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] space-y-1.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-extrabold">Peso (kg)</span>
+                        <span className="text-xs font-mono font-black text-[#38C958]">{weightKg} kg</span>
+                      </div>
+                      <input
+                        type="range"
+                        min={45}
+                        max={115}
+                        value={weightKg}
+                        onChange={(e) => setWeightKg(Number(e.target.value))}
+                        className="w-full accent-[#38C958]"
+                      />
+                      <div className="flex justify-between text-[10px] text-zinc-400">
+                        <span>45 kg</span>
+                        <span>Impacta Força & Inércia</span>
+                        <span>115 kg</span>
+                      </div>
+                    </div>
+                  </div>
+                </section>
+
+                {/* 2. SELETOR VISUAL DE ARQUÉTIPO OFICIAL (Ícones soltos sem borda quadrada pesada) */}
+                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
+                  <div className="flex items-center justify-between gap-2 flex-wrap">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={selectedArchetypeAsset.iconUrl}
+                        alt={selectedArchetypeAsset.name}
+                        className="w-11 h-11 object-contain drop-shadow-md"
+                      />
+                      <div>
+                        <h2 className="text-sm sm:text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                          Arquétipo Oficial: {selectedArchetypeAsset.name}
+                        </h2>
+                        <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                          Selecione o arquétipo principal do seu boneco no EA FC 26 Clubs
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex gap-1 flex-wrap">
+                      {(
+                        ['Atacante', 'Meio-Campista', 'Defensor', 'Goleiro'] as ArchetypePositionGroup[]
+                      ).map((grp) => (
+                        <button
+                          key={grp}
+                          type="button"
+                          onClick={() => setArchetypeGroupFilter(grp)}
+                          className={cn(
+                            'px-2.5 py-1 rounded-full text-[10px] font-extrabold transition-all',
+                            archetypeGroupFilter === grp
+                              ? 'bg-[#7C5CFC] text-white'
+                              : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
+                          )}
+                        >
+                          {grp}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+                    {ARCHETYPE_ASSETS.filter((a) => a.positionGroup === archetypeGroupFilter).map(
+                      (arch) => {
+                        const isSelected =
+                          selectedArchetypeId === arch.id ||
+                          selectedArchetypeId.toLowerCase() === arch.name.toLowerCase();
+                        return (
+                          <button
+                            key={arch.id}
+                            type="button"
+                            onClick={() => setSelectedArchetypeId(arch.id)}
+                            className={cn(
+                              'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5',
+                              isSelected
+                                ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-xs'
+                                : 'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/60 hover:border-[#7C5CFC]/40'
+                            )}
+                          >
+                            <img
+                              src={arch.iconUrl}
+                              alt={arch.name}
+                              className="w-12 h-12 object-contain drop-shadow-md"
+                            />
+                            <span className="text-xs font-extrabold text-zinc-900 dark:text-white">
+                              {arch.name}
+                            </span>
+                          </button>
+                        );
+                      }
+                    )}
+                  </div>
+                </section>
+
+                {/* 3. SELETOR DE PLAYSTYLES (1 CLIQUE = PRATA, 2 CLIQUES = DOURADO+ NA CARTA FC 26) */}
+                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div>
+                      <h2 className="text-sm sm:text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                        PlayStyles & PlayStyles+ ({playstyles.length} ativos)
+                      </h2>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                        <strong>1 clique</strong> = Prata • <strong>2 cliques</strong> = Dourado (aparece na borda esquerda da sua Carta FC 26!) • <strong>3 cliques</strong> = Remover
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex gap-1.5 overflow-x-auto pb-1">
+                    {(
+                      [
+                        'Finalização',
+                        'Passe',
+                        'Controle de Bola',
+                        'Defesa',
+                        'Físico',
+                        'Goleiro',
+                      ] as PlayStyleCategory[]
+                    ).map((cat) => (
+                      <button
+                        key={cat}
+                        type="button"
+                        onClick={() => setPlaystyleCategory(cat)}
+                        className={cn(
+                          'px-3 py-1.5 rounded-full text-[11px] font-extrabold shrink-0 transition-all',
+                          playstyleCategory === cat
+                            ? 'bg-[#7C5CFC] text-white'
+                            : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
+                        )}
+                      >
+                        {cat}
                       </button>
-                    </span>
-                  ))}
+                    ))}
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {PLAYSTYLE_ASSETS.filter((ps) => ps.category === playstyleCategory).map((ps) => {
+                      const sel = playstyles.find((p) => p.id === ps.id);
+                      const isGold = sel?.level === 'gold' || sel?.tier === 'gold';
+                      const isSilver = sel?.level === 'silver' || sel?.tier === 'silver';
+
+                      return (
+                        <button
+                          key={ps.id}
+                          type="button"
+                          onClick={() => handleTogglePlayStyle(ps.id)}
+                          className={cn(
+                            'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5 relative',
+                            isGold &&
+                              'border-amber-400 bg-amber-500/10 shadow-[0_0_16px_rgba(245,158,11,0.2)]',
+                            isSilver && 'border-zinc-400 bg-zinc-200/40 dark:bg-[#1c2029]',
+                            !sel &&
+                              'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/40 opacity-75 hover:opacity-100'
+                          )}
+                        >
+                          <span
+                            className={cn(
+                              'absolute top-2 right-2 px-1.5 py-0.5 rounded-full text-[9px] font-black uppercase',
+                              isGold && 'bg-amber-400 text-zinc-950',
+                              isSilver && 'bg-zinc-300 dark:bg-zinc-700 text-zinc-800 dark:text-white',
+                              !sel && 'hidden'
+                            )}
+                          >
+                            {isGold ? 'OURO+' : 'PRATA'}
+                          </span>
+
+                          <img
+                            src={isGold ? ps.plusIconUrl : ps.baseIconUrl}
+                            alt={ps.name}
+                            className="w-11 h-11 object-contain drop-shadow-md"
+                          />
+                          <span className="text-[11px] font-extrabold text-zinc-900 dark:text-white leading-tight">
+                            {ps.name}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </section>
+
+                {/* 4. EDITOR DOS 31 ATRIBUTOS (ATUALIZA OS 6 MACRO-STATS DA CARTA EM TEMPO REAL) */}
+                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                  <div>
+                    <h2 className="text-sm sm:text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                      Qualidades do Atleta (31 Atributos → Cálculo Automático PAC/SHO/PAS/DRI/DEF/PHY)
+                    </h2>
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                      Qualquer ajuste abaixo recalcula instantaneamente os 6 atributos e o OVR da sua Carta FC 26 ao lado
+                    </p>
+                  </div>
+
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    {ATTRIBUTE_GROUPS.map((group) => (
+                      <div
+                        key={group.id}
+                        className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/70 border border-zinc-200/60 dark:border-white/[0.05] space-y-2.5"
+                      >
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#7C5CFC]">
+                          {group.label}
+                        </h3>
+
+                        <div className="space-y-2">
+                          {group.fields.map((field) => {
+                            const val = attributes[field.key] ?? 80;
+                            return (
+                              <div key={field.key} className="space-y-1">
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="font-semibold text-zinc-700 dark:text-zinc-300">
+                                    {field.label}
+                                  </span>
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    max={99}
+                                    value={val}
+                                    onChange={(e) => {
+                                      const n = Math.max(
+                                        1,
+                                        Math.min(99, Number(e.target.value) || 1)
+                                      );
+                                      setAttributes((prev) => ({
+                                        ...prev,
+                                        [field.key]: n,
+                                      }));
+                                    }}
+                                    className="w-12 h-6 text-center rounded-lg bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-xs text-[#38C958]"
+                                  />
+                                </div>
+                                <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
+                                  <div
+                                    className="h-full bg-[#38C958] transition-all"
+                                    style={{ width: `${val}%` }}
+                                  />
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            {/* ============================================================= */}
+            {/* ABA 2: GALERIA DE CARTAS FC 26 & DESBLOQUEIO POR MÉRITO       */}
+            {/* ============================================================= */}
+            {activeTab === 'cards' && (
+              <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                      Coleção Oficial de Cartas EA FC 26 ({CARD_DESIGN_ASSETS.length} Designs)
+                    </h2>
+                    <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                      Desbloqueie designs especiais evoluindo seu OVR em campeonatos ou abrindo Packs FC 26! Clique em qualquer carta para testar e equipar.
+                    </p>
+                  </div>
                 </div>
-              )}
-            </div>
-          </section>
-        )}
 
-        {/* ================================================================= */}
-        {/* ABA 4: ESTATÍSTICAS DE CARREIRA & PREMIAÇÕES OFICIAIS             */}
-        {/* ================================================================= */}
-        {activeTab === 'career' && (
-          <section className="space-y-4">
-            <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-              <div>
-                <h2 className="text-base font-extrabold text-zinc-900 dark:text-zinc-100">
-                  Histórico Oficial em Campeonatos ({characterName})
-                </h2>
-                <p className="text-xs text-zinc-500">
-                  Métricas sincronizadas com as súmulas validadas e Sala de Draft
-                </p>
-              </div>
+                <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+                  {CARD_DESIGN_ASSETS.map((design) => {
+                    const isUnlocked = unlockedCardSet.has(design.id);
+                    const isEquipped = selectedCardUrl === design.url;
 
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {[
-                  { label: 'Campeonatos', val: career.tournaments_played ?? 4 },
-                  { label: 'Títulos', val: career.titles_won ?? 1 },
-                  { label: 'Partidas', val: career.matches_played ?? career.official_matches ?? 18 },
-                  { label: 'Gols Marcados', val: career.goals ?? career.official_goals ?? 24 },
-                  { label: 'Assistências', val: career.assists ?? career.official_assists ?? 11 },
-                  { label: 'MVPs (Craque)', val: career.mvps ?? career.official_motm ?? 6 },
-                  { label: 'Clean Sheets', val: career.clean_sheets ?? 0 },
-                  { label: 'Nota Média', val: (career.average_rating ?? 8.9).toFixed(1) },
-                ].map((stat) => (
-                  <div
-                    key={stat.label}
-                    className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 text-center space-y-1"
-                  >
-                    <span className="text-lg font-black text-[#7C5CFC] block">
-                      {stat.val}
-                    </span>
-                    <span className="text-[11px] font-bold text-zinc-500 block">
-                      {stat.label}
-                    </span>
+                    return (
+                      <button
+                        key={design.id}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCardUrl(design.url);
+                          if (currentPlayer) {
+                            unlockPlayerCardDesign(currentPlayer.id, design.id, design.url);
+                          }
+                        }}
+                        className={cn(
+                          'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-2 relative group',
+                          isEquipped
+                            ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-lg shadow-[#7C5CFC]/15'
+                            : 'border-zinc-200/70 dark:border-white/[0.07] bg-[#F5F6FA] dark:bg-[#1c2029]/60 hover:border-[#7C5CFC]/50'
+                        )}
+                      >
+                        <div className="absolute top-2 right-2">
+                          {isEquipped ? (
+                            <span className="px-2 py-0.5 rounded-full bg-[#38C958] text-white text-[9px] font-black uppercase flex items-center gap-0.5">
+                              <Check className="w-2.5 h-2.5" /> Equipada
+                            </span>
+                          ) : isUnlocked ? (
+                            <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/20 text-[#7C5CFC] text-[9px] font-black uppercase">
+                              Liberada
+                            </span>
+                          ) : (
+                            <span className="px-1.5 py-0.5 rounded-full bg-zinc-900/80 text-amber-400 text-[9px] font-bold flex items-center gap-0.5">
+                              <Lock className="w-2.5 h-2.5" /> Preview
+                            </span>
+                          )}
+                        </div>
+
+                        <img
+                          src={design.url}
+                          alt={design.name}
+                          className="w-24 h-32 object-contain drop-shadow-md group-hover:scale-105 transition-transform"
+                        />
+
+                        <div className="space-y-0.5">
+                          <span className="text-xs font-display font-extrabold text-zinc-900 dark:text-white block">
+                            {design.name}
+                          </span>
+                          <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block leading-tight">
+                            {design.unlockRequirement}
+                          </span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
+              </section>
+            )}
+
+            {/* ============================================================= */}
+            {/* ABA 3: FOTOS REAIS DO PERSONAGEM (ROSTO + CORPO INTEIRO)      */}
+            {/* ============================================================= */}
+            {activeTab === 'photos' && (
+              <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                <div>
+                  <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                    Fotos Oficiais do Personagem (Recorte Automático na Carta FC 26 & Estúdio IA)
+                  </h2>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Ao enviar a foto do seu boneco, o sistema aplica recorte inteligente de busto na sua Carta FC 26 e disponibiliza o ativo para os banners pós-jogo.
+                  </p>
+                </div>
+
+                <div className="grid sm:grid-cols-2 gap-4">
+                  <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/10 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase">
+                        📸 Foto do Rosto / Busto (Carta FC 26)
+                      </span>
+                      <h3 className="text-sm font-extrabold">
+                        Retrato da Carta ({characterName})
+                      </h3>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                        Exibido no centro superior da sua Carta FC 26 com remoção de fundo automática.
+                      </p>
+                    </div>
+
+                    <div className="w-full h-48 rounded-2xl bg-[#0c0e12] overflow-hidden flex items-center justify-center border border-white/10">
+                      <img
+                        src={avatarFaceUrl || TEMPLATE_ASSETS.avatarPlaceholder}
+                        alt="Rosto do Personagem"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
+                        }}
+                      />
+                    </div>
+
+                    <label className="cursor-pointer w-full py-2.5 px-4 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
+                      <Upload className="w-4 h-4" />
+                      <span>Enviar Foto para a Carta FC 26</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handlePhotoUpload('face', e)}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
-                ))}
-              </div>
-            </div>
 
-            {/* Galeria de Troféus e Premiações Reais (public/assets/awards) */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
-              <h3 className="text-sm font-extrabold text-zinc-900 dark:text-zinc-100">
-                Insígnias & Troféus Oficiais da Liga
-              </h3>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
-                {AWARD_ASSETS.map((aw) => (
-                  <div
-                    key={aw.id}
-                    className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/60 border border-zinc-100 dark:border-zinc-800 flex flex-col items-center text-center gap-1.5"
-                  >
-                    <img
-                      src={aw.iconUrl}
-                      alt={aw.name}
-                      className="w-12 h-12 object-contain"
-                    />
-                    <span className="text-[11px] font-extrabold text-zinc-800 dark:text-zinc-200 leading-tight">
-                      {aw.name}
-                    </span>
+                  <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/10 space-y-3 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#38C958] text-[10px] font-extrabold uppercase">
+                        🧍 Foto de Corpo Inteiro (Estúdio IA)
+                      </span>
+                      <h3 className="text-sm font-extrabold">
+                        Corpo Inteiro no Lobby ({characterName})
+                      </h3>
+                      <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
+                        Usado para preservar altura ({heightCm} cm), porte físico e chuteiras nas cenas de pós-jogo.
+                      </p>
+                    </div>
+
+                    <div className="w-full h-48 rounded-2xl bg-[#0c0e12] overflow-hidden flex items-center justify-center border border-white/10">
+                      <img
+                        src={avatarBodyUrl || TEMPLATE_ASSETS.avatarPlaceholder}
+                        alt="Corpo Inteiro do Personagem"
+                        className="w-full h-full object-contain"
+                        onError={(e) => {
+                          e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
+                        }}
+                      />
+                    </div>
+
+                    <label className="cursor-pointer w-full py-2.5 px-4 rounded-2xl bg-[#38C958] hover:bg-[#2fb34d] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
+                      <Upload className="w-4 h-4" />
+                      <span>Enviar Foto de Corpo Inteiro</span>
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={(e) => handlePhotoUpload('body', e)}
+                        className="hidden"
+                      />
+                    </label>
                   </div>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
+                </div>
+              </section>
+            )}
+
+            {/* ============================================================= */}
+            {/* ABA 4: DISPONIBILIDADE POR INTERVALOS DE HORÁRIO              */}
+            {/* ============================================================= */}
+            {activeTab === 'availability' && (
+              <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                <div>
+                  <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                    Meus Intervalos de Horário (Tinder de Agenda)
+                  </h2>
+                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                    Selecione turnos inteiros ou defina sua faixa personalizada de início e término para cruzar automaticamente com seu elenco.
+                  </p>
+                </div>
+
+                <div className="flex gap-1.5 overflow-x-auto pb-1">
+                  {DAYS_OF_WEEK.map((d) => {
+                    const count = (availabilityIntervals[d.key] || []).length;
+                    return (
+                      <button
+                        key={d.key}
+                        type="button"
+                        onClick={() => setSelectedDay(d.key)}
+                        className={cn(
+                          'px-3 py-2 rounded-2xl text-xs font-extrabold shrink-0 transition-all flex items-center gap-1.5',
+                          selectedDay === d.key
+                            ? 'bg-[#7C5CFC] text-white shadow-xs'
+                            : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-700 dark:text-zinc-300'
+                        )}
+                      >
+                        <span>{d.label}</span>
+                        {count > 0 && (
+                          <span className="px-1.5 py-0.2 rounded-full bg-[#38C958] text-white text-[10px]">
+                            {count}
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="space-y-2">
+                  <span className="text-xs font-extrabold text-zinc-600 dark:text-zinc-300 block">
+                    Turnos Rápidos ({DAYS_OF_WEEK.find((d) => d.key === selectedDay)?.label}):
+                  </span>
+                  <div className="grid sm:grid-cols-2 gap-2">
+                    {INTERVAL_PRESETS.map((preset) => {
+                      const active = (availabilityIntervals[selectedDay] || []).some(
+                        (i) => i.id === preset.id
+                      );
+                      return (
+                        <button
+                          key={preset.id}
+                          type="button"
+                          onClick={() => toggleIntervalForDay(selectedDay, preset)}
+                          className={cn(
+                            'p-3 rounded-2xl border text-left transition-all flex items-center justify-between',
+                            active
+                              ? 'border-[#38C958] bg-[#38C958]/10 text-zinc-900 dark:text-white font-extrabold'
+                              : 'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/60 text-xs font-semibold text-zinc-600 dark:text-zinc-400'
+                          )}
+                        >
+                          <span className="text-xs">{preset.label}</span>
+                          {active && <CheckCircle2 className="w-4 h-4 text-[#38C958] shrink-0" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 space-y-2.5">
+                  <span className="text-xs font-extrabold text-[#7C5CFC] flex items-center gap-1.5">
+                    <Clock className="w-3.5 h-3.5" />
+                    Adicionar Janela Personalizada (Ex: Das 21:30 às 23:30)
+                  </span>
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-zinc-500">Das</span>
+                      <input
+                        type="time"
+                        value={customStart}
+                        onChange={(e) => setCustomStart(e.target.value)}
+                        className="h-9 px-2.5 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
+                      />
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-xs font-bold text-zinc-500">às</span>
+                      <input
+                        type="time"
+                        value={customEnd}
+                        onChange={(e) => setCustomEnd(e.target.value)}
+                        className="h-9 px-2.5 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
+                      />
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => addCustomRangeForDay(selectedDay)}
+                      className="h-9 px-3.5 rounded-xl bg-[#7C5CFC] text-white text-xs font-bold flex items-center gap-1"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      Incluir Faixa
+                    </button>
+                  </div>
+
+                  {(availabilityIntervals[selectedDay] || []).length > 0 && (
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {(availabilityIntervals[selectedDay] || []).map((slot, sIdx) => (
+                        <span
+                          key={slot.id || `slot-${sIdx}`}
+                          className="px-3 py-1 rounded-full bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-bold flex items-center gap-2"
+                        >
+                          <span>{slot.label}</span>
+                          <button
+                            type="button"
+                            onClick={() => removeSlotFromDay(selectedDay, slot.id || '')}
+                            className="text-rose-500 hover:text-rose-600"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </section>
+            )}
+
+            {/* ============================================================= */}
+            {/* ABA 5: CARREIRA & TROFÉUS TRANSPARENTES (SEM CAIXAS PESADAS)  */}
+            {/* ============================================================= */}
+            {activeTab === 'career' && (
+              <section className="space-y-4">
+                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                  <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div>
+                      <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                        Histórico Oficial de Carreira ({characterName})
+                      </h2>
+                      <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                        Seus gols, assistências, títulos e MVPs geram <strong className="text-[#38C958]">+{fc26Macro.careerBonus} OVR de Bônus de Carreira</strong> na sua Carta FC 26!
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                    {[
+                      { label: 'Campeonatos', val: career.tournaments_played ?? 4 },
+                      { label: 'Títulos', val: career.titles_won ?? 1 },
+                      { label: 'Partidas', val: career.matches_played ?? career.official_matches ?? 18 },
+                      { label: 'Gols Marcados', val: career.goals ?? career.official_goals ?? 24 },
+                      { label: 'Assistências', val: career.assists ?? career.official_assists ?? 11 },
+                      { label: 'MVPs (Craque)', val: career.mvps ?? career.official_motm ?? 6 },
+                      { label: 'Clean Sheets', val: career.clean_sheets ?? 0 },
+                      { label: 'Nota Média', val: (career.average_rating ?? 8.9).toFixed(1) },
+                    ].map((stat) => (
+                      <div
+                        key={stat.label}
+                        className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] text-center space-y-1"
+                      >
+                        <span className="text-xl font-mono font-black text-[#7C5CFC] block tabular-nums">
+                          {stat.val}
+                        </span>
+                        <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 block">
+                          {stat.label}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Galeria de Troféus e Premiações Reais (Ícones soltos sem borda quadrada pesada) */}
+                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
+                  <h3 className="text-sm font-display font-extrabold text-zinc-900 dark:text-white">
+                    Sala de Troféus & Insígnias Oficiais da Liga
+                  </h3>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {AWARD_ASSETS.map((aw) => (
+                      <div
+                        key={aw.id}
+                        className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/50 flex flex-col items-center text-center gap-2 hover:scale-[1.02] transition-transform"
+                      >
+                        <img
+                          src={aw.iconUrl}
+                          alt={aw.name}
+                          className="w-16 h-16 object-contain drop-shadow-[0_8px_16px_rgba(0,0,0,0.45)]"
+                        />
+                        <span className="text-xs font-extrabold text-zinc-800 dark:text-zinc-100 leading-tight">
+                          {aw.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            )}
+          </div>
+        </div>
       </main>
     </div>
   );

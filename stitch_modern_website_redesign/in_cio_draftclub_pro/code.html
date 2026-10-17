@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fbf8fc;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'tertiary-container': '#6063ee', 'primary-container': '#7857f8', 'surface-container': '#f0edf1', 'on-tertiary-fixed-variant': '#2f2ebe', 'on-error': '#ffffff', 'secondary-container': '#70fb83', 'surface-tint': '#613de0', 'surface-container-low': '#f6f2f7', 'inverse-surface': '#303033', 'on-primary-fixed-variant': '#4918c8', 'tertiary-fixed-dim': '#c0c1ff', 'primary-fixed-dim': '#cabeff', 'violet-tint': '#F1EEFE', 'surface-container-highest': '#e4e1e6', 'on-tertiary-fixed': '#07006c', 'on-background': '#1b1b1e', 'on-primary-container': '#fffbff', 'surface': '#fbf8fc', 'tertiary-fixed': '#e1e0ff', 'on-secondary': '#ffffff', 'status-emerald': '#10B981', 'on-tertiary': '#ffffff', 'secondary-fixed-dim': '#54e16c', 'on-primary': '#ffffff', 'error': '#ba1a1a', 'surface-bright': '#fbf8fc', 'on-primary-fixed': '#1c0062', 'surface-variant': '#e4e1e6', 'on-surface': '#1b1b1e', 'emerald-tint': '#E8FAF0', 'canvas-bg': '#F5F6FA', 'surface-dim': '#dcd9dd', 'on-error-container': '#93000a', 'surface-white': '#FFFFFF', 'outline-variant': '#c9c4d8', 'border-subtle': '#E4E4E7', 'error-container': '#ffdad6', 'text-muted': '#71717A', 'tertiary': '#4648d4', 'on-secondary-fixed': '#002106', 'secondary-fixed': '#73fe85', 'surface-container-lowest': '#ffffff', 'on-secondary-container': '#007328', 'on-surface-variant': '#484555', 'inverse-primary': '#cabeff', 'primary-fixed': '#e6deff', 'outline': '#797587', 'score-capsule': '#F3F4F6', 'primary': '#5f3add', 'inverse-on-surface': '#f3f0f4', 'on-secondary-fixed-variant': '#00531a', 'surface-container-high': '#eae7eb', 'background': '#fbf8fc', 'on-tertiary-container': '#fffbff', 'secondary': '#006e26' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'space-xl': '1.75rem', 'margin-md': '1.5rem', 'space-xs': '0.25rem', 'space-lg': '1.25rem', 'space-sm': '0.5rem', 'gutter-md': '1rem', 'gutter-lg': '1.5rem', 'gutter': '0.75rem', 'space-md': '0.875rem', 'margin': '1rem', 'margin-lg': '2rem' }, fontFamily: { 'headline-md': ['Plus Jakarta Sans'], 'headline-lg': ['Plus Jakarta Sans'], 'score-display': ['Plus Jakarta Sans'], 'label-md': ['Inter'], 'body-lg': ['Inter'], 'headline-lg-mobile': ['Plus Jakarta Sans'], 'label-lg': ['Inter'], 'body-sm': ['Inter'], 'body-md': ['Inter'], 'headline-xl-mobile': ['Plus Jakarta Sans'], 'headline-xl': ['Plus Jakarta Sans'], 'label-sm': ['Inter'] }, fontSize: { 'headline-md': ['16px', { lineHeight: '22px', fontWeight: '700' }], 'headline-lg': ['22px', { lineHeight: '28px', letterSpacing: '-0.015em', fontWeight: '700' }], 'score-display': ['16px', { lineHeight: '20px', letterSpacing: '0.02em', fontWeight: '800' }], 'label-md': ['12px', { lineHeight: '16px', fontWeight: '600' }], 'body-lg': ['15px', { lineHeight: '22px', fontWeight: '500' }], 'headline-lg-mobile': ['19px', { lineHeight: '25px', letterSpacing: '-0.015em', fontWeight: '700' }], 'label-lg': ['14px', { lineHeight: '18px', fontWeight: '600' }], 'body-sm': ['12px', { lineHeight: '16px', fontWeight: '400' }], 'body-md': ['13px', { lineHeight: '18px', fontWeight: '400' }], 'headline-xl-mobile': ['26px', { lineHeight: '34px', letterSpacing: '-0.02em', fontWeight: '800' }], 'headline-xl': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '800' }], 'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '700' }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-1.5 bg-surface-container-low px-space-sm py-1.5 rounded-full shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)]"><span class="material-symbols-outlined text-primary text-[18px]">sports_soccer</span><select aria-label="Seleccionar Torneo" class="bg-transparent text-on-surface font-label-md text-label-md font-semibold focus:outline-none appearance-none pr-1 cursor-pointer"><option selected="" value="furia-del-plata">Furia del Plata</option><option value="lpf-5x5">LPF 5x5 Pro</option><option value="copa-argentina">Copa Argentina Clubes</option></select><span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span></div><span class="hidden sm:inline-block font-headline-md text-headline-md text-on-surface">Início</span></div><div class="flex items-center gap-space-xs"><button aria-label="Notificaciones" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant relative hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-secondary-container ring-2 ring-surface"></span></button><button aria-label="Filtros y Configuración" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface flex-1"><div class="flex flex-col w-full">
+<div class="px-gutter flex flex-col gap-space-lg w-full max-w-xl mx-auto pb-6">
+<!-- 1. TOURNAMENT HERO BENTO CARD -->
+<section class="relative bg-surface-container-lowest rounded-3xl p-gutter shadow-[0_4px_24px_-4px_rgba(24,24,27,0.06)] overflow-hidden">
+<!-- Ambient Glow Gradient Behind Header -->
+<div class="absolute -top-12 -right-12 w-44 h-44 bg-primary-container/10 rounded-full blur-3xl pointer-events-none"></div>
+<div class="absolute -bottom-8 -left-8 w-36 h-36 bg-secondary-container/20 rounded-full blur-2xl pointer-events-none"></div>
+<div class="relative flex items-start gap-3.5 mb-4">
+<!-- Glowing Gold Crest Badge -->
+<div class="relative shrink-0 flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 via-amber-500 to-amber-700 shadow-[0_6px_16px_rgba(217,119,6,0.28)] ring-4 ring-amber-100/60">
+<div class="w-12 h-12 rounded-xl bg-inverse-surface flex items-center justify-center text-center">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-amber-400 leading-none">1</span>
+</div>
+<span class="absolute -bottom-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-surface-white shadow-sm">
+<span class="material-symbols-outlined text-[12px] text-amber-600 font-bold" style="font-variation-settings: 'FILL' 1;">star</span>
+</span>
+</div>
+<div class="flex flex-col min-w-0">
+<!-- Season Status Tag -->
+<div class="inline-flex items-center gap-1.5 self-start bg-emerald-tint px-2.5 py-0.5 rounded-full mb-1">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-status-emerald uppercase tracking-wider">Temporada Oficial 5v5 • EA FC 26</span>
+</div>
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface tracking-tight truncate">
+            Liga Argentina Pro Clubs
+          </h1>
+<p class="font-body-sm text-body-sm text-text-muted mt-0.5 flex items-center gap-1.5">
+<span>Inscrição R$ 70,00</span>
+<span class="text-outline">•</span>
+<span>5 Titulares + 1 Reserva</span>
+</p>
+</div>
+</div>
+<!-- Prize Pool Glass Card -->
+<a class="group flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-violet-tint/80 via-surface-container-low to-surface-container-low/60 hover:from-violet-tint transition-all active:scale-[0.99] shadow-sm" href="#premiacao">
+<div class="flex items-center gap-3 min-w-0">
+<div class="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center shrink-0 text-primary">
+<span class="material-symbols-outlined text-[22px]" style="font-variation-settings: 'FILL' 1;">emoji_events</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-bold">Premiação 100% (Sem Taxa)</span>
+<span class="bg-status-emerald/15 text-status-emerald font-label-sm text-[10px] px-1.5 py-0.2 rounded-full">Garantida</span>
+</div>
+<div class="flex items-baseline gap-2 mt-0.5">
+<span class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface font-extrabold tracking-tight">R$ 560,00</span>
+<span class="font-body-sm text-body-sm text-text-muted truncate">1º R$300 • 2º R$120 • 3º R$80</span>
+</div>
+</div>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-white flex items-center justify-center text-on-surface-variant group-hover:text-primary group-hover:translate-x-0.5 transition-all shadow-xs shrink-0 ml-2">
+<span class="material-symbols-outlined text-[18px]">chevron_right</span>
+</div>
+</a>
+</section>
+<!-- 2. QUICK ACTION GRID -->
+<section class="grid grid-cols-2 gap-2.5">
+<!-- Súmula IA Action Card -->
+<button class="group flex items-center justify-between p-3.5 bg-gradient-to-r from-emerald-600 to-emerald-500 rounded-2xl text-on-primary shadow-[0_4px_16px_-2px_rgba(16,185,129,0.35)] active:scale-[0.97] transition-all" type="button">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-lg bg-surface-white/20 flex items-center justify-center shrink-0 backdrop-blur-xs">
+<span class="material-symbols-outlined text-[18px]">photo_camera</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold tracking-tight truncate">Súmula IA</span>
+</div>
+<span class="material-symbols-outlined text-[18px] opacity-80 group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</button>
+<!-- Banner 4:5 Action Card -->
+<button class="group flex items-center justify-between p-3.5 bg-gradient-to-r from-primary to-primary-container rounded-2xl text-on-primary shadow-[0_4px_16px_-2px_rgba(95,58,221,0.35)] active:scale-[0.97] transition-all" type="button">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-lg bg-surface-white/20 flex items-center justify-center shrink-0 backdrop-blur-xs">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+</div>
+<span class="font-label-lg text-label-lg font-bold tracking-tight truncate">Banner 4:5</span>
+</div>
+<span class="material-symbols-outlined text-[18px] opacity-80 group-hover:translate-x-0.5 transition-transform">arrow_forward</span>
+</button>
+<!-- Draft (+40) Action Chip -->
+<button class="group flex items-center justify-between p-3 bg-surface-container-lowest hover:bg-surface-container-low rounded-2xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] active:scale-[0.98] transition-all text-left" type="button">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-lg bg-violet-tint text-primary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">group_add</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">Draft (+40)</span>
+<span class="font-label-sm text-[10px] text-text-muted">Capitães ativos</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[16px] text-text-muted group-hover:text-primary transition-colors">chevron_right</span>
+</button>
+<!-- Minha Build Action Chip -->
+<button class="group flex items-center justify-between p-3 bg-surface-container-lowest hover:bg-surface-container-low rounded-2xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] active:scale-[0.98] transition-all text-left" type="button">
+<div class="flex items-center gap-2.5 min-w-0">
+<div class="w-8 h-8 rounded-lg bg-emerald-tint text-secondary flex items-center justify-center shrink-0">
+<span class="material-symbols-outlined text-[18px]">shield</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface truncate">Minha Build</span>
+<span class="font-label-sm text-[10px] text-status-emerald">OVR 91 • Atacante</span>
+</div>
+</div>
+<span class="material-symbols-outlined text-[16px] text-text-muted group-hover:text-secondary transition-colors">chevron_right</span>
+</button>
+</section>
+<!-- 3. SEGMENTED NAVIGATION TABS -->
+<section class="w-full">
+<div class="flex p-1.5 bg-surface-container-low rounded-2xl shadow-inner gap-1" role="tablist">
+<button aria-selected="true" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md shadow-[0_4px_12px_-2px_rgba(95,58,221,0.35)] transition-all" role="tab" type="button">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">calendar_month</span>
+<span>Jogos</span>
+</button>
+<button aria-selected="false" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" role="tab" type="button">
+<span class="material-symbols-outlined text-[18px]">military_tech</span>
+<span>Tabela (G4)</span>
+</button>
+<button aria-selected="false" class="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md" role="tab" type="button">
+<span class="material-symbols-outlined text-[18px]">local_fire_department</span>
+<span>Rankings</span>
+</button>
+</div>
+</section>
+<!-- 4. SECTION: CONFRONTOS DA RODADA -->
+<section class="flex flex-col gap-3">
+<!-- Section Header with Quick CTA -->
+<div class="flex items-center justify-between gap-2">
+<div class="flex flex-col">
+<div class="flex items-center gap-1.5">
+<h2 class="font-headline-md text-headline-md text-on-surface tracking-tight">Confrontos da Rodada</h2>
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+</div>
+<span class="font-body-sm text-body-sm text-text-muted">Agende horário ou valide a súmula por foto</span>
+</div>
+<button class="shrink-0 flex items-center gap-1 px-3 py-2 bg-primary text-on-primary rounded-xl font-label-md text-label-md shadow-[0_4px_14px_-2px_rgba(95,58,221,0.4)] hover:bg-primary-container active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[16px]">add</span>
+<span>Súmula / Jogo</span>
+</button>
+</div>
+<!-- MATCH 1: Validated Score Boca vs River -->
+<article class="bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_12px_-2px_rgba(24,24,27,0.05)] flex flex-col gap-3 transition-transform active:scale-[0.995]">
+<!-- Match Meta Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-text-muted">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-label-sm text-label-sm">Rodada #1 • Finalizado</span>
+</div>
+<!-- Status Tag: Súmula Validada -->
+<div class="inline-flex items-center gap-1 bg-emerald-tint px-2.5 py-1 rounded-full text-status-emerald font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span>
+<span>Súmula Validada</span>
+</div>
+</div>
+<!-- Head-to-Head Symmetrical Row -->
+<div class="grid grid-cols-7 items-center gap-1 py-1">
+<!-- Mandante Team -->
+<div class="col-span-3 flex items-center gap-2.5 min-w-0">
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="Emblem crest for Boca Juniors FC esports team with blue and gold iconic badge with stars on a clean transparent dark base." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDSQAduCdC3teDuklYO4cfPfOWSz0yowoEEpZXzMN0Yk7lqUofqTw6UhttVUjfyru-V36N0cUEStuQTyiglhNW_3DBWWH0APARjj6t5NwUBGghQPpsxSsmF5d7s6Hstrmj5RWVTN6tOEAFmEJuUoViwqYVS7sOVtfjlp0qao-fsz0lGZz1FT70mATkzt5Mwf8hs9CtLhQNQGoK6fbggIYtC4Q3oGVTgYxgtnsLTQuFY0C3ubrrfy6sb"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">Boca Juniors</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Mandante</span>
+</div>
+</div>
+<!-- Score Capsule -->
+<div class="col-span-1 flex justify-center">
+<div class="px-3 py-1.5 bg-score-capsule rounded-full shadow-inner flex items-center justify-center">
+<span class="font-score-display text-score-display text-on-surface tracking-wider">3 - 1</span>
+</div>
+</div>
+<!-- Visitante Team -->
+<div class="col-span-3 flex items-center justify-end gap-2.5 min-w-0 text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">River Plate</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="Esports crest for River Plate digital team with iconic diagonal red band and sleek modern crest design on bright clean shield." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDBp0OP-esvDE2adwp45HAokcFgIByGweIL1qGYKNBwYntdbIE_abvWHdnkMceTPNZnJ7QSXibARharSRNlmWaAK6FrHRyfb3m3ubO_1avZpQaqjmImvFJ9EC8bDNEBOG81caJU1_k3cNx2d4mPHlucC9RtPoEAzsaxcmy-UxUMpDPKC1kkhwi_Fv1vpxayXeNGMo8FZhjwMmoUGT7UFQqnspEJbGxI961sYddL5M_gj9wKSZx2iK1Z"/>
+</div>
+</div>
+</div>
+<!-- Match Card Footer Action -->
+<div class="flex items-center justify-between pt-2.5 bg-gradient-to-r from-transparent via-surface-container-low/40 to-transparent">
+<span class="font-body-sm text-body-sm text-text-muted">Rodada #1 • 5v5</span>
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-container font-label-md text-label-md font-semibold transition-colors" type="button">
+<span>Ver Súmula / Arte 4:5</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</article>
+<!-- MATCH 2: Bater Horário (Racing vs Boca) -->
+<article class="bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_12px_-2px_rgba(24,24,27,0.05)] flex flex-col gap-3 transition-transform active:scale-[0.995]">
+<!-- Match Meta Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-text-muted">
+<span class="material-symbols-outlined text-[16px] text-primary">event_available</span>
+<span class="font-label-sm text-label-sm">qua., 21/10 • 01:00</span>
+</div>
+<!-- Status Tag: Bater Horário -->
+<div class="inline-flex items-center gap-1 bg-violet-tint px-2.5 py-1 rounded-full text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[13px]">alarm</span>
+<span>Bater Horário</span>
+</div>
+</div>
+<!-- Head-to-Head Symmetrical Row -->
+<div class="grid grid-cols-7 items-center gap-1 py-1">
+<!-- Mandante Team -->
+<div class="col-span-3 flex items-center gap-2.5 min-w-0">
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="Racing Club Digital esports circular team crest with light blue and white stripes in a glossy competitive gaming badge style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA-qc7XAQ-ZGqw6p9LMhCMTbsMGFT-SzbX-Av86w4uMLOv4Eln_EtqARxr57tyeCVspM60b9c2Xq_xfwfgnay9mBKR5LktlPhuXzp-Px_IR895vLMCJbHCOrvPUM6Nlv4KB7B4yV1FaF_67H5T_YzLZMUlc7isq6rrceKbHaJPHMbwJPI93uF84Msc-k1PpsHCbRvRcwTSD8ZlF15NEXLcQlASZX07M3-Dpvtwkh7Nb7l2_v70T0occ"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">Racing Club</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Mandante</span>
+</div>
+</div>
+<!-- VS Capsule -->
+<div class="col-span-1 flex justify-center">
+<div class="px-2.5 py-1 bg-surface-container-low rounded-full flex items-center justify-center">
+<span class="font-label-sm text-[11px] text-text-muted font-black tracking-widest">VS</span>
+</div>
+</div>
+<!-- Visitante Team -->
+<div class="col-span-3 flex items-center justify-end gap-2.5 min-w-0 text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">Boca Juniors</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="Esports logo emblem for Boca Juniors FC digital squad with yellow stars and midnight navy crest shield." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCMl1lUjvXYzoowaIZx5XI7LrzSza9Hpy-eSEfzyYYmM4Bq3MK8bt6N8hS23gQnJ23CuTQNyYSx47-4c_CzEEDwRBWgpeV-3zWgbMR-yJgWxQpAWVbCx-GoF_zOFbS6qiCkb_1b6qu8uJoJlOt0KGf9c36yQLFKa38_iDkRHv6y4fYKOdMWxkaOKonRtoKqT0-d_yNQoXFCXkcF1hRSIjZ12z4QyTpHfZlJhiguHprkzHPWihEhvQQy"/>
+</div>
+</div>
+</div>
+<!-- Match Card Footer Action -->
+<div class="flex items-center justify-between pt-2.5 bg-gradient-to-r from-transparent via-surface-container-low/40 to-transparent">
+<span class="font-body-sm text-body-sm text-text-muted">Rodada #1 • 5v5</span>
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-container font-label-md text-label-md font-semibold transition-colors" type="button">
+<span>Ver Súmula / Arte 4:5</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</article>
+<!-- MATCH 3: Aguardando Capitão B with Quick Validation Action -->
+<article class="bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_12px_-2px_rgba(24,24,27,0.05)] flex flex-col gap-3 relative overflow-hidden transition-transform active:scale-[0.995]">
+<div class="absolute top-0 left-0 w-1.5 h-full bg-amber-400"></div>
+<!-- Match Meta Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-text-muted">
+<span class="material-symbols-outlined text-[16px]">calendar_today</span>
+<span class="font-label-sm text-label-sm">sáb., 17/10 • 01:00</span>
+</div>
+<!-- Status Tag: Aguardando Capitão B -->
+<div class="inline-flex items-center gap-1 bg-amber-50 px-2.5 py-1 rounded-full text-amber-700 font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+<span>Aguardando Capitão B</span>
+</div>
+</div>
+<!-- Head-to-Head Symmetrical Row -->
+<div class="grid grid-cols-7 items-center gap-1 py-1">
+<!-- Mandante Team -->
+<div class="col-span-3 flex items-center gap-2.5 min-w-0">
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="Furia del Plata official esports team shield with fierce roaring jaguar mascot and dynamic purple silver elements." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD31aBIG0xDGEO0yiqrSQfV5IPtIjL53Juo3Te_BDL23AEF2WTzNX_ESaQcu78chVrMkVTlSH7S8PoPb1dJsgKWcQelHy9xl_FnHNzRuWPOTFuM4fAf2Zi2wymFIXqci_hQiRioSWmKK76yWjLTrRVeYdGYHUQSVRpFf8mI4rRf2V88WMsYVXwfU4yqRHo3LxhtY58T82zHSV8404umVL9-2l9r1QhP8-0Ppn0tdO_yGYMBEkRbYV6H"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">Furia del Plata</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Mandante</span>
+</div>
+</div>
+<!-- Score Capsule -->
+<div class="col-span-1 flex justify-center">
+<div class="px-3 py-1.5 bg-score-capsule rounded-full shadow-inner flex items-center justify-center">
+<span class="font-score-display text-score-display text-on-surface tracking-wider">2 - 7</span>
+</div>
+</div>
+<!-- Visitante Team -->
+<div class="col-span-3 flex items-center justify-end gap-2.5 min-w-0 text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">La Catimba</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="La Catimba gaming crew emblem featuring a menacing raven insignia with electric emerald neon glowing outline." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC3YQHgbE6qNpx4g6OEetalWie4oeeEXYNrtsLk_SF7YbtlqTcA1IKtVfpNT4JFvOduGNWYiiPsM04X-j2LpdMzC6-Kf6mfXP5faCz40A1w7PeZonuwhdPN3Kk2CDMo5Qw8xrIkNY7YY6jl_GNUolMuc4QUNAvMWLJhQAj-r_v6SEXG1a7A8PxbLT3bSRWdC1HrzS8QpuRQPzD8khihmt6O8F8wgqAJ0aUQWl-34Et53_MBwYacM-W_"/>
+</div>
+</div>
+</div>
+<!-- Match Card Footer Action with Validar Placar CTA -->
+<div class="flex items-center justify-between pt-2.5 bg-gradient-to-r from-transparent via-surface-container-low/40 to-transparent">
+<span class="font-body-sm text-body-sm text-text-muted">Rodada #5 • 5v5</span>
+<button class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full bg-status-emerald text-surface-white font-label-md text-label-md font-bold shadow-[0_2px_8px_rgba(16,185,129,0.3)] hover:brightness-105 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-[15px]">verified</span>
+<span>Validar Placar</span>
+</button>
+</div>
+</article>
+<!-- MATCH 4: Validated Score Furia vs San Lorenzo -->
+<article class="bg-surface-container-lowest rounded-3xl p-4 shadow-[0_2px_12px_-2px_rgba(24,24,27,0.05)] flex flex-col gap-3 transition-transform active:scale-[0.995]">
+<!-- Match Meta Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-1.5 text-text-muted">
+<span class="material-symbols-outlined text-[16px]">schedule</span>
+<span class="font-label-sm text-label-sm">ter., 13/10 • 01:30</span>
+</div>
+<!-- Status Tag: Súmula Validada -->
+<div class="inline-flex items-center gap-1 bg-emerald-tint px-2.5 py-1 rounded-full text-status-emerald font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span>
+<span>Súmula Validada</span>
+</div>
+</div>
+<!-- Head-to-Head Symmetrical Row -->
+<div class="grid grid-cols-7 items-center gap-1 py-1">
+<!-- Mandante Team -->
+<div class="col-span-3 flex items-center gap-2.5 min-w-0">
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="Furia del Plata official esports shield emblem with roaring jaguar and stylized violet and silver lightning motif." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDAJNBK6Pw22-dkHBzoOmb251TREmqxj9r7FyWKWoXdYPd3_sLdfEUbgcVpEOyfDBqDgDig9lRPQdk4JOryVGIw_p6x7J2AXQsDz0EkmYhiR28elXFcf88BlNGkCAQonvN2jHodaPOD3L0RFul4DI6CuZSJgrl1qApuWi515xD7wGTCssgDeld9iyI2wvY15R9YdeiMWUVAInWobsxmbHmz6pmEZJE6hMbx_KKlGlSfTxPvjs9YLRjI"/>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">Furia del Plata</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Mandante</span>
+</div>
+</div>
+<!-- Score Capsule -->
+<div class="col-span-1 flex justify-center">
+<div class="px-3 py-1.5 bg-score-capsule rounded-full shadow-inner flex items-center justify-center">
+<span class="font-score-display text-score-display text-on-surface tracking-wider">4 - 1</span>
+</div>
+</div>
+<!-- Visitante Team -->
+<div class="col-span-3 flex items-center justify-end gap-2.5 min-w-0 text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-label-lg font-bold text-on-surface truncate">San Lorenzo</span>
+<span class="font-label-sm text-[10px] text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="relative w-11 h-11 rounded-2xl bg-surface-container-low flex items-center justify-center p-1 shrink-0 shadow-xs">
+<img class="w-full h-full object-contain rounded-xl" data-alt="San Lorenzo 5v5 gaming crest badge with red and deep blue vertical stripes and modern competitive insignia." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCw8m9Vli30I38mgbtxcTtDAd1PJwYx4vSuKjrKU7EQU7vA0EmrTwm08aHLyyHZLQNeeY9QYrSzt_OTD_GTxItf0RBbPaloFha7hU2r7esFLKL3yU3AuZFygXQcs4f-RUO3gPkJY11uZgRaGQRrngcp4DUcPguOInw-kff5WlVsRM5GwlKqjov_zZ9_1N3a88Xnryu3NjfkedHjVUPdSzBY0Adv4bpWa6FMELuZla7qYoCgdnKu2ej9"/>
+</div>
+</div>
+</div>
+<!-- Match Card Footer Action -->
+<div class="flex items-center justify-between pt-2.5 bg-gradient-to-r from-transparent via-surface-container-low/40 to-transparent">
+<span class="font-body-sm text-body-sm text-text-muted">Rodada #3 • 5v5</span>
+<button class="inline-flex items-center gap-1 text-primary hover:text-primary-container font-label-md text-label-md font-semibold transition-colors" type="button">
+<span>Ver Súmula / Arte 4:5</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</button>
+</div>
+</article>
+</section>
+<!-- TOURNAMENT SUMMARY STAT STRIP -->
+<section class="bg-surface-container-low/80 rounded-2xl p-3.5 flex items-center justify-around gap-2 text-center mt-1">
+<div class="flex flex-col">
+<span class="font-headline-md text-label-lg text-primary font-bold">12</span>
+<span class="font-label-sm text-[11px] text-text-muted">Equipes 5v5</span>
+</div>
+<div class="w-px h-6 bg-surface-container-highest"></div>
+<div class="flex flex-col">
+<span class="font-headline-md text-label-lg text-status-emerald font-bold">78</span>
+<span class="font-label-sm text-[11px] text-text-muted">Gols Marcados</span>
+</div>
+<div class="w-px h-6 bg-surface-container-highest"></div>
+<div class="flex flex-col">
+<span class="font-headline-md text-label-lg text-on-surface font-bold">96%</span>
+<span class="font-label-sm text-[11px] text-text-muted">Súmulas Validadas</span>
+</div>
+</section>
+</div>
+</div>
+<script>
+  // Micro-interactions for tab switching and quick feedback
+  document.querySelectorAll('[role="tab"]').forEach((tab) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('[role="tab"]').forEach((t) => {
+        t.setAttribute('aria-selected', 'false');
+        t.className = 'flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-on-surface-variant hover:text-on-surface hover:bg-surface-container transition-all font-label-md text-label-md';
+      });
+      tab.setAttribute('aria-selected', 'true');
+      tab.className = 'flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-primary text-on-primary font-label-md text-label-md shadow-[0_4px_12px_-2px_rgba(95,58,221,0.35)] transition-all';
+    });
+  });
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="bg-primary text-on-primary font-label-md"><div class="flex items-center justify-between h-16 px-gutter gap-1"><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">stadium</span><span class="font-label-sm text-label-sm">Início</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="tabela" href="#"><span class="material-symbols-outlined text-[20px]">leaderboard</span><span class="font-label-sm text-label-sm">Tabela</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="confrontos" href="#"><span class="material-symbols-outlined text-[20px]">sports_score</span><span class="font-label-sm text-label-sm">Jogos</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all relative" data-path="draft" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-label-sm text-label-sm">Draft +40</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="perfil-capitao" href="#"><span class="material-symbols-outlined text-[20px]">shield_person</span><span class="font-label-sm text-label-sm">Capitão</span></a></div></nav></body></html>

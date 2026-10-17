@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+
+<html lang="es"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"/><meta content="mobile_tab" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@600;700;800&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{width:100vw;margin:0;padding:0;background-color:#fbf8fc;}body{overscroll-behavior:none;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: 'class', theme: { extend: { colors: { 'tertiary-container': '#6063ee', 'primary-container': '#7857f8', 'surface-container': '#f0edf1', 'on-tertiary-fixed-variant': '#2f2ebe', 'on-error': '#ffffff', 'secondary-container': '#70fb83', 'surface-tint': '#613de0', 'surface-container-low': '#f6f2f7', 'inverse-surface': '#303033', 'on-primary-fixed-variant': '#4918c8', 'tertiary-fixed-dim': '#c0c1ff', 'primary-fixed-dim': '#cabeff', 'violet-tint': '#F1EEFE', 'surface-container-highest': '#e4e1e6', 'on-tertiary-fixed': '#07006c', 'on-background': '#1b1b1e', 'on-primary-container': '#fffbff', 'surface': '#fbf8fc', 'tertiary-fixed': '#e1e0ff', 'on-secondary': '#ffffff', 'status-emerald': '#10B981', 'on-tertiary': '#ffffff', 'secondary-fixed-dim': '#54e16c', 'on-primary': '#ffffff', 'error': '#ba1a1a', 'surface-bright': '#fbf8fc', 'on-primary-fixed': '#1c0062', 'surface-variant': '#e4e1e6', 'on-surface': '#1b1b1e', 'emerald-tint': '#E8FAF0', 'canvas-bg': '#F5F6FA', 'surface-dim': '#dcd9dd', 'on-error-container': '#93000a', 'surface-white': '#FFFFFF', 'outline-variant': '#c9c4d8', 'border-subtle': '#E4E4E7', 'error-container': '#ffdad6', 'text-muted': '#71717A', 'tertiary': '#4648d4', 'on-secondary-fixed': '#002106', 'secondary-fixed': '#73fe85', 'surface-container-lowest': '#ffffff', 'on-secondary-container': '#007328', 'on-surface-variant': '#484555', 'inverse-primary': '#cabeff', 'primary-fixed': '#e6deff', 'outline': '#797587', 'score-capsule': '#F3F4F6', 'primary': '#5f3add', 'inverse-on-surface': '#f3f0f4', 'on-secondary-fixed-variant': '#00531a', 'surface-container-high': '#eae7eb', 'background': '#fbf8fc', 'on-tertiary-container': '#fffbff', 'secondary': '#006e26' }, borderRadius: { 'DEFAULT': '0.25rem', 'lg': '0.5rem', 'xl': '0.75rem', 'full': '9999px' }, spacing: { 'space-xl': '1.75rem', 'margin-md': '1.5rem', 'space-xs': '0.25rem', 'space-lg': '1.25rem', 'space-sm': '0.5rem', 'gutter-md': '1rem', 'gutter-lg': '1.5rem', 'gutter': '0.75rem', 'space-md': '0.875rem', 'margin': '1rem', 'margin-lg': '2rem' }, fontFamily: { 'headline-md': ['Plus Jakarta Sans'], 'headline-lg': ['Plus Jakarta Sans'], 'score-display': ['Plus Jakarta Sans'], 'label-md': ['Inter'], 'body-lg': ['Inter'], 'headline-lg-mobile': ['Plus Jakarta Sans'], 'label-lg': ['Inter'], 'body-sm': ['Inter'], 'body-md': ['Inter'], 'headline-xl-mobile': ['Plus Jakarta Sans'], 'headline-xl': ['Plus Jakarta Sans'], 'label-sm': ['Inter'] }, fontSize: { 'headline-md': ['16px', { lineHeight: '22px', fontWeight: '700' }], 'headline-lg': ['22px', { lineHeight: '28px', letterSpacing: '-0.015em', fontWeight: '700' }], 'score-display': ['16px', { lineHeight: '20px', letterSpacing: '0.02em', fontWeight: '800' }], 'label-md': ['12px', { lineHeight: '16px', fontWeight: '600' }], 'body-lg': ['15px', { lineHeight: '22px', fontWeight: '500' }], 'headline-lg-mobile': ['19px', { lineHeight: '25px', letterSpacing: '-0.015em', fontWeight: '700' }], 'label-lg': ['14px', { lineHeight: '18px', fontWeight: '600' }], 'body-sm': ['12px', { lineHeight: '16px', fontWeight: '400' }], 'body-md': ['13px', { lineHeight: '18px', fontWeight: '400' }], 'headline-xl-mobile': ['26px', { lineHeight: '34px', letterSpacing: '-0.02em', fontWeight: '800' }], 'headline-xl': ['32px', { lineHeight: '40px', letterSpacing: '-0.02em', fontWeight: '800' }], 'label-sm': ['11px', { lineHeight: '14px', letterSpacing: '0.02em', fontWeight: '700' }] } } } };</script><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head><body class="bg-surface font-body-md text-on-surface flex flex-col min-h-screen antialiased"><header class="fixed top-0 inset-x-0 z-50 bg-surface/85 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-gutter flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-sm"><div class="flex items-center gap-1.5 bg-surface-container-low px-space-sm py-1.5 rounded-full shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)]"><span class="material-symbols-outlined text-primary text-[18px]">sports_soccer</span><select aria-label="Seleccionar Torneo" class="bg-transparent text-on-surface font-label-md text-label-md font-semibold focus:outline-none appearance-none pr-1 cursor-pointer"><option selected="" value="furia-del-plata">Furia del Plata</option><option value="lpf-5x5">LPF 5x5 Pro</option><option value="copa-argentina">Copa Argentina Clubes</option></select><span class="material-symbols-outlined text-on-surface-variant text-[16px]">expand_more</span></div><span class="hidden sm:inline-block font-headline-md text-headline-md text-on-surface">Início</span></div><div class="flex items-center gap-space-xs"><button aria-label="Notificaciones" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant relative hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">notifications</span><span class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-secondary-container ring-2 ring-surface"></span></button><button aria-label="Filtros y Configuración" class="w-11 h-11 flex items-center justify-center rounded-full bg-surface-container-low text-on-surface-variant hover:bg-surface-container transition-colors" type="button"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center ml-1"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><main class="flex flex-col relative w-full pt-16 pb-24 bg-surface flex-1"><div class="flex flex-col w-full">
+<!-- Content Container with Compact Mobile Rhythm -->
+<div class="px-gutter-md py-space-md flex flex-col gap-space-md max-w-xl mx-auto w-full">
+<!-- 1. Header Contextual do Campeonato -->
+<section class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-space-md flex flex-col gap-space-sm relative overflow-hidden">
+<!-- Glow Accent Decor -->
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/10 rounded-full blur-2xl pointer-events-none"></div>
+<!-- Super-pill Tag & League Status -->
+<div class="flex items-center justify-between gap-space-xs flex-wrap">
+<div class="inline-flex items-center gap-1.5 bg-violet-tint px-space-sm py-1 rounded-full">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-primary uppercase tracking-wider">TEMPORADA OFICIAL 5V5 • EA FC 26</span>
+</div>
+<div class="flex items-center gap-1 bg-emerald-tint px-2.5 py-0.5 rounded-full text-secondary">
+<span class="material-symbols-outlined text-[14px]">verified</span>
+<span class="font-label-sm text-label-sm">Oficial LPF</span>
+</div>
+</div>
+<!-- Title & Context -->
+<div class="flex items-start justify-between gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<h1 class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface">CAMP 5x5 LPF 🇦🇷</h1>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted mt-0.5">Classificação Geral &amp; Estatísticas Oficiais</p>
+</div>
+<!-- Round Phase Selector Pill -->
+<div class="relative">
+<div class="flex items-center gap-1 bg-surface-container px-3 py-1.5 rounded-full text-on-surface cursor-pointer">
+<span class="material-symbols-outlined text-[16px] text-primary">filter_alt</span>
+<select aria-label="Seletor de Fase do Campeonato" class="bg-transparent font-label-md text-label-md text-on-surface focus:outline-none appearance-none pr-3 cursor-pointer">
+<option selected="" value="1f">1ª Fase</option>
+<option value="qf">Quartas</option>
+<option value="semi">Semifinal</option>
+<option value="final">Final</option>
+</select>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant absolute right-2 pointer-events-none">expand_more</span>
+</div>
+</div>
+</div>
+<!-- Quick Metrics Ribbon (Bento Micro-cards) -->
+<div class="grid grid-cols-3 gap-space-xs pt-1">
+<div class="bg-surface-container-low rounded-lg p-2 flex flex-col items-center justify-center text-center">
+<span class="font-body-sm text-body-sm text-text-muted">Equipes</span>
+<span class="font-score-display text-score-display text-on-surface">8 Clubes</span>
+</div>
+<div class="bg-surface-container-low rounded-lg p-2 flex flex-col items-center justify-center text-center">
+<span class="font-body-sm text-body-sm text-text-muted">Rodadas</span>
+<span class="font-score-display text-score-display text-primary">12 Jogadas</span>
+</div>
+<div class="bg-emerald-tint rounded-lg p-2 flex flex-col items-center justify-center text-center">
+<span class="font-body-sm text-body-sm text-secondary">Zona G4</span>
+<span class="font-score-display text-score-display text-status-emerald">Semis Ouro</span>
+</div>
+</div>
+</section>
+<!-- 2. Interactive Navigation Tabs (Modern Segmented Pill Switcher) -->
+<div class="bg-surface-container-low p-1 rounded-full flex items-center justify-between gap-1 shadow-sm">
+<button class="flex-1 py-2 px-2 rounded-full font-label-md text-label-md text-center transition-all flex items-center justify-center gap-1.5 bg-primary text-on-primary shadow-[0_4px_12px_-2px_rgba(124,92,252,0.3)]" id="tab-tabela" onclick="switchMainTab('tabela')" type="button">
+<span class="material-symbols-outlined text-[16px]">format_list_numbered</span>
+<span>Tabela</span>
+</button>
+<button class="flex-1 py-2 px-2 rounded-full font-label-md text-label-md text-center transition-all flex items-center justify-center gap-1.5 text-text-muted hover:text-on-surface" id="tab-artilharia" onclick="switchMainTab('artilharia')" type="button">
+<span class="material-symbols-outlined text-[16px]">sports_soccer</span>
+<span>Gols</span>
+</button>
+<button class="flex-1 py-2 px-2 rounded-full font-label-md text-label-md text-center transition-all flex items-center justify-center gap-1.5 text-text-muted hover:text-on-surface" id="tab-assistencias" onclick="switchMainTab('assistencias')" type="button">
+<span class="material-symbols-outlined text-[16px]">handshake</span>
+<span>Assistências</span>
+</button>
+<button class="flex-1 py-2 px-2 rounded-full font-label-md text-label-md text-center transition-all flex items-center justify-center gap-1.5 text-text-muted hover:text-on-surface" id="tab-goleiros" onclick="switchMainTab('goleiros')" type="button">
+<span class="material-symbols-outlined text-[16px]">sports</span>
+<span>Defesas</span>
+</button>
+</div>
+<!-- 3. TAB 1: TABELA DE CLASSIFICAÇÃO GERAL -->
+<div class="flex flex-col gap-space-sm" id="content-tabela">
+<!-- Table Micro Header -->
+<div class="px-2 flex items-center justify-between text-text-muted font-label-sm text-label-sm">
+<div class="flex items-center gap-3">
+<span class="w-4 text-center">#</span>
+<span>CLUBE</span>
+</div>
+<div class="flex items-center gap-3 text-right">
+<span class="w-8 font-bold text-on-surface">PTS</span>
+<span class="w-6">J</span>
+<span class="w-6">V</span>
+<span class="w-7">SG</span>
+<span class="w-10">APROV</span>
+</div>
+</div>
+<!-- Team Row 1: TIVER LEITE FC (Líder G4) -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-3 flex flex-col gap-2 relative overflow-hidden transition-all hover:shadow-md">
+<!-- Classification Zone Bar (Green G4) -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-emerald rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<!-- Club Info -->
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-status-emerald w-4 text-center">1</span>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-headline-md text-[13px] shadow-sm relative flex-shrink-0">
+<span class="material-symbols-outlined text-primary text-[20px]">shield</span>
+<span class="absolute -bottom-1 -right-1 bg-status-emerald text-on-primary text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold">1º</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-[14px] text-on-surface truncate">TIVER LEITE FC</span>
+<span class="bg-emerald-tint text-status-emerald text-[9px] px-1.5 py-0.5 rounded-full font-label-sm font-bold flex-shrink-0">LÍDER</span>
+</div>
+<div class="flex items-center gap-1 mt-0.5">
+<!-- Recent form dots -->
+<span class="w-2 h-2 rounded-full bg-status-emerald" title="Vitória"></span>
+<span class="w-2 h-2 rounded-full bg-status-emerald" title="Vitória"></span>
+<span class="w-2 h-2 rounded-full bg-status-emerald" title="Vitória"></span>
+<span class="w-2 h-2 rounded-full bg-error" title="Derrota"></span>
+<span class="w-2 h-2 rounded-full bg-status-emerald" title="Vitória"></span>
+<span class="text-[10px] text-text-muted font-body-sm ml-1">9V • 0E • 2D</span>
+</div>
+</div>
+</div>
+<!-- Numeric Stats -->
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-primary font-extrabold">27</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">11</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">9</span>
+<span class="w-7 font-label-md text-label-md text-status-emerald font-bold">+18</span>
+<span class="w-10 font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">81%</span>
+</div>
+</div>
+</div>
+<!-- Team Row 2: LA CATIMBA FC (G4) -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-3 flex flex-col gap-2 relative overflow-hidden transition-all hover:shadow-md">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-emerald rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-status-emerald w-4 text-center">2</span>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-headline-md text-[13px] shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-secondary text-[20px]">sports_soccer</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[14px] text-on-surface truncate">LA CATIMBA FC</span>
+<div class="flex items-center gap-1 mt-0.5">
+<span class="w-2 h-2 rounded-full bg-status-emerald"></span>
+<span class="w-2 h-2 rounded-full bg-surface-variant"></span>
+<span class="w-2 h-2 rounded-full bg-status-emerald"></span>
+<span class="w-2 h-2 rounded-full bg-status-emerald"></span>
+<span class="w-2 h-2 rounded-full bg-surface-variant"></span>
+<span class="text-[10px] text-text-muted font-body-sm ml-1">7V • 3E • 1D</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-on-surface font-extrabold">24</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">11</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">7</span>
+<span class="w-7 font-label-md text-label-md text-status-emerald font-bold">+14</span>
+<span class="w-10 font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">73%</span>
+</div>
+</div>
+</div>
+<!-- Team Row 3: BELGRANA FC (G4) -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-3 flex flex-col gap-2 relative overflow-hidden transition-all hover:shadow-md">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-emerald rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-status-emerald w-4 text-center">3</span>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-headline-md text-[13px] shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-tertiary text-[20px]">military_tech</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[14px] text-on-surface truncate">BELGRANA FC</span>
+<span class="text-[10px] text-text-muted font-body-sm mt-0.5">5V • 1E • 3D</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-on-surface font-extrabold">16</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">9</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">5</span>
+<span class="w-7 font-label-md text-label-md text-status-emerald font-bold">+5</span>
+<span class="w-10 font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">59%</span>
+</div>
+</div>
+</div>
+<!-- Team Row 4: SIN TALENTO FC (G4 Final Spot) -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-3 flex flex-col gap-2 relative overflow-hidden transition-all hover:shadow-md">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-status-emerald rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-status-emerald w-4 text-center">4</span>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-headline-md text-[13px] shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-outline text-[20px]">token</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[14px] text-on-surface truncate">SIN TALENTO FC</span>
+<span class="text-[10px] text-text-muted font-body-sm mt-0.5">4V • 3E • 5D</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-on-surface font-extrabold">15</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">12</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">4</span>
+<span class="w-7 font-label-md text-label-md text-error font-bold">-2</span>
+<span class="w-10 font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">42%</span>
+</div>
+</div>
+</div>
+<!-- Team Row 5: FURIA DEL PLATA (Clube do Usuário - Destaque Lilac/Gold Repescagem) -->
+<div class="bg-violet-tint/40 rounded-xl shadow-[0_4px_12px_-2px_rgba(124,92,252,0.15)] p-3 flex flex-col gap-2 relative overflow-hidden transition-all">
+<!-- Amber/Purple Repescagem zone indicator -->
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-primary rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-primary w-4 text-center">5</span>
+<div class="w-9 h-9 rounded-full bg-primary flex items-center justify-center text-on-primary font-headline-md text-[13px] shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-[20px]">bolt</span>
+</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-[14px] text-primary truncate font-bold">FURIA DEL PLATA</span>
+<span class="bg-primary text-on-primary text-[9px] px-1.5 py-0.2 rounded-full font-label-sm font-bold flex-shrink-0">MEU TIME</span>
+</div>
+<div class="flex items-center gap-1.5 mt-0.5">
+<span class="text-[10px] text-on-surface-variant font-body-sm">4V • 1E • 3D (Menos 3 jogos)</span>
+<span class="text-[9px] bg-surface-white text-primary font-label-sm px-1 rounded font-bold">1 JOGO A MENOS</span>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-primary font-extrabold">13</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">8</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">4</span>
+<span class="w-7 font-label-md text-label-md text-status-emerald font-bold">+3</span>
+<span class="w-10 font-label-sm text-label-sm bg-primary/10 text-primary font-bold px-1 py-0.5 rounded">54%</span>
+</div>
+</div>
+</div>
+<!-- Team Row 6: MAFIOSOS FC (Repescagem) -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-3 flex flex-col gap-2 relative overflow-hidden transition-all hover:shadow-md">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-amber-400 rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-on-surface-variant w-4 text-center">6</span>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-headline-md text-[13px] shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-outline text-[20px]">award_star</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[14px] text-on-surface truncate">MAFIOSOS FC</span>
+<span class="text-[10px] text-text-muted font-body-sm mt-0.5">3V • 0E • 4D</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-on-surface font-extrabold">9</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">7</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">3</span>
+<span class="w-7 font-label-md text-label-md text-error font-bold">-4</span>
+<span class="w-10 font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">43%</span>
+</div>
+</div>
+</div>
+<!-- Team Row 7: REAL MOLHADA FC (Zona Risco / Eliminação) -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-3 flex flex-col gap-2 relative overflow-hidden opacity-90 transition-all hover:opacity-100">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error/70 rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">7</span>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-headline-md text-[13px] shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-outline text-[20px]">water_drop</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[14px] text-on-surface truncate">REAL MOLHADA FC</span>
+<span class="text-[10px] text-text-muted font-body-sm mt-0.5">2V • 1E • 3D</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-on-surface font-extrabold">7</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">6</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">2</span>
+<span class="w-7 font-label-md text-label-md text-error font-bold">-6</span>
+<span class="w-10 font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">39%</span>
+</div>
+</div>
+</div>
+<!-- Team Row 8: NEW OLD BOIS (Eliminado / Lanterna) -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-3 flex flex-col gap-2 relative overflow-hidden opacity-85 transition-all hover:opacity-100">
+<div class="absolute left-0 top-0 bottom-0 w-1.5 bg-error rounded-l-xl"></div>
+<div class="flex items-center justify-between pl-2">
+<div class="flex items-center gap-2.5 min-w-0">
+<span class="font-score-display text-score-display text-error w-4 text-center">8</span>
+<div class="w-9 h-9 rounded-full bg-surface-container flex items-center justify-center text-on-surface font-headline-md text-[13px] shadow-sm flex-shrink-0">
+<span class="material-symbols-outlined text-outline text-[20px]">sentiment_dissatisfied</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[14px] text-on-surface truncate">NEW OLD BOIS</span>
+<span class="text-[10px] text-text-muted font-body-sm mt-0.5">0V • 1E • 13D</span>
+</div>
+</div>
+<div class="flex items-center gap-3 text-right flex-shrink-0">
+<span class="w-8 font-score-display text-[17px] text-error font-extrabold">1</span>
+<span class="w-6 font-body-md text-body-md text-on-surface">14</span>
+<span class="w-6 font-body-md text-body-md text-text-muted">0</span>
+<span class="w-7 font-label-md text-label-md text-error font-bold">-28</span>
+<span class="w-10 font-label-sm text-label-sm bg-surface-container px-1 py-0.5 rounded text-on-surface">2%</span>
+</div>
+</div>
+</div>
+<!-- 4. Legenda Oficial e Critérios -->
+<div class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-space-sm flex flex-col gap-2 mt-1">
+<div class="flex items-center justify-between text-text-muted">
+<span class="font-label-sm text-label-sm uppercase tracking-wide">LEGENDA DAS VAGAS</span>
+<span class="font-label-sm text-label-sm text-primary flex items-center gap-0.5 cursor-pointer hover:underline">
+            Critérios Oficiais
+            <span class="material-symbols-outlined text-[14px]">info</span>
+</span>
+</div>
+<div class="grid grid-cols-3 gap-2 pt-0.5">
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-status-emerald flex-shrink-0"></span>
+<span class="font-body-sm text-[11px] text-on-surface">1º-4º Playoff Ouro</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-amber-400 flex-shrink-0"></span>
+<span class="font-body-sm text-[11px] text-on-surface">5º-6º Playoff Prata</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-2.5 h-2.5 rounded-full bg-error flex-shrink-0"></span>
+<span class="font-body-sm text-[11px] text-on-surface">7º-8º Eliminados</span>
+</div>
+</div>
+<p class="font-body-sm text-[10px] text-text-muted border-t-0 pt-1">
+          PTS (Pontos) &gt; V (Vitórias) &gt; SG (Saldo de Gols) &gt; GP (Gols Pró) &gt; Confronto Direto.
+        </p>
+</div>
+</div>
+<!-- 5. INDIVIDUAL STATS SECTIONS (Integrated Artilharia & Assistências from Reference Images) -->
+<div class="flex flex-col gap-space-md" id="content-estatisticas">
+<!-- TOP GOLEADORES (ARTILHARIA) CARD -->
+<section class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-amber-500 text-[22px]">emoji_events</span>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Artilharia • Top Goleadores</h2>
+<span class="font-body-sm text-body-sm text-text-muted">10 Jogadores registrados na 1ª Fase</span>
+</div>
+</div>
+<span class="bg-amber-100 text-amber-800 text-label-sm font-label-sm px-2.5 py-1 rounded-full font-bold flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">sports_soccer</span>
+            Gols
+          </span>
+</div>
+<!-- 1º Lugar Destacado (Oliso) -->
+<div class="bg-gradient-to-r from-amber-500/10 via-amber-500/5 to-transparent rounded-xl p-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-12 h-12 rounded-full bg-amber-200/80 flex items-center justify-center font-headline-md text-amber-900 font-bold shadow-inner">
+                O
+              </div>
+<span class="absolute -bottom-1 -right-1 bg-amber-500 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow">
+                1º
+              </span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">OLISO</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm text-text-muted">TIVER LEITE FC</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-amber-600 font-extrabold leading-none">40</span>
+<span class="block font-label-sm text-label-sm text-amber-700 font-bold">Gols</span>
+</div>
+</div>
+<!-- Runner-ups List (Haalandinho, Flash, Teteu, Miguel) -->
+<div class="flex flex-col divide-y-0 gap-1.5 pt-1">
+<!-- 2. Haalandinho -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">2</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface">H</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[13px] text-on-surface truncate">HAALANDINHO</span>
+<span class="font-body-sm text-[11px] text-text-muted">LA CATIMBA FC</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-on-surface">16</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">gols</span>
+</div>
+</div>
+<!-- 3. Flash -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">3</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface">F</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[13px] text-on-surface truncate">FLASH</span>
+<span class="font-body-sm text-[11px] text-text-muted">SIN TALENTO FC</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-on-surface">11</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">gols</span>
+</div>
+</div>
+<!-- 4. Teteu -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">4</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface">T</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[13px] text-on-surface truncate">TETEU</span>
+<span class="font-body-sm text-[11px] text-text-muted">LA CATIMBA FC</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-on-surface">10</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">gols</span>
+</div>
+</div>
+<!-- 5. Miguel (Furia del Plata) -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg bg-violet-tint/30 transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-primary w-4 text-center">5</span>
+<div class="w-8 h-8 rounded-full bg-primary/20 text-primary flex items-center justify-center font-label-md font-bold">M</div>
+<div class="flex flex-col min-w-0">
+<div class="flex items-center gap-1.5">
+<span class="font-headline-md text-[13px] text-primary truncate font-bold">MIGUEL</span>
+<span class="text-[9px] bg-primary text-on-primary px-1 rounded">MEU TIME</span>
+</div>
+<span class="font-body-sm text-[11px] text-text-muted">FURIA DEL PLATA</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-primary font-bold">8</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">gols</span>
+</div>
+</div>
+</div>
+</section>
+<!-- TOP ASSISTÊNCIAS (GARÇONS) CARD -->
+<section class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[22px]">handshake</span>
+<div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Líderes de Assistências</h2>
+<span class="font-body-sm text-body-sm text-text-muted">Garçons oficiais da temporada</span>
+</div>
+</div>
+<span class="bg-violet-tint text-primary text-label-sm font-label-sm px-2.5 py-1 rounded-full font-bold">
+            Passes Chave
+          </span>
+</div>
+<!-- 1º Lugar Assistências (Japa) -->
+<div class="bg-gradient-to-r from-primary/10 via-primary/5 to-transparent rounded-xl p-3 flex items-center justify-between">
+<div class="flex items-center gap-3">
+<div class="relative">
+<div class="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center font-headline-md text-primary font-bold shadow-inner">
+                J
+              </div>
+<span class="absolute -bottom-1 -right-1 bg-primary text-on-primary text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold shadow">
+                1º
+              </span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-surface">JAPA</span>
+<div class="flex items-center gap-1.5">
+<span class="w-2 h-2 rounded-full bg-status-emerald"></span>
+<span class="font-body-sm text-body-sm text-text-muted">TIVER LEITE FC</span>
+</div>
+</div>
+</div>
+<div class="text-right">
+<span class="font-headline-xl-mobile text-headline-xl-mobile text-primary font-extrabold leading-none">19</span>
+<span class="block font-label-sm text-label-sm text-primary font-bold">Assists</span>
+</div>
+</div>
+<!-- Runner-ups Assists (Pickles, Gustagol, João Viny, Haalandinho) -->
+<div class="flex flex-col divide-y-0 gap-1.5 pt-1">
+<!-- 2. Pickles -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">2</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface">P</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[13px] text-on-surface truncate">PICKLES</span>
+<span class="font-body-sm text-[11px] text-text-muted">TIVER LEITE FC</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-on-surface">12</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">ast</span>
+</div>
+</div>
+<!-- 3. Gustagol -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">3</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface">G</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[13px] text-on-surface truncate">GUSTAGOL</span>
+<span class="font-body-sm text-[11px] text-text-muted">LA CATIMBA FC</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-on-surface">9</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">ast</span>
+</div>
+</div>
+<!-- 4. João Viny -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">4</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface">JV</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[13px] text-on-surface truncate">JOÃO VINY</span>
+<span class="font-body-sm text-[11px] text-text-muted">LA CATIMBA FC</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-on-surface">9</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">ast</span>
+</div>
+</div>
+<!-- 5. Haalandinho -->
+<div class="flex items-center justify-between py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<div class="flex items-center gap-3 min-w-0">
+<span class="font-score-display text-score-display text-text-muted w-4 text-center">5</span>
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center font-label-md text-on-surface">H</div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-[13px] text-on-surface truncate">HAALANDINHO</span>
+<span class="font-body-sm text-[11px] text-text-muted">LA CATIMBA FC</span>
+</div>
+</div>
+<div class="text-right">
+<span class="font-score-display text-score-display text-on-surface">7</span>
+<span class="font-body-sm text-[11px] text-text-muted ml-0.5">ast</span>
+</div>
+</div>
+</div>
+</section>
+<!-- CARD DE REFERÊNCIA AO COPA FÁCIL & ARTE DE COMPARTILHAMENTO -->
+<section class="bg-surface-white rounded-xl shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] p-space-md flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-primary text-[20px]">brush</span>
+<span class="font-headline-md text-[14px] text-on-surface">Arte Oficial do Torneio (Copa Fácil Sync)</span>
+</div>
+<span class="bg-emerald-tint text-status-emerald text-[11px] font-label-sm font-bold px-2 py-0.5 rounded-full">Sincronizado</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted">
+          Os dados da tabela e artilharia acima estão sincronizados com a planilha oficial do campeonato.
+        </p>
+<div class="rounded-xl overflow-hidden shadow-sm relative group">
+<img alt="Arte Oficial da Classificação da 1ª Fase do Campeonato 5x5 LPF" class="w-full h-44 object-cover object-top transition-transform duration-300 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuD091SsSnKSnJ1MpqkQAbiB-jtqOQ3NbGlPAdyMEDkSRFUbsgMQw1UxS7IVxebUJPHykaTB7ENolnj8rjfOe5ysModvEODAt73qe2vFr4h7Fkwf8PyYwgFJWo_bG07TRDtQ41bSWWvOAjLQODMpCvGmvhY14moVHASrKk998DQ4pkVVnvjFaTqclLTuH3KOp3qHrCIbxwIdA45-b9bHCdGfAajrC_-4uyetrZldwYmKcau3e-RUv4V3pODypKNHSTWpig"/>
+<div class="absolute inset-0 bg-gradient-to-t from-inverse-surface/80 via-transparent to-transparent flex items-end p-3">
+<div class="flex items-center justify-between w-full">
+<span class="text-white font-label-md text-label-md">Tabela Gráfica Instagram 4:5</span>
+<button class="bg-surface-white text-on-surface px-3 py-1 rounded-full font-label-sm text-label-sm flex items-center gap-1 shadow" type="button">
+<span class="material-symbols-outlined text-[14px]">visibility</span>
+                Expandir
+              </button>
+</div>
+</div>
+</div>
+</section>
+</div>
+<!-- 6. Bottom Sticky Quick Actions -->
+<div class="pt-2 flex flex-col sm:flex-row gap-space-sm items-center">
+<button class="w-full bg-primary text-on-primary py-3.5 px-4 rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_4px_16px_rgba(95,58,221,0.3)] transition-transform active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-[20px]">share</span>
+<span>Gerar Arte de Classificação (Story/Feed)</span>
+</button>
+<button class="w-full bg-surface-white text-on-surface py-3.5 px-4 rounded-xl font-label-lg text-label-lg flex items-center justify-center gap-2 shadow-[0_2px_8px_-2px_rgba(24,24,27,0.04)] hover:bg-surface-container-low transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px] text-primary">analytics</span>
+<span>Simular Próxima Rodada</span>
+</button>
+</div>
+</div>
+</div>
+<script>
+  function switchMainTab(tabName) {
+    const tabs = ['tabela', 'artilharia', 'assistencias', 'goleiros'];
+    const tabBtns = {
+      'tabela': document.getElementById('tab-tabela'),
+      'artilharia': document.getElementById('tab-artilharia'),
+      'assistencias': document.getElementById('tab-assistencias'),
+      'goleiros': document.getElementById('tab-goleiros')
+    };
+
+    tabs.forEach(t => {
+      const btn = tabBtns[t];
+      if (!btn) return;
+      if (t === tabName) {
+        btn.className = "flex-1 py-2 px-2 rounded-full font-label-md text-label-md text-center transition-all flex items-center justify-center gap-1.5 bg-primary text-on-primary shadow-[0_4px_12px_-2px_rgba(124,92,252,0.3)]";
+      } else {
+        btn.className = "flex-1 py-2 px-2 rounded-full font-label-md text-label-md text-center transition-all flex items-center justify-center gap-1.5 text-text-muted hover:text-on-surface";
+      }
+    });
+
+    const tabelaContent = document.getElementById('content-tabela');
+    const statsContent = document.getElementById('content-estatisticas');
+
+    if (tabName === 'tabela') {
+      if (tabelaContent) tabelaContent.classList.remove('hidden');
+      if (statsContent) statsContent.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else if (tabName === 'artilharia' || tabName === 'assistencias') {
+      if (statsContent) {
+        statsContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }
+  }
+</script></main><nav class="fixed bottom-0 inset-x-0 z-50 pb-safe bg-surface/90 backdrop-blur-xl shadow-[0_-2px_12px_rgba(0,0,0,0.05)]" data-active-classes="bg-primary text-on-primary font-label-md"><div class="flex items-center justify-between h-16 px-gutter gap-1"><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">stadium</span><span class="font-label-sm text-label-sm">Início</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="tabela" href="#"><span class="material-symbols-outlined text-[20px]">leaderboard</span><span class="font-label-sm text-label-sm">Tabela</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="confrontos" href="#"><span class="material-symbols-outlined text-[20px]">sports_score</span><span class="font-label-sm text-label-sm">Jogos</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all relative" data-path="draft" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-label-sm text-label-sm">Draft +40</span></a><a class="flex-1 flex flex-col items-center justify-center h-12 rounded-full text-on-surface-variant transition-all" data-path="perfil-capitao" href="#"><span class="material-symbols-outlined text-[20px]">shield_person</span><span class="font-label-sm text-label-sm">Capitão</span></a></div></nav></body></html>

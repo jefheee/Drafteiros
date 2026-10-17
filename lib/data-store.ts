@@ -17,6 +17,8 @@ import {
 } from '@/types/database';
 import {
   FALLBACK_TOURNAMENT,
+  FALLBACK_TOURNAMENTS,
+  FALLBACK_PAST_TOURNAMENT,
   FALLBACK_TEAMS,
   FALLBACK_PLAYERS,
   FALLBACK_MATCHES,
@@ -27,8 +29,9 @@ import {
   FALLBACK_INCIDENTS,
   FALLBACK_FINANCES,
 } from '@/lib/mock-league-data';
+import { calculateFC26MacroAndOvr } from '@/lib/accelerate';
 
-const STORE_KEY = 'draftclub_live_store_v3';
+const STORE_KEY = 'draftclub_persistent_state_v2';
 const EVENT_NAME = 'draftclub-store-sync';
 
 export interface LeagueStoreState {
@@ -47,7 +50,7 @@ export interface LeagueStoreState {
 
 function getBaseStoreState(): LeagueStoreState {
   return {
-    tournaments: [FALLBACK_TOURNAMENT],
+    tournaments: FALLBACK_TOURNAMENTS,
     activeTournamentId: FALLBACK_TOURNAMENT.id,
     teams: FALLBACK_TEAMS,
     players: FALLBACK_PLAYERS,
@@ -67,10 +70,18 @@ function getInitialStoreState(): LeagueStoreState {
   try {
     const raw = localStorage.getItem(STORE_KEY);
     if (!raw) return base;
-    const parsed = JSON.parse(raw);
+    const parsed = JSON.parse(raw) as Partial<LeagueStoreState>;
+    const mergedTournaments =
+      parsed.tournaments && parsed.tournaments.length > 0
+        ? parsed.tournaments.some((t) => t.id === FALLBACK_PAST_TOURNAMENT.id)
+          ? parsed.tournaments
+          : [...parsed.tournaments, FALLBACK_PAST_TOURNAMENT]
+        : base.tournaments;
+
     return {
       ...base,
       ...parsed,
+      tournaments: mergedTournaments,
     };
   } catch {
     return base;
@@ -731,6 +742,149 @@ export function useLeagueStore() {
     saveStoreState({ ...curr, tournaments: nextTourns });
   }, []);
 
+  const selectTournament = useCallback((tournamentId: string) => {
+    const curr = getInitialStoreState();
+    saveStoreState({
+      ...curr,
+      activeTournamentId: tournamentId,
+    });
+  }, []);
+
+  const createNewTournament = useCallback(
+    async (partial: Partial<Tournament>) => {
+      const curr = getInitialStoreState();
+      const newTourn: Tournament = {
+        ...FALLBACK_TOURNAMENT,
+        ...partial,
+        id: partial.id || `tourn-${Date.now()}`,
+        created_at: new Date().toISOString(),
+      };
+      const nextTourns = [newTourn, ...curr.tournaments];
+      saveStoreState({
+        ...curr,
+        tournaments: nextTourns,
+        activeTournamentId: newTourn.id,
+      });
+      try {
+        await supabase.from('tournaments').upsert({
+          id: newTourn.id,
+          name: newTourn.name,
+          format: newTourn.format,
+          format_label: newTourn.format_label || newTourn.format,
+          players_on_pitch: newTourn.players_on_pitch,
+          max_reserves: newTourn.max_reserves,
+          entry_fee: newTourn.entry_fee,
+          bracket_type: newTourn.bracket_type,
+          custom_rules: newTourn.custom_rules,
+          prize_breakdown: newTourn.prize_distribution,
+          status: newTourn.status,
+        });
+      } catch {
+        // sincronizado localmente
+      }
+      return newTourn;
+    },
+    []
+  );
+
+  const addLegacyCareerStats = useCallback(
+    async (
+      playerId: string,
+      delta: {
+        matches?: number;
+        goals?: number;
+        assists?: number;
+        mvps?: number;
+        titles?: number;
+        cleanSheets?: number;
+        matchesToAdd?: number;
+        goalsToAdd?: number;
+        assistsToAdd?: number;
+        motmToAdd?: number;
+        titlesToAdd?: number;
+      }
+    ) => {
+      const curr = getInitialStoreState();
+      const target = curr.players.find((p) => p.id === playerId);
+      if (!target) return;
+
+      const addMatches = delta.matches ?? delta.matchesToAdd ?? 0;
+      const addGoals = delta.goals ?? delta.goalsToAdd ?? 0;
+      const addAssists = delta.assists ?? delta.assistsToAdd ?? 0;
+      const addMvps = delta.mvps ?? delta.motmToAdd ?? 0;
+      const addTitles = delta.titles ?? delta.titlesToAdd ?? 0;
+      const addCleanSheets = delta.cleanSheets ?? 0;
+
+      const prevStats = target.career_stats || {};
+      const nextMatches =
+        (prevStats.matches_played ?? prevStats.official_matches ?? 10) + addMatches;
+      const nextGoals =
+        (prevStats.goals ?? prevStats.official_goals ?? 5) + addGoals;
+      const nextAssists =
+        (prevStats.assists ?? prevStats.official_assists ?? 3) + addAssists;
+      const nextMvps =
+        (prevStats.mvps ?? prevStats.official_motm ?? 1) + addMvps;
+      const nextTitles = (prevStats.titles_won ?? 0) + addTitles;
+      const nextCleanSheets = (prevStats.clean_sheets ?? 0) + addCleanSheets;
+
+      const computed = calculateFC26MacroAndOvr({
+        attributes: target.attributes,
+        primaryPosition: target.primary_position,
+        careerStats: {
+          matches: nextMatches,
+          goals: nextGoals,
+          assists: nextAssists,
+          mvps: nextMvps,
+          titles: nextTitles,
+          cleanSheets: nextCleanSheets,
+        },
+        extraUnlockedCards: target.unlocked_cards,
+      });
+
+      const updatedPlayer: PlayerProfile = {
+        ...target,
+        overall: computed.finalOvr,
+        unlocked_cards: computed.unlockedCardIds,
+        career_stats: {
+          ...prevStats,
+          official_matches: nextMatches,
+          matches_played: nextMatches,
+          official_goals: nextGoals,
+          goals: nextGoals,
+          official_assists: nextAssists,
+          assists: nextAssists,
+          official_motm: nextMvps,
+          mvps: nextMvps,
+          titles_won: nextTitles,
+          clean_sheets: nextCleanSheets,
+          tournaments_played: (prevStats.tournaments_played ?? 2) + (addTitles > 0 ? 1 : 0),
+          average_rating: Math.min(9.9, (prevStats.average_rating ?? 8.2) + 0.2),
+        },
+      };
+
+      await updatePlayer(updatedPlayer);
+    },
+    [updatePlayer]
+  );
+
+  const unlockPlayerCardDesign = useCallback(
+    async (playerId: string, cardId: string, equipUrl?: string) => {
+      const curr = getInitialStoreState();
+      const target = curr.players.find((p) => p.id === playerId) || curr.players[0];
+      if (!target) return;
+
+      const existing = new Set<string>(target.unlocked_cards || ['gold-rare']);
+      existing.add(cardId);
+
+      await updatePlayer({
+        ...target,
+        unlocked_cards: Array.from(existing),
+        card_design: equipUrl || target.card_design,
+      });
+    },
+    [updatePlayer]
+  );
+
   const activeTournament =
     state.tournaments.find((t) => t.id === state.activeTournamentId) ||
     state.tournaments[0] ||
@@ -741,6 +895,10 @@ export function useLeagueStore() {
     hydrated,
     activeTournament,
     tournament: activeTournament,
+    selectTournament,
+    createNewTournament,
+    addLegacyCareerStats,
+    unlockPlayerCardDesign,
     updatePlayer,
     updatePlayerProfile,
     updateTeam,

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+
+<html lang="pt-BR"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"background":"#fbf8fc","score-capsule":"#F3F4F6","on-surface":"#1b1b1e","surface-container":"#f0edf1","primary":"#5f3add","text-muted":"#71717A","surface-container-high":"#eae7eb","tertiary-fixed-dim":"#c0c1ff","surface-white":"#FFFFFF","tertiary":"#4648d4","on-secondary-fixed":"#002106","primary-container":"#7857f8","secondary-fixed":"#73fe85","surface":"#fbf8fc","on-tertiary":"#ffffff","secondary-fixed-dim":"#54e16c","on-background":"#1b1b1e","inverse-on-surface":"#f3f0f4","error":"#ba1a1a","surface-container-lowest":"#ffffff","tertiary-container":"#6063ee","surface-container-low":"#f6f2f7","outline":"#797587","on-primary-container":"#fffbff","secondary":"#006e26","on-primary-fixed-variant":"#4918c8","canvas-bg":"#F5F6FA","primary-fixed":"#e6deff","on-tertiary-fixed":"#07006c","surface-dim":"#dcd9dd","primary-fixed-dim":"#cabeff","on-error":"#ffffff","border-subtle":"#E4E4E7","emerald-tint":"#E8FAF0","on-secondary-container":"#007328","surface-variant":"#e4e1e6","on-secondary":"#ffffff","secondary-container":"#70fb83","on-secondary-fixed-variant":"#00531a","surface-bright":"#fbf8fc","on-primary":"#ffffff","on-error-container":"#93000a","inverse-primary":"#cabeff","status-emerald":"#10B981","outline-variant":"#c9c4d8","violet-tint":"#F1EEFE","on-tertiary-container":"#fffbff","on-primary-fixed":"#1c0062","tertiary-fixed":"#e1e0ff","on-tertiary-fixed-variant":"#2f2ebe","surface-container-highest":"#e4e1e6","error-container":"#ffdad6","inverse-surface":"#303033","on-surface-variant":"#484555","surface-tint":"#613de0"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"margin":"1rem","space-md":"0.875rem","space-sm":"0.5rem","space-lg":"1.25rem","margin-md":"1.5rem","gutter-md":"1rem","margin-lg":"2rem","space-xl":"1.75rem","gutter":"0.75rem","gutter-lg":"1.5rem","space-xs":"0.25rem"},fontFamily:{"headline-lg":["Plus Jakarta Sans"],"label-md":["Inter"],"headline-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"label-lg":["Inter"],"body-md":["Inter"],"body-lg":["Inter"],"score-display":["Plus Jakarta Sans"],"label-sm":["Inter"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"headline-lg-mobile":["Plus Jakarta Sans"]},fontSize:{"headline-lg":["22px",{lineHeight:"28px",letterSpacing:"-0.015em",fontWeight:"700"}],"label-md":["12px",{lineHeight:"16px",fontWeight:"600"}],"headline-md":["16px",{lineHeight:"22px",fontWeight:"700"}],"body-sm":["12px",{lineHeight:"16px",fontWeight:"400"}],"label-lg":["14px",{lineHeight:"18px",fontWeight:"600"}],"body-md":["13px",{lineHeight:"18px",fontWeight:"400"}],"body-lg":["15px",{lineHeight:"22px",fontWeight:"500"}],"score-display":["16px",{lineHeight:"20px",letterSpacing:"0.02em",fontWeight:"800"}],"label-sm":["11px",{lineHeight:"14px",letterSpacing:"0.02em",fontWeight:"700"}],"headline-xl-mobile":["26px",{lineHeight:"34px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-xl":["32px",{lineHeight:"40px",letterSpacing:"-0.02em",fontWeight:"800"}],"headline-lg-mobile":["19px",{lineHeight:"25px",letterSpacing:"-0.015em",fontWeight:"700"}]}}}};</script></head><body class="bg-canvas-bg font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-full w-72 bg-surface-white z-50 flex flex-col justify-between shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><div class="flex flex-col"><div class="px-gutter-lg pt-space-lg pb-space-md flex items-center justify-between"><div class="flex items-center gap-space-sm"><div class="w-9 h-9 rounded-xl bg-primary flex items-center justify-center text-on-primary shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><span class="material-symbols-outlined text-[20px]">sports_soccer</span></div><div class="flex flex-col"><span class="font-headline-md text-headline-md tracking-tight text-on-surface">DraftClub<span class="text-primary">Pro</span></span><span class="font-label-sm text-label-sm text-text-muted">EA FC 26 Hub</span></div></div><span class="px-space-xs py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm">LPF 5v5</span></div><div class="px-gutter-lg py-space-sm"><div class="flex items-center justify-between p-space-sm bg-surface-container-low rounded-xl"><div class="flex items-center gap-space-sm"><div class="w-8 h-8 rounded-lg bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold">FP</div><div class="flex flex-col text-left"><span class="font-label-lg text-label-lg text-on-surface leading-tight">Furia del Plata</span><span class="font-label-sm text-label-sm text-status-emerald flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-status-emerald"></span>Capitão Ativo</span></div></div><span class="material-symbols-outlined text-on-surface-variant text-[18px]">unfold_more</span></div></div><nav class="px-gutter py-space-sm flex flex-col gap-1" data-active-classes="bg-primary text-on-primary font-bold shadow-[0_4px_12px_-2px_rgba(124,92,252,0.25)]"><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="inicio" href="#"><span class="material-symbols-outlined text-[20px]">grid_view</span><span class="font-label-lg text-label-lg">Início</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="tabela-e-classificacao" href="#"><span class="material-symbols-outlined text-[20px]">leaderboard</span><span class="font-label-lg text-label-lg">Tabela &amp; Classificação</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="jogos-e-sumula-ia" href="#"><span class="material-symbols-outlined text-[20px]">document_scanner</span><span class="font-label-lg text-label-lg">Jogos &amp; Súmula IA</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="sala-de-draft" href="#"><span class="material-symbols-outlined text-[20px]">how_to_reg</span><span class="font-label-lg text-label-lg">Sala de Draft</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="minha-build-e-perfil" href="#"><span class="material-symbols-outlined text-[20px]">tune</span><span class="font-label-lg text-label-lg">Minha Build &amp; Perfil</span></a><a class="flex items-center gap-space-md px-space-md py-space-sm rounded-xl text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-all" data-path="estudio-banners" href="#"><span class="material-symbols-outlined text-[20px]">auto_awesome_motion</span><span class="font-label-lg text-label-lg">Estúdio Banners 4:5</span></a></nav></div><div class="p-gutter-lg"><div class="p-space-md bg-emerald-tint rounded-xl flex items-center justify-between mb-space-sm"><div class="flex items-center gap-space-sm"><span class="relative flex h-2.5 w-2.5"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-emerald opacity-75"></span><span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-status-emerald"></span></span><span class="font-label-md text-label-md text-secondary font-bold">Copa Fácil Sync</span></div><span class="material-symbols-outlined text-secondary text-[16px]">sync</span></div><div class="flex items-center justify-between pt-space-xs text-text-muted"><span class="font-body-sm text-body-sm">Versão 5v5 Clausura</span><span class="font-label-sm text-label-sm">v2.6.4</span></div></div></aside><div class="pl-72 flex flex-col min-h-screen"><header class="fixed top-0 left-72 right-0 h-16 bg-surface-white/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-gutter-lg"><div class="flex items-center gap-space-md w-96"><div class="w-full flex items-center gap-space-sm px-space-md py-1.5 bg-surface-container-low rounded-xl text-text-muted"><span class="material-symbols-outlined text-[18px]">search</span><input class="bg-transparent border-none outline-none font-body-sm text-body-sm text-on-surface placeholder:text-text-muted w-full" placeholder="Buscar jogadores, confrontos ou súmulas..." type="text"/></div></div><div class="flex items-center gap-space-md"><div class="hidden lg:flex items-center gap-space-xs px-space-md py-1 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-status-emerald"></span><span class="font-label-sm text-label-sm text-on-surface">Rodada 4 em Andamento</span></div><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">notifications</span></button><button class="w-9 h-9 rounded-xl flex items-center justify-center text-on-surface-variant hover:bg-surface-container-high transition-colors"><span class="material-symbols-outlined text-[20px]">tune</span></button><div class="flex items-center gap-space-sm pl-space-xs"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div><div class="hidden md:flex flex-col text-left"><span class="font-label-md text-label-md text-on-surface leading-tight">Capitão Mateo</span><span class="font-body-sm text-body-sm text-text-muted leading-none">Admin Clube</span></div></div></div></header><main class="w-full pt-16 bg-canvas-bg min-h-screen"><div class="flex flex-col w-full p-gutter-lg space-y-gutter-lg max-w-[1440px] mx-auto">
+<!-- HERO BANNER: Torneio Liga Argentina 5v5 -->
+<section class="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary via-tertiary-container to-primary-container text-on-primary shadow-xl">
+<div class="absolute inset-0 opacity-15 pointer-events-none">
+<svg class="w-full h-full" preserveaspectratio="none" viewbox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<pattern height="8" id="grid-pattern" patternunits="userSpaceOnUse" width="8">
+<path d="M 8 0 L 0 0 0 8" fill="none" stroke="currentColor" stroke-width="0.5"></path>
+</pattern>
+</defs>
+<rect fill="url(#grid-pattern)" height="100%" width="100%"></rect>
+</svg>
+</div>
+<div class="relative z-10 p-gutter-lg md:p-margin-lg flex flex-col xl:flex-row items-start xl:items-center justify-between gap-gutter-lg">
+<div class="flex flex-col gap-space-sm max-w-2xl">
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="inline-flex items-center gap-1.5 px-space-md py-0.5 rounded-full bg-surface-white/20 backdrop-blur-md font-label-sm text-label-sm text-on-primary uppercase tracking-wider">
+<span class="w-2 h-2 rounded-full bg-secondary-fixed animate-pulse"></span>
+            Fase Classificatória • Rodada 5/11
+          </span>
+<span class="px-space-sm py-0.5 rounded-full bg-violet-tint/25 text-on-primary font-label-sm text-label-sm">
+            Inscrição: R$ 70,00
+          </span>
+<span class="px-space-sm py-0.5 rounded-full bg-emerald-tint/20 text-secondary-fixed font-label-sm text-label-sm font-bold">
+            100% Garantido
+          </span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-on-primary tracking-tight mt-space-xs">
+          🇦🇷 Liga Argentina Pro Clubs — 5v5 (LPF)
+        </h1>
+<p class="font-body-lg text-body-lg text-on-primary/85 leading-snug">
+          Circuito competitivo oficial EA FC 26 com validação instantânea por Súmula IA e integração Copa Fácil.
+        </p>
+<!-- Prizepool breakdown pills -->
+<div class="flex flex-wrap items-center gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-xs px-space-md py-1.5 rounded-xl bg-surface-white/10 backdrop-blur-md">
+<span class="material-symbols-outlined text-secondary-fixed text-[18px]">workspace_premium</span>
+<div class="flex flex-col text-left">
+<span class="font-label-sm text-label-sm text-on-primary/75 uppercase leading-none">Total Premiação</span>
+<span class="font-headline-md text-headline-md text-on-primary">R$ 560,00</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1.5 rounded-lg bg-surface-white/10">
+<span class="font-label-sm text-label-sm text-secondary-fixed font-extrabold">1º</span>
+<span class="font-label-lg text-label-lg text-on-primary">R$ 300</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1.5 rounded-lg bg-surface-white/10">
+<span class="font-label-sm text-label-sm text-on-primary/80 font-bold">2º</span>
+<span class="font-label-lg text-label-lg text-on-primary">R$ 120</span>
+</div>
+<div class="flex items-center gap-space-xs px-space-sm py-1.5 rounded-lg bg-surface-white/10">
+<span class="font-label-sm text-label-sm text-on-primary/80 font-bold">3º</span>
+<span class="font-label-lg text-label-lg text-on-primary">R$ 80</span>
+</div>
+</div>
+</div>
+<!-- Action Widget Right -->
+<div class="flex flex-col sm:flex-row xl:flex-col gap-space-sm w-full xl:w-auto shrink-0">
+<button class="flex items-center justify-center gap-space-sm px-gutter-lg py-space-md rounded-xl bg-secondary-fixed text-on-secondary-fixed font-headline-md text-headline-md shadow-md hover:bg-secondary-fixed-dim transition-all">
+<span class="material-symbols-outlined text-[20px]">cloud_upload</span>
+<span>Subir Print de Partida</span>
+<span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</button>
+<button class="flex items-center justify-center gap-space-sm px-gutter-lg py-space-md rounded-xl bg-surface-white/15 hover:bg-surface-white/25 backdrop-blur-md text-on-primary font-label-lg text-label-lg transition-all">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+<span>Regulamento &amp; Critérios LPF</span>
+</button>
+</div>
+</div>
+</section>
+<!-- 4-COLUMN HORIZONTAL BENTO ACTIONS -->
+<section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-gutter">
+<!-- Card 1: Súmula IA -->
+<div class="group relative overflow-hidden bg-surface-white rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div class="w-11 h-11 rounded-xl bg-violet-tint text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">document_scanner</span>
+</div>
+<span class="inline-flex items-center gap-1 px-space-sm py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-[14px]">bolt</span> OCR Ativo
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline justify-between mb-0.5">
+<h2 class="font-headline-md text-headline-md text-on-surface">Súmula IA</h2>
+<span class="font-label-sm text-label-sm text-status-emerald font-bold">1 Pendente</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted mb-space-md">
+          Envie a captura da tela final do FC 26 para preenchimento estatístico automático.
+        </p>
+<a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Validar súmulas pendentes
+          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Card 2: Banner 4:5 Redes -->
+<div class="group relative overflow-hidden bg-surface-white rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div class="w-11 h-11 rounded-xl bg-violet-tint text-primary flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">auto_awesome_motion</span>
+</div>
+<span class="px-space-sm py-0.5 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold">
+          Feed 1080x1350
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline justify-between mb-0.5">
+<h2 class="font-headline-md text-headline-md text-on-surface">Estúdio Banners 4:5</h2>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted mb-space-md">
+          Gere artes prontas para Instagram dos confrontos do seu clube em 1 clique.
+        </p>
+<a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Criar arte do jogo
+          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Card 3: Draft Mercadão -->
+<div class="group relative overflow-hidden bg-surface-white rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div class="w-11 h-11 rounded-xl bg-emerald-tint text-status-emerald flex items-center justify-center group-hover:scale-105 transition-transform">
+<span class="material-symbols-outlined text-[24px]">group_add</span>
+</div>
+<span class="px-space-sm py-0.5 rounded-full bg-emerald-tint text-status-emerald font-label-sm text-label-sm font-bold">
+          29 Livres
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="flex items-baseline justify-between mb-0.5">
+<h2 class="font-headline-md text-headline-md text-on-surface">Draft Mercadão</h2>
+<span class="font-label-sm text-label-sm text-text-muted">+40 atletas</span>
+</div>
+<p class="font-body-sm text-body-sm text-text-muted mb-space-md">
+          Pesquise por volantes, alas e goleiros com builds calibradas para 5v5.
+        </p>
+<a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Acessar lista de transferências
+          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+<!-- Card 4: Minha Build FC 26 -->
+<div class="group relative overflow-hidden bg-surface-white rounded-xl p-space-lg shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
+<div class="flex items-start justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-11 h-11 rounded-xl bg-primary text-on-primary flex items-center justify-center font-headline-md text-headline-md font-extrabold">
+            92
+          </div>
+<div class="flex flex-col">
+<span class="font-label-lg text-label-lg text-on-surface">Jefhe</span>
+<span class="font-body-sm text-body-sm text-primary font-semibold">Maestro • CAM</span>
+</div>
+</div>
+<span class="px-space-sm py-0.5 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm">
+          Prolongada
+        </span>
+</div>
+<div class="mt-space-md">
+<div class="grid grid-cols-3 gap-1 py-1 px-space-xs bg-surface-container-low rounded-lg text-center mb-space-sm">
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">RIT</span>
+<span class="font-headline-md text-headline-md text-on-surface">89</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">PAS</span>
+<span class="font-headline-md text-headline-md text-on-surface">95</span>
+</div>
+<div>
+<span class="font-label-sm text-label-sm text-text-muted block">DRI</span>
+<span class="font-headline-md text-headline-md text-on-surface">93</span>
+</div>
+</div>
+<a class="inline-flex items-center gap-1 font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+          Ajustar atributos &amp; PlayStyles+
+          <span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</section>
+<!-- 2-COLUMN CENTRAL GRID (WIDESCREEN RATIO) -->
+<section class="grid grid-cols-1 xl:grid-cols-12 gap-gutter-lg items-start">
+<!-- LEFT COLUMN: Confrontos da Rodada (8 Cols) -->
+<div class="xl:col-span-8 flex flex-col space-y-space-md">
+<!-- Section Header with Filter Pills -->
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm bg-surface-white p-space-md rounded-xl shadow-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-violet-tint text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">sports</span>
+</div>
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Confrontos da Rodada</h2>
+<p class="font-body-sm text-body-sm text-text-muted">Acompanhe e valide os resultados do Furia del Plata</p>
+</div>
+</div>
+<!-- Filter tabs -->
+<div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-xl" id="fixture-tabs">
+<button class="px-space-md py-1 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold shadow-sm">
+            Todos (4)
+          </button>
+<button class="px-space-md py-1 rounded-lg text-text-muted hover:text-on-surface font-label-md text-label-md">
+            Pendentes (2)
+          </button>
+<button class="px-space-md py-1 rounded-lg text-text-muted hover:text-on-surface font-label-md text-label-md">
+            Finalizados (2)
+          </button>
+</div>
+</div>
+<!-- MATCH 1: Rodada 5 (Pendente de Validação) -->
+<article class="bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all p-space-lg flex flex-col gap-space-md">
+<!-- Match Header -->
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Rodada #5</span>
+<span class="font-body-sm text-body-sm text-text-muted">• Hoje, 21:30 BRT</span>
+</div>
+<span class="inline-flex items-center gap-1.5 px-space-md py-1 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm font-bold">
+<span class="w-2 h-2 rounded-full bg-primary animate-ping"></span>
+            Aguardando Capitão B
+          </span>
+</div>
+<!-- Symmetrical 3-Column Matchup -->
+<div class="grid grid-cols-12 items-center py-space-sm">
+<!-- Home Team (Furia del Plata) -->
+<div class="col-span-5 flex items-center gap-space-md justify-start">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold shadow-sm shrink-0">
+              FP
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Furia del Plata</span>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Mandante</span>
+</div>
+</div>
+<!-- Score Capsule -->
+<div class="col-span-2 flex flex-col items-center justify-center">
+<div class="px-space-lg py-1.5 rounded-full bg-score-capsule font-score-display text-score-display text-on-surface tracking-widest shadow-inner">
+              2 - 7
+            </div>
+<span class="font-label-sm text-label-sm text-primary font-bold mt-1">Súmula IA Lida</span>
+</div>
+<!-- Away Team (La Catimba) -->
+<div class="col-span-5 flex items-center gap-space-md justify-end text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">La Catimba FC</span>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center font-headline-md text-headline-md text-on-surface font-extrabold shadow-sm shrink-0">
+              LC
+            </div>
+</div>
+</div>
+<!-- Match Footer / Action -->
+<div class="pt-space-sm flex flex-col sm:flex-row items-center justify-between gap-space-sm bg-surface-container-low -mx-space-lg -mb-space-lg p-space-md rounded-b-xl">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[18px]">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface">Capitão Mateo já assinou com print do console.</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-1 rounded-lg bg-surface-white text-on-surface hover:bg-surface-container-high font-label-md text-label-md">
+              Ver OCR IA
+            </button>
+<button class="px-space-md py-1 rounded-lg bg-primary text-on-primary hover:bg-primary-container font-label-md text-label-md font-bold shadow-sm flex items-center gap-1">
+<span>Validar Placar</span>
+<span class="material-symbols-outlined text-[14px]">check</span>
+</button>
+</div>
+</div>
+</article>
+<!-- MATCH 2: Rodada 6 (Bater Horário) -->
+<article class="bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Rodada #6</span>
+<span class="font-body-sm text-body-sm text-text-muted">• Amanhã, 22:15 BRT</span>
+</div>
+<span class="inline-flex items-center gap-1 px-space-md py-1 rounded-full bg-violet-tint text-primary font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+            Bater Horário
+          </span>
+</div>
+<div class="grid grid-cols-12 items-center py-space-sm">
+<div class="col-span-5 flex items-center gap-space-md justify-start">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold shrink-0">
+              FP
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Furia del Plata</span>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Mandante</span>
+</div>
+</div>
+<div class="col-span-2 flex flex-col items-center justify-center">
+<div class="px-space-md py-1.5 rounded-full bg-score-capsule font-score-display text-score-display text-text-muted tracking-widest">
+              VS
+            </div>
+<span class="font-label-sm text-label-sm text-text-muted mt-1">Lobby #4</span>
+</div>
+<div class="col-span-5 flex items-center gap-space-md justify-end text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">River Plate eSports</span>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-error-container flex items-center justify-center font-headline-md text-headline-md text-error font-extrabold shrink-0">
+              RP
+            </div>
+</div>
+</div>
+<div class="pt-space-sm flex items-center justify-between bg-surface-container-low -mx-space-lg -mb-space-lg p-space-md rounded-b-xl">
+<span class="font-body-sm text-body-sm text-text-muted">Tolerância de 10 min pós-horário oficial LPF</span>
+<div class="flex items-center gap-space-sm">
+<a class="font-label-md text-label-md text-primary font-bold hover:underline flex items-center gap-0.5" href="#">
+<span>Gerar Banner 4:5 Matchday</span>
+<span class="material-symbols-outlined text-[16px]">chevron_right</span>
+</a>
+</div>
+</div>
+</article>
+<!-- MATCH 3: Rodada 7 (Agendada) -->
+<article class="bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Rodada #7</span>
+<span class="font-body-sm text-body-sm text-text-muted">• Quinta-feira, 22:00 BRT</span>
+</div>
+<span class="px-space-sm py-1 rounded-full bg-surface-container-high text-on-surface-variant font-label-sm text-label-sm font-semibold">
+            Programado
+          </span>
+</div>
+<div class="grid grid-cols-12 items-center py-space-sm">
+<div class="col-span-5 flex items-center gap-space-md justify-start">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold shrink-0">
+              FP
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Furia del Plata</span>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Mandante</span>
+</div>
+</div>
+<div class="col-span-2 flex flex-col items-center justify-center">
+<div class="px-space-md py-1.5 rounded-full bg-score-capsule font-score-display text-score-display text-text-muted tracking-widest">
+              VS
+            </div>
+<span class="font-label-sm text-label-sm text-text-muted mt-1">Transmissão LPF</span>
+</div>
+<div class="col-span-5 flex items-center gap-space-md justify-end text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Boca Juniors Gaming</span>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-tertiary-fixed flex items-center justify-center font-headline-md text-headline-md text-tertiary font-extrabold shrink-0">
+              BJ
+            </div>
+</div>
+</div>
+<div class="pt-space-sm flex items-center justify-between bg-surface-container-low -mx-space-lg -mb-space-lg p-space-md rounded-b-xl">
+<span class="font-body-sm text-body-sm text-text-muted">Arbitragem automatizada EA Anti-Cheat</span>
+<button class="px-space-md py-1 rounded-lg bg-surface-white text-on-surface hover:bg-surface-container-high font-label-md text-label-md">
+            Confirmar Roster 5v5
+          </button>
+</div>
+</article>
+<!-- MATCH 4: Rodada 3 (Validada) -->
+<article class="bg-surface-white rounded-xl shadow-sm hover:shadow-md transition-all p-space-lg flex flex-col gap-space-md opacity-95">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="font-label-lg text-label-lg text-on-surface font-bold">Rodada #3</span>
+<span class="font-body-sm text-body-sm text-text-muted">• Domingo Anterior</span>
+</div>
+<span class="inline-flex items-center gap-1.5 px-space-md py-1 rounded-full bg-emerald-tint text-status-emerald font-label-sm text-label-sm font-bold">
+<span class="material-symbols-outlined text-[15px]">task_alt</span>
+            Súmula Validada
+          </span>
+</div>
+<div class="grid grid-cols-12 items-center py-space-sm">
+<div class="col-span-5 flex items-center gap-space-md justify-start">
+<div class="w-12 h-12 rounded-xl bg-primary-fixed flex items-center justify-center font-headline-md text-headline-md text-primary font-extrabold shrink-0">
+              FP
+            </div>
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">Furia del Plata</span>
+<span class="font-label-sm text-label-sm text-status-emerald font-semibold">Vitória (+3 pts)</span>
+</div>
+</div>
+<div class="col-span-2 flex flex-col items-center justify-center">
+<div class="px-space-lg py-1.5 rounded-full bg-emerald-tint font-score-display text-score-display text-secondary tracking-widest">
+              4 - 1
+            </div>
+<span class="font-label-sm text-label-sm text-text-muted mt-1">Final Encerrado</span>
+</div>
+<div class="col-span-5 flex items-center gap-space-md justify-end text-right">
+<div class="flex flex-col min-w-0">
+<span class="font-headline-md text-headline-md text-on-surface truncate">San Lorenzo eSports</span>
+<span class="font-label-sm text-label-sm text-text-muted uppercase tracking-wider">Visitante</span>
+</div>
+<div class="w-12 h-12 rounded-xl bg-surface-container-high flex items-center justify-center font-headline-md text-headline-md text-on-surface font-extrabold shrink-0">
+              SL
+            </div>
+</div>
+</div>
+<div class="pt-space-sm flex items-center justify-between bg-surface-container-low -mx-space-lg -mb-space-lg p-space-md rounded-b-xl">
+<span class="font-body-sm text-body-sm text-text-muted">Artilheiro: Jefhe (2 gols, 1 ass)</span>
+<a class="font-label-md text-label-md text-primary font-bold hover:underline" href="#">
+            Ver estatísticas completas &gt;
+          </a>
+</div>
+</article>
+</div>
+<!-- RIGHT COLUMN: Mini-Classificação & Métricas da Liga (4 Cols) -->
+<div class="xl:col-span-4 flex flex-col space-y-gutter">
+<!-- Mini Tabela G4 + Posição Atual -->
+<div class="bg-surface-white rounded-xl shadow-sm p-space-lg flex flex-col">
+<div class="flex items-center justify-between pb-space-sm">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-emerald-tint text-status-emerald flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">leaderboard</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Mini-Classificação</h3>
+</div>
+<span class="font-label-sm text-label-sm text-text-muted">G4 Semifinais</span>
+</div>
+<!-- Table header -->
+<div class="grid grid-cols-12 text-label-sm font-label-sm text-text-muted uppercase py-2 px-2 bg-surface-container-low rounded-lg mb-2">
+<span class="col-span-2">Pos</span>
+<span class="col-span-6">Clube</span>
+<span class="col-span-2 text-center">J</span>
+<span class="col-span-2 text-right">Pts</span>
+</div>
+<!-- Table Rows -->
+<div class="space-y-1">
+<!-- 1 Tiver Leite -->
+<div class="grid grid-cols-12 items-center py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="col-span-2 font-headline-md text-headline-md text-status-emerald">1º</span>
+<div class="col-span-6 flex items-center gap-2 min-w-0">
+<div class="w-6 h-6 rounded-md bg-secondary-fixed text-on-secondary-fixed font-bold text-center text-xs flex items-center justify-center shrink-0">TL</div>
+<span class="font-label-md text-label-md text-on-surface truncate">Tiver Leite FC</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-text-muted">10</span>
+<span class="col-span-2 text-right font-headline-md text-headline-md text-on-surface">27</span>
+</div>
+<!-- 2 La Catimba -->
+<div class="grid grid-cols-12 items-center py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="col-span-2 font-headline-md text-headline-md text-status-emerald">2º</span>
+<div class="col-span-6 flex items-center gap-2 min-w-0">
+<div class="w-6 h-6 rounded-md bg-surface-container-high text-on-surface font-bold text-center text-xs flex items-center justify-center shrink-0">LC</div>
+<span class="font-label-md text-label-md text-on-surface truncate">La Catimba</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-text-muted">10</span>
+<span class="col-span-2 text-right font-headline-md text-headline-md text-on-surface">24</span>
+</div>
+<!-- 3 Belgrana -->
+<div class="grid grid-cols-12 items-center py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="col-span-2 font-headline-md text-headline-md text-status-emerald">3º</span>
+<div class="col-span-6 flex items-center gap-2 min-w-0">
+<div class="w-6 h-6 rounded-md bg-tertiary-fixed text-tertiary font-bold text-center text-xs flex items-center justify-center shrink-0">BG</div>
+<span class="font-label-md text-label-md text-on-surface truncate">Belgrana</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-text-muted">9</span>
+<span class="col-span-2 text-right font-headline-md text-headline-md text-on-surface">16</span>
+</div>
+<!-- 4 Sin Talento -->
+<div class="grid grid-cols-12 items-center py-2 px-2 rounded-lg hover:bg-surface-container-low transition-colors">
+<span class="col-span-2 font-headline-md text-headline-md text-status-emerald">4º</span>
+<div class="col-span-6 flex items-center gap-2 min-w-0">
+<div class="w-6 h-6 rounded-md bg-surface-container-high text-on-surface font-bold text-center text-xs flex items-center justify-center shrink-0">ST</div>
+<span class="font-label-md text-label-md text-on-surface truncate">Sin Talento</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-text-muted">10</span>
+<span class="col-span-2 text-right font-headline-md text-headline-md text-on-surface">15</span>
+</div>
+<!-- Cutoff indicator -->
+<div class="py-1 flex items-center gap-2 px-2">
+<div class="h-0.5 flex-1 bg-surface-container-high rounded-full"></div>
+<span class="font-label-sm text-label-sm text-text-muted uppercase">Linha de Corte Semis</span>
+<div class="h-0.5 flex-1 bg-surface-container-high rounded-full"></div>
+</div>
+<!-- 5 Furia del Plata (Meu Clube Highlight) -->
+<div class="grid grid-cols-12 items-center py-2 px-2 rounded-lg bg-violet-tint/60 text-primary">
+<span class="col-span-2 font-headline-md text-headline-md text-primary">5º</span>
+<div class="col-span-6 flex items-center gap-2 min-w-0">
+<div class="w-6 h-6 rounded-md bg-primary text-on-primary font-bold text-center text-xs flex items-center justify-center shrink-0">FP</div>
+<span class="font-label-lg text-label-lg text-primary font-bold truncate">Furia del Plata</span>
+</div>
+<span class="col-span-2 text-center font-body-sm text-body-sm text-primary font-bold">8</span>
+<span class="col-span-2 text-right font-headline-md text-headline-md text-primary font-extrabold">13</span>
+</div>
+</div>
+<a class="mt-space-md text-center py-space-sm rounded-lg bg-surface-container-low hover:bg-surface-container-high font-label-md text-label-md text-on-surface transition-colors flex items-center justify-center gap-1" href="#">
+<span>Ver Tabela Completa &amp; Critérios</span>
+<span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</a>
+</div>
+<!-- Quick League Stats & IA OCR Ring -->
+<div class="bg-surface-white rounded-xl shadow-sm p-space-lg flex flex-col gap-space-md">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Estatísticas da Liga</h3>
+<span class="px-space-xs py-0.5 rounded bg-emerald-tint text-status-emerald font-label-sm text-label-sm font-bold">
+            Live Sync
+          </span>
+</div>
+<div class="grid grid-cols-2 gap-space-sm">
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-text-muted uppercase">Equipes</span>
+<span class="font-headline-xl text-headline-xl text-on-surface mt-1">12</span>
+<span class="font-body-sm text-body-sm text-text-muted">60 jogadores ativos</span>
+</div>
+<div class="p-space-md rounded-xl bg-surface-container-low flex flex-col">
+<span class="font-label-sm text-label-sm text-text-muted uppercase">Gols Feitos</span>
+<span class="font-headline-xl text-headline-xl text-primary mt-1">78</span>
+<span class="font-body-sm text-body-sm text-status-emerald font-semibold">Média 3.9 / jogo</span>
+</div>
+</div>
+<!-- Progress ring IA OCR Accuracy -->
+<div class="p-space-md rounded-xl bg-violet-tint/40 flex items-center justify-between gap-space-md">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface font-bold">Súmulas IA Lidas</span>
+<span class="font-body-sm text-body-sm text-text-muted">Processamento sem falhas de OCR</span>
+<span class="font-label-sm text-label-sm text-primary font-bold mt-1">24 de 25 confrontos</span>
+</div>
+<div class="relative w-16 h-16 shrink-0 flex items-center justify-center">
+<svg class="w-full h-full -rotate-90" viewbox="0 0 36 36">
+<path class="text-surface-container-high stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3.5"></path>
+<path class="text-primary stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-dasharray="96, 100" stroke-linecap="round" stroke-width="3.5"></path>
+</svg>
+<span class="absolute font-headline-md text-headline-md text-primary font-bold">96%</span>
+</div>
+</div>
+<!-- Banner social shortcut preview -->
+<div class="rounded-xl bg-gradient-to-br from-surface-container-low to-surface-container-high p-space-md flex items-center gap-space-md">
+<div class="w-12 h-15 rounded-lg bg-primary text-on-primary flex flex-col items-center justify-center font-label-sm text-label-sm font-extrabold shadow-sm shrink-0">
+<span class="text-[10px] leading-tight">ARTE</span>
+<span class="text-[14px]">4:5</span>
+</div>
+<div class="flex flex-col min-w-0">
+<span class="font-label-md text-label-md text-on-surface font-bold truncate">Template Clásico de Mayo</span>
+<span class="font-body-sm text-body-sm text-text-muted">Pronto para exportar com escudo e escalação</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+</div>
+<script>
+  // Micro-interaction for filter tabs
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabsContainer = document.getElementById('fixture-tabs');
+    if (!tabsContainer) return;
+
+    const buttons = tabsContainer.querySelectorAll('button');
+    buttons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        buttons.forEach((b) => {
+          b.className = 'px-space-md py-1 rounded-lg text-text-muted hover:text-on-surface font-label-md text-label-md transition-all';
+        });
+        btn.className = 'px-space-md py-1 rounded-lg bg-primary text-on-primary font-label-md text-label-md font-bold shadow-sm transition-all';
+      });
+    });
+  });
+</script></main></div></body></html>

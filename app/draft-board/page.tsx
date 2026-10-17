@@ -1,25 +1,23 @@
 'use client';
 
 import React, { useState, useMemo } from 'react';
-import { useAuth } from '@/components/auth/auth-context';
 import { useLeagueStore } from '@/lib/data-store';
-import { ARCHETYPE_ASSETS } from '@/lib/assets-catalog';
+import { ARCHETYPE_ASSETS, TEMPLATE_ASSETS } from '@/lib/assets-catalog';
 import { DraftOrderSlot } from '@/types/database';
+import { WorkspaceNav } from '@/components/layout/workspace-nav';
+import { FC26PlayerCard } from '@/components/players/fc26-player-card';
 import { cn } from '@/lib/utils';
 import {
   Dices,
   Search,
   UserPlus,
   CheckCircle2,
-  Zap,
-  Trophy,
-  Shield,
-  Sparkles,
   Crown,
+  Sparkles,
+  X,
 } from 'lucide-react';
 
 export default function OfficialDraftBoardPage() {
-  const { session } = useAuth();
   const {
     players,
     teams,
@@ -36,11 +34,12 @@ export default function OfficialDraftBoardPage() {
 
   const [mounted, setMounted] = useState(false);
   const [selectedTeamId, setSelectedTeamId] = useState<string>(
-    teams[0]?.id || 'team-furia'
+    teams[0]?.id || 'b3333333-3333-3333-3333-333333333333'
   );
   const [currentPickIndex, setCurrentPickIndex] = useState<number>(0);
   const [draftFeedback, setDraftFeedback] = useState<string | null>(null);
   const [isDrawingLottery, setIsDrawingLottery] = useState(false);
+  const [inspectedPlayerId, setInspectedPlayerId] = useState<string | null>(null);
 
   React.useEffect(() => {
     setMounted(true);
@@ -50,7 +49,6 @@ export default function OfficialDraftBoardPage() {
     if (tournament.draft_order && tournament.draft_order.length > 0) {
       return tournament.draft_order;
     }
-    // Snake draft padrão
     const r1: DraftOrderSlot[] = teams.map((t, i) => ({
       pick_number: i + 1,
       round: 1,
@@ -70,12 +68,10 @@ export default function OfficialDraftBoardPage() {
 
   const activePickSlot = draftOrder[currentPickIndex] || draftOrder[0];
 
-  // Sorteio Criptográfico de Ordem dos Capitães (Snake Draft IA Lottery)
   const handleRunDraftLottery = async () => {
     setIsDrawingLottery(true);
     try {
       const shuffledTeams = [...teams];
-      // Embaralhamento Fisher-Yates com Web Crypto quando disponível
       for (let i = shuffledTeams.length - 1; i > 0; i--) {
         let j = Math.floor(Math.random() * (i + 1));
         if (typeof window !== 'undefined' && window.crypto?.getRandomValues) {
@@ -126,7 +122,6 @@ export default function OfficialDraftBoardPage() {
     }
   };
 
-  // Contratar / Draftar Jogador Imediatamente para o Elenco
   const handleDraftPlayer = async (playerId: string, characterName: string) => {
     const targetId = activePickSlot?.team_id || activePickSlot?.teamId || selectedTeamId;
     const targetTeam = teams.find((t) => t.id === targetId) || teams[0];
@@ -159,7 +154,7 @@ export default function OfficialDraftBoardPage() {
         posFilter === 'ALL' ||
         (posFilter === 'ATK' && ['ST', 'LW', 'RW', 'ATA'].includes(pPos)) ||
         (posFilter === 'MID' && ['CAM', 'CM', 'CDM', 'MEI', 'MC', 'VOL'].includes(pPos)) ||
-        (posFilter === 'DEF' && ['LB', 'RB', 'CB', 'ZAG'].includes(pPos)) ||
+        (posFilter === 'DEF' && ['LB', 'RB', 'CB', 'ZAG', 'LD', 'LE'].includes(pPos)) ||
         (posFilter === 'GK' && pPos === 'GK') ||
         pPos === posFilter;
 
@@ -177,37 +172,48 @@ export default function OfficialDraftBoardPage() {
     [players]
   );
 
+  const inspectedPlayer = useMemo(
+    () => players.find((p) => p.id === inspectedPlayerId) || null,
+    [players, inspectedPlayerId]
+  );
+
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-3 sm:px-4 py-4 pb-28 overflow-x-hidden">
-      <main className="max-w-3xl mx-auto space-y-4">
-        {/* ================================================================= */}
-        {/* 1. CABEÇALHO DA SALA DE DRAFT OFICIAL (+40 JOGADORES)             */}
-        {/* ================================================================= */}
-        <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
+      <main className="max-w-7xl mx-auto space-y-5">
+        {/* SUB-NAVEGAÇÃO RÁPIDA DO PILAR 5 (MEU ESPAÇO) */}
+        <WorkspaceNav />
+
+        {/* CABEÇALHO DA SALA DE DRAFT OFICIAL */}
+        <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase" suppressHydrationWarning>
+                <span
+                  className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase"
+                  suppressHydrationWarning
+                >
                   Pool Oficial: {mounted ? players.length : 19} Atletas Cadastrados
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#229a3e] text-[10px] font-extrabold" suppressHydrationWarning>
+                <span
+                  className="px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#38C958] text-[10px] font-extrabold"
+                  suppressHydrationWarning
+                >
                   {mounted ? freeAgentsCount : 0} Livres no Mercado
                 </span>
               </div>
-              <h1 className="text-lg sm:text-xl font-extrabold text-zinc-900 dark:text-white">
+              <h1 className="text-xl sm:text-2xl font-display font-black text-zinc-900 dark:text-white">
                 Sala de Draft Oficial & Mercadão (+40 Jogadores)
               </h1>
-              <p className="text-xs text-zinc-500">
-                Ordem Snake Draft sorteada por IA • Contratação imediata com Nome do Personagem, Arquétipo e AcceleRATE.
+              <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                Ordem Snake Draft sorteada por IA • Inspecione a Carta FC 26 de qualquer jogador antes de draftar!
               </p>
             </div>
 
-            {/* Botão do Admin: Sortear Ordem de Escolha dos Capitães (IA Draft Lottery) */}
             <button
               type="button"
               onClick={handleRunDraftLottery}
               disabled={isDrawingLottery}
-              className="py-3 px-4 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#6344E5] hover:opacity-95 text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md shrink-0"
+              className="py-3 px-4 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] hover:opacity-95 text-white font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#7C5CFC]/25 shrink-0"
             >
               <Dices className="w-4 h-4" />
               <span>
@@ -219,21 +225,24 @@ export default function OfficialDraftBoardPage() {
           </div>
 
           {draftFeedback && (
-            <div className="p-3 rounded-2xl bg-[#38C958]/15 border border-[#38C958]/30 text-[#229a3e] dark:text-[#38C958] text-xs font-bold flex items-center gap-2">
+            <div className="p-3 rounded-2xl bg-[#38C958]/15 border border-[#38C958]/40 text-[#38C958] text-xs font-bold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{draftFeedback}</span>
             </div>
           )}
 
           {/* Fila Snake Draft Ao Vivo */}
-          <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-zinc-800">
+          <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-white/[0.07]">
             <div className="flex items-center justify-between text-xs">
               <span className="font-extrabold text-[#7C5CFC] flex items-center gap-1.5">
                 <Crown className="w-3.5 h-3.5" />
                 Ordem Oficial de Escolha (Snake Draft: Rodada 1 ➔ Rodada 2)
               </span>
-              <span className="text-[11px] font-bold text-zinc-500">
-                Na vez: <strong className="text-[#38C958]">{activePickSlot?.team_name || activePickSlot?.teamName || 'Furia del Plata'}</strong>
+              <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400">
+                Na vez:{' '}
+                <strong className="text-[#38C958]">
+                  {activePickSlot?.team_name || activePickSlot?.teamName || 'Furia del Plata'}
+                </strong>
               </span>
             </div>
 
@@ -256,13 +265,13 @@ export default function OfficialDraftBoardPage() {
                       'px-3 py-2 rounded-2xl border text-left shrink-0 transition-all',
                       isCurrentTurn
                         ? 'border-[#38C958] bg-[#38C958]/15 shadow-xs'
-                        : 'border-zinc-200 dark:border-zinc-800 bg-[#F5F6FA] dark:bg-zinc-800/60 opacity-80'
+                        : 'border-zinc-200 dark:border-white/10 bg-[#F5F6FA] dark:bg-[#1c2029] opacity-85'
                     )}
                   >
-                    <span className="text-[9px] font-black uppercase text-[#7C5CFC] block">
+                    <span className="text-[9px] font-mono font-black uppercase text-[#7C5CFC] block">
                       Pick #{pickNum} • R{roundNum}
                     </span>
-                    <span className="text-xs font-extrabold text-zinc-900 dark:text-white block truncate max-w-[125px]">
+                    <span className="text-xs font-extrabold text-zinc-900 dark:text-white block truncate max-w-[130px]">
                       {tName}
                     </span>
                   </button>
@@ -272,10 +281,8 @@ export default function OfficialDraftBoardPage() {
           </div>
         </section>
 
-        {/* ================================================================= */}
-        {/* 2. FILTROS DE BUSCA E POSIÇÃO                                     */}
-        {/* ================================================================= */}
-        <section className="p-3.5 sm:p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-xs space-y-3">
+        {/* FILTROS DE BUSCA E POSIÇÃO */}
+        <section className="p-4 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs space-y-3">
           <div className="grid sm:grid-cols-2 gap-2.5">
             <div className="relative">
               <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -284,7 +291,7 @@ export default function OfficialDraftBoardPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar por Nome do Personagem (ex: JEFHE, HAALANDINHO)..."
-                className="w-full h-9 pl-9 pr-3 rounded-xl bg-[#F5F6FA] dark:bg-zinc-800 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
+                className="w-full h-10 pl-9 pr-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-bold"
               />
             </div>
 
@@ -302,10 +309,10 @@ export default function OfficialDraftBoardPage() {
                   onClick={() => setAvailabilityFilter(tab.id)}
                   suppressHydrationWarning
                   className={cn(
-                    'flex-1 h-9 px-2 rounded-xl text-[11px] font-extrabold transition-all',
+                    'flex-1 h-10 px-2 rounded-xl text-[11px] font-extrabold transition-all',
                     availabilityFilter === tab.id
                       ? 'bg-[#7C5CFC] text-white'
-                      : 'bg-[#F5F6FA] dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                      : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
                   )}
                 >
                   {tab.label}
@@ -317,9 +324,9 @@ export default function OfficialDraftBoardPage() {
           <div className="flex gap-1.5 overflow-x-auto pb-0.5">
             {[
               { id: 'ALL', label: 'Todas Posições' },
-              { id: 'ATK', label: 'Atacantes (ST/LW/RW)' },
-              { id: 'MID', label: 'Meias (CAM/CM/CDM)' },
-              { id: 'DEF', label: 'Defensores (CB/LB/RB)' },
+              { id: 'ATK', label: 'Atacantes (ATA/ST)' },
+              { id: 'MID', label: 'Meias (MEI/MC/VOL)' },
+              { id: 'DEF', label: 'Defensores (ZAG/LD/LE)' },
               { id: 'GK', label: 'Goleiros (GK)' },
             ].map((pos) => (
               <button
@@ -327,10 +334,10 @@ export default function OfficialDraftBoardPage() {
                 type="button"
                 onClick={() => setPosFilter(pos.id)}
                 className={cn(
-                  'px-3 py-1.5 rounded-full text-[11px] font-extrabold shrink-0 transition-all',
+                  'px-3.5 py-1.5 rounded-full text-[11px] font-extrabold shrink-0 transition-all',
                   posFilter === pos.id
                     ? 'bg-[#38C958] text-white'
-                    : 'bg-[#F5F6FA] dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                    : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
                 )}
               >
                 {pos.label}
@@ -339,10 +346,8 @@ export default function OfficialDraftBoardPage() {
           </div>
         </section>
 
-        {/* ================================================================= */}
-        {/* 3. LISTA DOS +40 JOGADORES COM CHARACTER_NAME & CAREER STATS      */}
-        {/* ================================================================= */}
-        <section className="grid sm:grid-cols-2 gap-3">
+        {/* LISTA DE ATLETAS (+40 JOGADORES) */}
+        <section className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {filteredPlayers.map((player) => {
             const currentClub = teams.find((t) => t.id === player.team_id);
             const archAsset =
@@ -363,48 +368,46 @@ export default function OfficialDraftBoardPage() {
             return (
               <div
                 key={player.id}
-                className="p-4 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] flex flex-col justify-between gap-3"
+                className="p-4 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm flex flex-col justify-between gap-3 hover:border-[#7C5CFC]/40 transition-all"
               >
                 <div className="flex items-start gap-3">
-                  {/* Foto do Personagem */}
-                  <div className="relative w-14 h-14 rounded-2xl bg-zinc-900 overflow-hidden border border-zinc-200 dark:border-zinc-700 shrink-0">
+                  <div className="relative w-14 h-14 rounded-2xl bg-[#0c0e12] overflow-hidden border border-white/10 shrink-0">
                     <img
-                      src={
-                        player.avatar_face_url ||
-                        '/assets/templates/guest-avatar.png'
-                      }
+                      src={player.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
                       alt={player.character_name}
                       className="w-full h-full object-cover"
+                      onError={(e) => {
+                        e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
+                      }}
                     />
-                    <span className="absolute bottom-0 right-0 px-1.5 py-0.2 bg-[#7C5CFC] text-white text-[9px] font-black rounded-tl-md">
+                    <span className="absolute bottom-0 right-0 px-1.5 py-0.2 bg-[#7C5CFC] text-white font-mono text-[9px] font-black rounded-tl-md">
                       {player.overall}
                     </span>
                   </div>
 
-                  {/* Identidade Dupla + Arquétipo + AcceleRATE */}
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-black">
+                      <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] font-mono text-[10px] font-black">
                         {player.primary_position}
                       </span>
                       <span
                         className={cn(
                           'px-2 py-0.5 rounded-full text-[10px] font-extrabold',
                           player.accelerate_type === 'Explosiva'
-                            ? 'bg-amber-500/15 text-amber-600'
+                            ? 'bg-amber-500/15 text-amber-400'
                             : player.accelerate_type === 'Prolongada'
                             ? 'bg-[#7C5CFC]/15 text-[#7C5CFC]'
-                            : 'bg-[#38C958]/15 text-[#229a3e]'
+                            : 'bg-[#38C958]/15 text-[#38C958]'
                         )}
                       >
                         ⚡ {player.accelerate_type || 'Controlada'}
                       </span>
                     </div>
 
-                    <h3 className="text-sm font-black uppercase text-zinc-900 dark:text-white truncate">
+                    <h3 className="text-sm font-display font-black uppercase text-zinc-900 dark:text-white truncate">
                       {player.character_name}
                     </h3>
-                    <p className="text-[11px] text-zinc-500 truncate">
+                    <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
                       Atleta: <strong>{player.full_name || player.character_name}</strong> •{' '}
                       {player.height_cm || 178}cm / {player.weight_kg || 72}kg
                     </p>
@@ -413,7 +416,7 @@ export default function OfficialDraftBoardPage() {
                       <img
                         src={archAsset.iconUrl}
                         alt={archAsset.name}
-                        className="w-4 h-4 object-contain"
+                        className="w-5 h-5 object-contain drop-shadow-sm"
                       />
                       <span className="text-[10px] font-extrabold text-zinc-600 dark:text-zinc-300">
                         Arquétipo: {player.archetype || archAsset.name}
@@ -423,72 +426,90 @@ export default function OfficialDraftBoardPage() {
                 </div>
 
                 {/* Estatísticas de Campeonatos Anteriores */}
-                <div className="grid grid-cols-4 gap-1.5 p-2 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 text-center">
+                <div className="grid grid-cols-4 gap-1.5 p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] text-center">
                   <div>
-                    <span className="text-xs font-black text-[#7C5CFC] block">
+                    <span className="text-xs font-mono font-black text-[#7C5CFC] block">
                       {matchesPlayed}
                     </span>
-                    <span className="text-[9px] font-bold text-zinc-500 uppercase">
-                      Jogos
-                    </span>
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase">Jogos</span>
                   </div>
                   <div>
-                    <span className="text-xs font-black text-[#38C958] block">
+                    <span className="text-xs font-mono font-black text-[#38C958] block">
                       {goalsScored}
                     </span>
-                    <span className="text-[9px] font-bold text-zinc-500 uppercase">
-                      Gols
-                    </span>
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase">Gols</span>
                   </div>
                   <div>
-                    <span className="text-xs font-black text-amber-500 block">
+                    <span className="text-xs font-mono font-black text-amber-400 block">
                       {assistsMade}
                     </span>
-                    <span className="text-[9px] font-bold text-zinc-500 uppercase">
-                      Assists
-                    </span>
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase">Assists</span>
                   </div>
                   <div>
-                    <span className="text-xs font-black text-zinc-900 dark:text-white block">
+                    <span className="text-xs font-mono font-black text-zinc-900 dark:text-white block">
                       {avgRating.toFixed(1)}
                     </span>
-                    <span className="text-[9px] font-bold text-zinc-500 uppercase">
-                      Nota
-                    </span>
+                    <span className="text-[9px] font-bold text-zinc-500 uppercase">Nota</span>
                   </div>
                 </div>
 
-                {/* Rodapé: Clube Atual + Botão Draftar Jogador */}
-                <div className="flex items-center justify-between gap-2 pt-1 border-t border-zinc-100 dark:border-zinc-800">
-                  <span className="text-[11px] font-bold text-zinc-500 truncate">
-                    {currentClub ? (
-                      <>
-                        Clube: <strong className="text-zinc-800 dark:text-zinc-200">{currentClub.name}</strong>
-                      </>
-                    ) : (
-                      <span className="text-[#38C958] font-extrabold">
-                        🟢 Agente Livre para Draft
-                      </span>
-                    )}
-                  </span>
+                {/* Rodapé: Clube Atual + Ver Carta FC 26 + Draftar */}
+                <div className="flex items-center justify-between gap-1.5 pt-1 border-t border-zinc-100 dark:border-white/[0.06]">
+                  <button
+                    type="button"
+                    onClick={() => setInspectedPlayerId(player.id)}
+                    className="py-2 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] hover:border-[#7C5CFC] border border-transparent text-[11px] font-extrabold text-[#7C5CFC] flex items-center gap-1 transition-all"
+                  >
+                    <Sparkles className="w-3 h-3" />
+                    <span>Carta FC 26</span>
+                  </button>
 
                   <button
                     type="button"
-                    onClick={() =>
-                      handleDraftPlayer(player.id, player.character_name)
-                    }
-                    className="py-2 px-3.5 rounded-xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-extrabold text-[11px] flex items-center gap-1.5 shrink-0 shadow-xs transition-all"
+                    onClick={() => handleDraftPlayer(player.id, player.character_name)}
+                    className="py-2 px-3 rounded-xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] hover:opacity-95 text-white font-extrabold text-[11px] flex items-center gap-1.5 shrink-0 shadow-xs transition-all"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
-                    <span>
-                      Draftar p/ {activeTeamFirstName}
-                    </span>
+                    <span>Draftar p/ {activeTeamFirstName}</span>
                   </button>
                 </div>
               </div>
             );
           })}
         </section>
+
+        {/* MODAL DE INSPEÇÃO DA CARTA FC 26 DO JOGADOR */}
+        {inspectedPlayer && (
+          <div
+            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
+            onClick={() => setInspectedPlayerId(null)}
+          >
+            <div
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/15 p-6 text-center space-y-4 shadow-2xl"
+            >
+              <button
+                type="button"
+                onClick={() => setInspectedPlayerId(null)}
+                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-zinc-100 dark:bg-[#1c2029] flex items-center justify-center text-zinc-500"
+              >
+                <X className="w-4 h-4" />
+              </button>
+
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-xs font-extrabold uppercase">
+                <Sparkles className="w-3.5 h-3.5" />
+                Scouting Report • Carta Oficial EA FC 26
+              </div>
+
+              <FC26PlayerCard
+                player={inspectedPlayer}
+                team={teams.find((t) => t.id === inspectedPlayer.team_id)}
+                size="md"
+                showActions={true}
+              />
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );

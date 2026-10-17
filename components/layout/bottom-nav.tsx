@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Home,
-  Search,
+  Trophy,
   CircleDot,
   Images,
   User,
@@ -32,9 +32,9 @@ export function BottomNav() {
 
   const profileAvatarSrc =
     session?.role === 'player'
-      ? activePlayer?.avatar_face_url || session?.avatarUrl || '/assets/templates/guest-avatar.png'
+      ? activePlayer?.avatar_face_url || session?.avatarUrl || '/assets/templates/avatar-placeholder.jpg'
       : session?.role === 'captain'
-      ? activeTeam?.logo_url || '/assets/templates/default-crest.png'
+      ? activeTeam?.logo_url || '/assets/templates/crest-placeholder.png'
       : '/assets/awards/1st-place.png';
 
   const profileHref =
@@ -44,25 +44,22 @@ export function BottomNav() {
       ? '/admin'
       : '/captain';
 
+  // 5 Pilares Oficiais (Mobile Bottom Nav)
   const tabs = [
     {
       id: 'home',
       label: 'Início',
       href: '/',
       icon: Home,
-      isActive:
-        pathname === '/' ||
-        pathname.startsWith('/rankings') ||
-        pathname.startsWith('/tournaments'),
+      isActive: pathname === '/',
       isAvatar: false,
     },
     {
-      id: 'search',
-      label: 'Draft',
-      href: '/draft-board',
-      icon: Search,
-      isActive:
-        pathname.startsWith('/draft-board') || pathname.startsWith('/market'),
+      id: 'rankings',
+      label: 'Tabela',
+      href: '/rankings',
+      icon: Trophy,
+      isActive: pathname.startsWith('/rankings') || pathname.startsWith('/tournaments'),
       isAvatar: false,
     },
     {
@@ -75,37 +72,31 @@ export function BottomNav() {
     },
     {
       id: 'studio',
-      label: 'Banners',
+      label: 'Estúdio',
       href: '/studio',
       icon: Images,
       isActive: pathname.startsWith('/studio'),
       isAvatar: false,
     },
     {
-      id: 'profile',
-      label: 'Perfil',
+      id: 'workspace',
+      label: 'Espaço',
       href: profileHref,
       icon: User,
       isActive:
         pathname.startsWith('/captain') ||
         pathname.startsWith('/player') ||
         pathname.startsWith('/players') ||
+        pathname.startsWith('/draft-board') ||
         pathname.startsWith('/admin'),
       isAvatar: true,
     },
   ];
 
-  const initials =
-    session?.role === 'player'
-      ? (session?.characterName || 'JF').slice(0, 2).toUpperCase()
-      : session?.role === 'admin'
-      ? 'LPF'
-      : 'FP';
-
   return (
     <nav
-      aria-label="Navegação Principal"
-      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-20px)] max-w-[420px] h-14 bg-[#7C5CFC] rounded-full px-2 flex items-center justify-between shadow-2xl border border-white/15 select-none"
+      aria-label="Navegação Principal Mobile"
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-20px)] max-w-[430px] h-14 bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] rounded-full px-2.5 flex items-center justify-between shadow-2xl shadow-[#7C5CFC]/30 border border-white/20 select-none lg:hidden"
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;
@@ -117,7 +108,7 @@ export function BottomNav() {
             href={tab.href}
             className={cn(
               active
-                ? 'px-3 py-1.5 rounded-full bg-white text-[#7C5CFC] font-bold text-xs flex items-center gap-1.5 shrink-0 shadow-xs transition-all'
+                ? 'px-3 py-1.5 rounded-full bg-white text-[#7C5CFC] font-extrabold text-xs flex items-center gap-1.5 shrink-0 shadow-xs transition-all'
                 : 'w-9 h-9 flex items-center justify-center text-white/90 hover:text-white shrink-0 rounded-full transition-all'
             )}
           >
@@ -131,10 +122,10 @@ export function BottomNav() {
               >
                 <img
                   src={profileAvatarSrc}
-                  alt="Perfil"
+                  alt="Meu Espaço"
                   className="w-full h-full object-cover"
                   onError={(e) => {
-                    e.currentTarget.style.display = 'none';
+                    e.currentTarget.src = '/assets/templates/avatar-placeholder.jpg';
                   }}
                 />
               </span>

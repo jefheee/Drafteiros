@@ -331,3 +331,196 @@ export function calculateBracketOptions(teamsCount: number): CalculatedBracketOp
     },
   ];
 }
+
+export interface FC26CardComputedStats {
+  pac: number;
+  sho: number;
+  pas: number;
+  dri: number;
+  def: number;
+  phy: number;
+  baseOvr: number;
+  careerBonus: number;
+  finalOvr: number;
+  tierLabel: 'S+' | 'S' | 'A' | 'B';
+  unlockedCardIds: string[];
+}
+
+export type FC26CardMacroStats = FC26CardComputedStats;
+
+export interface FC26MacroParams {
+  attributes?: Partial<PlayerAttributes>;
+  primaryPosition?: string;
+  position?: string;
+  careerStats?: {
+    matches?: number;
+    goals?: number;
+    assists?: number;
+    mvps?: number;
+    titles?: number;
+    cleanSheets?: number;
+    official_matches?: number;
+    official_goals?: number;
+    official_assists?: number;
+    official_motm?: number;
+    titles_won?: number;
+    matches_played?: number;
+    clean_sheets?: number;
+  };
+  extraUnlockedCards?: string[];
+}
+
+export function calculateFC26MacroAndOvr(
+  paramsOrAttributes?: FC26MacroParams | Partial<PlayerAttributes>,
+  positionArg?: string,
+  careerStatsArg?: FC26MacroParams['careerStats']
+): FC26CardComputedStats {
+  const isParamsObject =
+    paramsOrAttributes &&
+    ('attributes' in paramsOrAttributes ||
+      'primaryPosition' in paramsOrAttributes ||
+      'position' in paramsOrAttributes ||
+      'careerStats' in paramsOrAttributes);
+
+  const params: FC26MacroParams = isParamsObject
+    ? (paramsOrAttributes as FC26MacroParams)
+    : {
+        attributes: (paramsOrAttributes as Partial<PlayerAttributes>) || {},
+        primaryPosition: positionArg,
+        careerStats: careerStatsArg,
+      };
+
+  const attr = { ...DEFAULT_PLAYER_ATTRIBUTES, ...(params.attributes || {}) };
+  const career = params.careerStats || {};
+  const goals = career.goals ?? career.official_goals ?? 0;
+  const assists = career.assists ?? career.official_assists ?? 0;
+  const mvps = career.mvps ?? career.official_motm ?? 0;
+  const titles = career.titles ?? career.titles_won ?? 0;
+  const matches = career.matches ?? career.official_matches ?? career.matches_played ?? 0;
+  const cleanSheets = career.cleanSheets ?? career.clean_sheets ?? 0;
+
+  // Bônus de carreira nos campeonatos (+1 a +6 de bônus evolutivo)
+  const careerBonus = Math.min(
+    7,
+    Math.floor(goals / 5) +
+      Math.floor(assists / 5) +
+      Math.floor(mvps / 2) +
+      titles * 1 +
+      Math.floor(cleanSheets / 4)
+  );
+
+  const clamp99 = (v: number) => Math.max(40, Math.min(99, Math.round(v)));
+
+  const rawPac = attr.acceleration * 0.45 + attr.sprint_speed * 0.55;
+  const rawSho =
+    attr.finishing * 0.45 +
+    attr.shot_power * 0.2 +
+    attr.long_shots * 0.15 +
+    attr.attack_positioning * 0.1 +
+    attr.volleys * 0.05 +
+    attr.penalties * 0.05;
+  const rawPas =
+    attr.short_passing * 0.35 +
+    attr.vision * 0.25 +
+    attr.crossing * 0.15 +
+    attr.long_passing * 0.15 +
+    attr.curve * 0.1;
+  const rawDri =
+    attr.dribbling * 0.45 +
+    attr.ball_control * 0.3 +
+    attr.agility * 0.1 +
+    attr.balance * 0.05 +
+    attr.reactions * 0.05 +
+    attr.composure * 0.05;
+  const rawDef =
+    attr.standing_tackle * 0.35 +
+    attr.def_awareness * 0.3 +
+    attr.interceptions * 0.2 +
+    attr.heading_accuracy * 0.1 +
+    attr.sliding_tackle * 0.05;
+  const rawPhy =
+    attr.strength * 0.5 +
+    attr.stamina * 0.25 +
+    attr.aggression * 0.15 +
+    attr.jumping * 0.1;
+
+  const macroBonus = Math.min(4, Math.floor(careerBonus / 2));
+
+  const pac = clamp99(rawPac + macroBonus);
+  const sho = clamp99(rawSho + (goals >= 5 ? macroBonus + 1 : macroBonus));
+  const pas = clamp99(rawPas + (assists >= 5 ? macroBonus + 1 : macroBonus));
+  const dri = clamp99(rawDri + macroBonus);
+  const def = clamp99(rawDef + (cleanSheets >= 2 ? macroBonus + 2 : macroBonus));
+  const phy = clamp99(rawPhy + macroBonus);
+
+  const pos = (params.primaryPosition || params.position || 'MEI').toUpperCase();
+  let weightedBase = 85;
+  if (['ST', 'LW', 'RW', 'ATA'].includes(pos)) {
+    weightedBase = rawPac * 0.22 + rawSho * 0.36 + rawDri * 0.25 + rawPas * 0.1 + rawPhy * 0.07;
+  } else if (['CAM', 'CM', 'MEI', 'MC'].includes(pos)) {
+    weightedBase = rawPas * 0.34 + rawDri * 0.3 + rawSho * 0.16 + rawPac * 0.12 + rawPhy * 0.08;
+  } else if (['CDM', 'VOL'].includes(pos)) {
+    weightedBase = rawDef * 0.32 + rawPas * 0.26 + rawPhy * 0.22 + rawDri * 0.12 + rawPac * 0.08;
+  } else if (['CB', 'LB', 'RB', 'ZAG', 'LD', 'LE'].includes(pos)) {
+    weightedBase = rawDef * 0.42 + rawPhy * 0.28 + rawPac * 0.18 + rawPas * 0.12;
+  } else if (pos === 'GK') {
+    const gkAvg =
+      ((attr.gk_diving || 86) +
+        (attr.gk_reflexes || 88) +
+        (attr.gk_positioning || 86) +
+        (attr.gk_handling || 85)) /
+      4;
+    weightedBase = gkAvg;
+  } else {
+    weightedBase = (rawPac + rawSho + rawPas + rawDri + rawPhy) / 5;
+  }
+
+  const baseOvr = clamp99(weightedBase);
+  const finalOvr = clamp99(baseOvr + careerBonus);
+
+  const tierLabel: 'S+' | 'S' | 'A' | 'B' =
+    finalOvr >= 92 ? 'S+' : finalOvr >= 89 ? 'S' : finalOvr >= 85 ? 'A' : 'B';
+
+  const unlocked = new Set<string>(['gold-rare', 'silver-rare', 'bronze-rare', 'fc-pro']);
+  if (mvps >= 1 || finalOvr >= 84) unlocked.add('team-of-the-week');
+  if (matches >= 5 || finalOvr >= 85) unlocked.add('future-stars');
+  if ((attr.skill_moves || 4) >= 5 || assists >= 5 || finalOvr >= 86) unlocked.add('joga-bonito');
+  if (finalOvr >= 86 || matches >= 8) unlocked.add('ucl-primetime');
+  if (goals >= 8 || finalOvr >= 88) unlocked.add('knockout-royalty');
+  if (finalOvr >= 88) unlocked.add('thunderstruck');
+  if (mvps >= 3 || finalOvr >= 89) {
+    unlocked.add('potm-premier-league');
+    unlocked.add('fantasy-fc-hero');
+  }
+  if (goals + assists >= 12 || finalOvr >= 90) unlocked.add('prime-heroes');
+  if (titles >= 1 || finalOvr >= 90) {
+    unlocked.add('fut-birthday-hero');
+    unlocked.add('icon');
+  }
+  if (goals >= 10 || assists >= 10 || finalOvr >= 91) {
+    unlocked.add('tots-champions');
+  }
+  if (goals >= 10 || finalOvr >= 92) {
+    unlocked.add('toty');
+  }
+  if (titles >= 1 && (goals >= 10 || mvps >= 3 || finalOvr >= 93)) {
+    unlocked.add('toty-icon');
+  }
+
+  (params.extraUnlockedCards || []).forEach((id) => unlocked.add(id));
+
+  return {
+    pac,
+    sho,
+    pas,
+    dri,
+    def,
+    phy,
+    baseOvr,
+    careerBonus,
+    finalOvr,
+    tierLabel,
+    unlockedCardIds: Array.from(unlocked),
+  };
+}
+

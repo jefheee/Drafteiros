@@ -1,5 +1,5 @@
 export type Tier = 'S' | 'A' | 'B' | 'C' | 'D' | 'UNRATED';
-export type TournamentStatus = 'REGISTRATION' | 'SCOUTING' | 'DRAFT' | 'ACTIVE' | 'FINISHED';
+export type TournamentStatus = 'REGISTRATION' | 'SCOUTING' | 'DRAFT' | 'ACTIVE' | 'FINISHED' | 'active' | 'finished' | 'completed';
 export type ParticipantRole = 'admin' | 'captain' | 'player';
 export type GameMode = '3v3' | '4v4' | '5v5' | '7v7' | '11v11' | string;
 export type PlayerPosition =
@@ -209,6 +209,12 @@ export interface PlayerProfile {
   avatar_body_url?: string;
   attributes_screenshot_url?: string;
   card_design?: string;
+  card_background?: string;
+  unlocked_cards?: string[];
+  preferred_foot?: 'D' | 'E' | 'R' | 'L';
+  skill_moves?: number;
+  weak_foot?: number;
+  nationality?: string;
   positions_declared: string[];
   primary_position?: PlayerPosition;
   secondary_positions?: string[];
@@ -288,6 +294,9 @@ export interface Tournament {
   rules_config?: TournamentRulesConfig;
   draft_order?: DraftOrderSlot[];
   status: TournamentStatus;
+  champion_team_name?: string;
+  top_scorer_name?: string;
+  season_label?: string;
   rules?: TournamentRules;
   created_at: string;
 }
@@ -401,6 +410,24 @@ export interface Team {
   whatsapp_group_link?: string;
   instagram_handle?: string;
   is_approved?: boolean;
+  points?: number;
+  matches_played?: number;
+  wins?: number;
+  draws?: number;
+  losses?: number;
+  goals_for?: number;
+  goals_against?: number;
+  standings?: {
+    points: number;
+    played: number;
+    wins: number;
+    draws: number;
+    losses: number;
+    gf: number;
+    ga: number;
+    gd: number;
+    form: ('V' | 'E' | 'D')[];
+  };
   created_at: string;
 }
 
