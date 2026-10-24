@@ -35,6 +35,11 @@ import { cn } from '@/lib/utils';
 export function Header() {
   const router = useRouter();
   const pathname = usePathname();
+
+  // Não renderiza header in-app na Landing Page para preservar a estética limpa e criativa
+  if (pathname === '/' || pathname === '/landing') {
+    return null;
+  }
   const { session, switchProfileRole, logout } = useAuth();
   const { players, teams, tournament, tournaments, selectTournament } = useLeagueStore();
 
@@ -171,10 +176,10 @@ export function Header() {
   const desktopPillars = [
     {
       id: 'home',
-      label: 'Início',
-      href: '/',
+      label: 'Painel Geral',
+      href: '/dashboard',
       icon: Home,
-      active: pathname === '/',
+      active: pathname === '/dashboard',
     },
     {
       id: 'rankings',
@@ -259,12 +264,12 @@ export function Header() {
               href="/"
               className="hidden sm:flex items-center gap-2 pr-2 border-r border-zinc-200 dark:border-white/10"
             >
-              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7C5CFC] to-[#5b3fd9] flex items-center justify-center shadow-md shadow-[#7C5CFC]/25">
-                <Trophy className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#00E599] to-[#059669] flex items-center justify-center shadow-md shadow-[#00E599]/20">
+                <Trophy className="w-4 h-4 text-[#090A0F]" />
               </div>
               <div className="leading-none">
                 <span className="font-display font-black text-sm tracking-tight text-zinc-900 dark:text-white block">
-                  DRAFT<span className="text-[#7C5CFC]">CLUB</span>
+                  DRAFT<span className="text-[#00E599]">CLUB</span>
                 </span>
                 <span className="text-[9px] font-bold uppercase tracking-widest text-[#38C958]">
                   PRO EDITION
@@ -278,7 +283,7 @@ export function Header() {
                 setAccountMenuOpen(!accountMenuOpen);
                 setSeasonMenuOpen(false);
               }}
-              className="max-w-[160px] sm:max-w-[220px] h-9 pl-1.5 pr-2.5 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center gap-1.5 hover:border-[#7C5CFC] transition-all shrink-0 overflow-hidden"
+              className="max-w-[160px] sm:max-w-[220px] h-9 pl-1.5 pr-2.5 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center gap-1.5 hover:border-[#00E599] transition-all shrink-0 overflow-hidden"
             >
               <div className="w-6 h-6 rounded-full overflow-hidden bg-zinc-100 dark:bg-[#1c2029] flex items-center justify-center shrink-0">
                 {mounted ? (
@@ -301,7 +306,7 @@ export function Header() {
                     }}
                   />
                 ) : (
-                  <span className="text-[9px] font-black text-[#7C5CFC]">{currentInitials}</span>
+                  <span className="text-[9px] font-black text-[#00E599]">{currentInitials}</span>
                 )}
               </div>
               <span
@@ -310,7 +315,7 @@ export function Header() {
               >
                 {mounted ? currentRoleLabel : '🛡️ Furia del Plata'}
               </span>
-              <ChevronDown className="w-3 h-3 text-[#7C5CFC] shrink-0" />
+              <ChevronDown className="w-3 h-3 text-[#00E599] shrink-0" />
             </button>
 
             {/* Botão rápido direto para /admin quando estiver em Visão Admin */}
@@ -336,7 +341,7 @@ export function Header() {
                   className={cn(
                     'px-3.5 py-1.5 rounded-full text-xs font-extrabold flex items-center gap-1.5 transition-all',
                     pillar.active
-                      ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm shadow-[#7C5CFC]/30'
+                      ? 'bg-[#00E599] text-[#090A0F] font-black shadow-sm shadow-[#00E599]/20'
                       : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                   )}
                 >
@@ -355,10 +360,10 @@ export function Header() {
                 setSeasonMenuOpen(!seasonMenuOpen);
                 setAccountMenuOpen(false);
               }}
-              className="max-w-[125px] sm:max-w-[205px] h-9 px-2.5 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center gap-1.5 hover:border-[#7C5CFC] transition-all overflow-hidden"
+              className="max-w-[125px] sm:max-w-[205px] h-9 px-2.5 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center gap-1.5 hover:border-[#00E599] transition-all overflow-hidden"
               title="Alternar Campeonato Ativo ou Histórico"
             >
-              <Calendar className="w-3.5 h-3.5 text-[#7C5CFC] shrink-0" />
+              <Calendar className="w-3.5 h-3.5 text-[#00E599] shrink-0" />
               <span className="truncate text-[11px] font-extrabold text-[#18181B] dark:text-white">
                 {tournament?.season_label || tournament?.name || 'LPF 5x5'}
               </span>
@@ -368,16 +373,16 @@ export function Header() {
             <button
               type="button"
               onClick={toggleTheme}
-              className="hidden sm:flex w-9 h-9 shrink-0 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs items-center justify-center text-[#18181B] dark:text-white hover:border-[#7C5CFC] transition-all"
+              className="hidden sm:flex w-9 h-9 shrink-0 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs items-center justify-center text-[#18181B] dark:text-white hover:border-[#00E599] transition-all"
               title={isDark ? 'Mudar para Light Mode (Pitch Clean)' : 'Mudar para Dark Mode (Tactical Obsidian)'}
             >
-              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#7C5CFC]" />}
+              {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-[#00E599]" />}
             </button>
 
             <button
               type="button"
               onClick={() => setNotificationsOpen(true)}
-              className="relative w-9 h-9 shrink-0 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#7C5CFC] transition-all"
+              className="relative w-9 h-9 shrink-0 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#00E599] transition-all"
               title="Suas Notificações"
             >
               <Bell className="w-4 h-4" />
@@ -387,7 +392,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setSettingsOpen(true)}
-              className="w-9 h-9 shrink-0 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#7C5CFC] transition-all"
+              className="w-9 h-9 shrink-0 rounded-full bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.08] shadow-xs flex items-center justify-center text-[#18181B] dark:text-white hover:border-[#00E599] transition-all"
               title="Configurações e Perfis"
             >
               <SlidersHorizontal className="w-4 h-4" />
@@ -408,7 +413,7 @@ export function Header() {
           >
             <div className="px-2 py-1 flex items-center justify-between border-b border-zinc-100 dark:border-white/10 pb-2">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                   Conta Única Multi-Perfil
                 </span>
                 <span className="text-xs font-extrabold text-[#18181B] dark:text-white">
@@ -431,7 +436,7 @@ export function Header() {
               className={cn(
                 'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
                 session?.role === 'player'
-                  ? 'bg-[#7C5CFC]/15 border border-[#7C5CFC]/40'
+                  ? 'bg-[#00E599]/15 border border-[#00E599]/40'
                   : 'hover:bg-zinc-50 dark:hover:bg-[#1c2029]'
               )}
             >
@@ -456,7 +461,7 @@ export function Header() {
                 </div>
               </div>
               {session?.role === 'player' && (
-                <Check className="w-4 h-4 text-[#7C5CFC] shrink-0" />
+                <Check className="w-4 h-4 text-[#00E599] shrink-0" />
               )}
             </button>
 
@@ -467,7 +472,7 @@ export function Header() {
               className={cn(
                 'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
                 session?.role === 'captain'
-                  ? 'bg-[#7C5CFC]/15 border border-[#7C5CFC]/40'
+                  ? 'bg-[#00E599]/15 border border-[#00E599]/40'
                   : 'hover:bg-zinc-50 dark:hover:bg-[#1c2029]'
               )}
             >
@@ -486,13 +491,13 @@ export function Header() {
                   <p className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
                     🛡️ Visão Capitão ({activeTeam?.name || 'Furia del Plata'})
                   </p>
-                  <p className="text-[10px] text-[#7C5CFC] font-semibold truncate">
+                  <p className="text-[10px] text-[#00E599] font-semibold truncate">
                     Abre /captain • Elenco, Uniformes & Rateio PIX
                   </p>
                 </div>
               </div>
               {session?.role === 'captain' && (
-                <Check className="w-4 h-4 text-[#7C5CFC] shrink-0" />
+                <Check className="w-4 h-4 text-[#00E599] shrink-0" />
               )}
             </button>
 
@@ -503,7 +508,7 @@ export function Header() {
               className={cn(
                 'w-full p-2.5 rounded-2xl flex items-center justify-between text-left transition-all',
                 session?.role === 'admin'
-                  ? 'bg-[#7C5CFC]/15 border border-[#7C5CFC]/40'
+                  ? 'bg-[#00E599]/15 border border-[#00E599]/40'
                   : 'hover:bg-zinc-50 dark:hover:bg-[#1c2029]'
               )}
             >
@@ -528,7 +533,7 @@ export function Header() {
                 </div>
               </div>
               {session?.role === 'admin' && (
-                <Check className="w-4 h-4 text-[#7C5CFC] shrink-0" />
+                <Check className="w-4 h-4 text-[#00E599] shrink-0" />
               )}
             </button>
 
@@ -536,7 +541,7 @@ export function Header() {
               <Link
                 href="/draft-board"
                 onClick={() => setAccountMenuOpen(false)}
-                className="text-[11px] font-bold text-[#7C5CFC] hover:underline py-1 flex items-center gap-1"
+                className="text-[11px] font-bold text-[#00E599] hover:underline py-1 flex items-center gap-1"
               >
                 <Users className="w-3.5 h-3.5" /> Sala de Draft (+40)
               </Link>
@@ -576,7 +581,7 @@ export function Header() {
             className="mt-14 mx-auto sm:mr-16 w-80 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 shadow-2xl p-3 space-y-1.5"
           >
             <div className="px-2 py-1 border-b border-zinc-100 dark:border-white/10 mb-1">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                 Campeonatos & Temporadas
               </span>
               <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -597,7 +602,7 @@ export function Header() {
                   className={cn(
                     'w-full px-3 py-2.5 rounded-2xl text-left transition-all flex items-center justify-between gap-2',
                     isSelected
-                      ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-md'
+                      ? 'bg-[#00E599] text-[#090A0F] font-black shadow-md'
                       : 'text-[#18181B] dark:text-zinc-200 hover:bg-zinc-100 dark:hover:bg-[#1c2029]'
                   )}
                 >
@@ -663,10 +668,10 @@ export function Header() {
                     key={n.id}
                     href={n.href}
                     onClick={() => setNotificationsOpen(false)}
-                    className="block p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] hover:bg-[#7C5CFC]/15 border border-zinc-200/60 dark:border-white/[0.06] transition-all"
+                    className="block p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] hover:bg-[#00E599]/15 border border-zinc-200/60 dark:border-white/[0.06] transition-all"
                   >
                     <div className="flex items-start gap-3">
-                      <div className="w-10 h-10 rounded-2xl bg-[#7C5CFC]/15 text-[#7C5CFC] flex items-center justify-center shrink-0">
+                      <div className="w-10 h-10 rounded-2xl bg-[#00E599]/15 text-[#00E599] flex items-center justify-center shrink-0">
                         <Icon className="w-5 h-5" />
                       </div>
                       <div className="flex-1 min-w-0">
@@ -674,14 +679,14 @@ export function Header() {
                           <span className="text-xs font-extrabold text-[#18181B] dark:text-white truncate">
                             {n.title}
                           </span>
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#7C5CFC] text-white shrink-0">
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#00E599] text-[#090A0F] font-black shrink-0">
                             {n.badge}
                           </span>
                         </div>
                         <p className="text-xs text-zinc-500 dark:text-zinc-400 mt-0.5">
                           {n.desc}
                         </p>
-                        <span className="text-[10px] text-[#7C5CFC] font-semibold mt-1 block">
+                        <span className="text-[10px] text-[#00E599] font-semibold mt-1 block">
                           {n.time}
                         </span>
                       </div>
@@ -719,7 +724,7 @@ export function Header() {
               </button>
             </div>
 
-            <div className="p-4 rounded-3xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-lg flex items-center justify-between">
+            <div className="p-4 rounded-3xl bg-[#00E599] text-[#090A0F] font-black shadow-lg flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <div className="w-11 h-11 rounded-2xl bg-white/20 flex items-center justify-center shrink-0">
                   <Sparkles className="w-6 h-6 text-white" />
@@ -750,7 +755,7 @@ export function Header() {
                   className={cn(
                     'p-2.5 rounded-2xl border text-center transition-all',
                     session?.role === 'player'
-                      ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 text-[#7C5CFC] font-extrabold'
+                      ? 'border-[#00E599] bg-[#00E599]/15 text-[#00E599] font-extrabold'
                       : 'border-zinc-200/60 dark:border-white/10 text-xs font-semibold'
                   )}
                 >
@@ -763,7 +768,7 @@ export function Header() {
                   className={cn(
                     'p-2.5 rounded-2xl border text-center transition-all',
                     session?.role === 'captain'
-                      ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 text-[#7C5CFC] font-extrabold'
+                      ? 'border-[#00E599] bg-[#00E599]/15 text-[#00E599] font-extrabold'
                       : 'border-zinc-200/60 dark:border-white/10 text-xs font-semibold'
                   )}
                 >
@@ -776,7 +781,7 @@ export function Header() {
                   className={cn(
                     'p-2.5 rounded-2xl border text-center transition-all',
                     session?.role === 'admin'
-                      ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 text-[#7C5CFC] font-extrabold'
+                      ? 'border-[#00E599] bg-[#00E599]/15 text-[#00E599] font-extrabold'
                       : 'border-zinc-200/60 dark:border-white/10 text-xs font-semibold'
                   )}
                 >
@@ -794,9 +799,9 @@ export function Header() {
               >
                 <div className="flex items-center gap-3">
                   {isDark ? (
-                    <Moon className="w-5 h-5 text-[#7C5CFC]" />
+                    <Moon className="w-5 h-5 text-[#00E599]" />
                   ) : (
-                    <Sun className="w-5 h-5 text-[#7C5CFC]" />
+                    <Sun className="w-5 h-5 text-[#00E599]" />
                   )}
                   <div>
                     <span className="text-xs font-extrabold text-[#18181B] dark:text-white block">
@@ -807,7 +812,7 @@ export function Header() {
                     </span>
                   </div>
                 </div>
-                <span className="px-3 py-1 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[11px] font-bold">
+                <span className="px-3 py-1 rounded-full bg-[#00E599]/15 text-[#00E599] text-[11px] font-bold">
                   Alternar
                 </span>
               </button>
@@ -821,7 +826,7 @@ export function Header() {
                 className="w-full p-3.5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-[#1c2029] rounded-2xl transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <Calculator className="w-5 h-5 text-[#7C5CFC]" />
+                  <Calculator className="w-5 h-5 text-[#00E599]" />
                   <div>
                     <span className="text-xs font-extrabold text-[#18181B] dark:text-white block">
                       Pontuação da Súmula
@@ -831,7 +836,7 @@ export function Header() {
                     </span>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-[#7C5CFC]">Editar &gt;</span>
+                <span className="text-xs font-bold text-[#00E599]">Editar &gt;</span>
               </button>
 
               <Link
@@ -850,7 +855,7 @@ export function Header() {
                     </span>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-[#7C5CFC]">Abrir &gt;</span>
+                <span className="text-xs font-bold text-[#00E599]">Abrir &gt;</span>
               </Link>
 
               <Link
@@ -859,7 +864,7 @@ export function Header() {
                 className="w-full p-3.5 flex items-center justify-between text-left hover:bg-zinc-50 dark:hover:bg-[#1c2029] rounded-2xl transition-colors"
               >
                 <div className="flex items-center gap-3">
-                  <Users className="w-5 h-5 text-[#7C5CFC]" />
+                  <Users className="w-5 h-5 text-[#00E599]" />
                   <div>
                     <span className="text-xs font-extrabold text-[#18181B] dark:text-white block">
                       Sala de Draft Oficial (+40 Jogadores)
@@ -869,7 +874,7 @@ export function Header() {
                     </span>
                   </div>
                 </div>
-                <span className="text-xs font-bold text-[#7C5CFC]">Abrir &gt;</span>
+                <span className="text-xs font-bold text-[#00E599]">Abrir &gt;</span>
               </Link>
 
               <Link
@@ -941,7 +946,7 @@ export function Header() {
                     <button
                       type="button"
                       onClick={() => adjustMetric(item.key as keyof typeof metricsScore, -1)}
-                      className="w-8 h-8 rounded-full bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-black text-sm text-[#7C5CFC] flex items-center justify-center"
+                      className="w-8 h-8 rounded-full bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-black text-sm text-[#00E599] flex items-center justify-center"
                     >
                       -
                     </button>
@@ -951,7 +956,7 @@ export function Header() {
                     <button
                       type="button"
                       onClick={() => adjustMetric(item.key as keyof typeof metricsScore, 1)}
-                      className="w-8 h-8 rounded-full bg-[#7C5CFC] text-white font-black text-sm flex items-center justify-center"
+                      className="w-8 h-8 rounded-full bg-[#00E599] text-[#090A0F] font-black font-black text-sm flex items-center justify-center"
                     >
                       +
                     </button>

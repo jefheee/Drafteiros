@@ -26,6 +26,7 @@ import {
 import { WorkspaceNav } from '@/components/layout/workspace-nav';
 import { FC26PlayerCard, FC26PackOpener } from '@/components/players/fc26-player-card';
 import { cn } from '@/lib/utils';
+import { HoloCard, PeekRating, ClickSpark, RefineFrame } from '@/components/react-bits';
 import {
   Camera,
   Sparkles,
@@ -565,7 +566,7 @@ export default function PlayerProfilePage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
+    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
       <main className="max-w-7xl mx-auto space-y-5">
         {/* SUB-NAVEGAÇÃO RÁPIDA DO PILAR 5 (MEU ESPAÇO) */}
         <WorkspaceNav />
@@ -584,13 +585,13 @@ export default function PlayerProfilePage() {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* COLUNA ESQUERDA (4 COLUNAS): CARTA FC 26 ULTIMATE TEAM + PACK OPENER */}
           <aside className="lg:col-span-4 space-y-4 lg:sticky lg:top-20">
-            <div className="p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl flex flex-col items-center space-y-4 relative overflow-hidden">
+            <div className="p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl flex flex-col items-center space-y-4 relative overflow-hidden">
               <div className="w-full flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#7C5CFC] block">
+                  <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#00E599] block">
                     EA SPORTS FC 26 PRO CARD
                   </span>
-                  <h2 className="text-base font-display font-black text-zinc-900 dark:text-white">
+                  <h2 className="text-base font-display font-black text-white">
                     {fc26Macro.tierLabel} • {fc26Macro.finalOvr} OVR
                   </h2>
                 </div>
@@ -600,15 +601,17 @@ export default function PlayerProfilePage() {
               </div>
 
               {/* CARTA FC 26 INTERATIVA AO VIVO */}
-              <FC26PlayerCard
-                player={livePlayerPreview}
-                team={currentTeam}
-                cardDesignUrl={selectedCardUrl}
-                size="md"
-                showActions={true}
-                onEnhancePortraitAI={handleEnhancePortraitAI}
-                enhancingAI={enhancingPortrait}
-              />
+              <HoloCard className="p-3 bg-black/60 border-[#00E599]/20 shadow-xl shadow-black/80">
+                <FC26PlayerCard
+                  player={livePlayerPreview}
+                  team={currentTeam}
+                  cardDesignUrl={selectedCardUrl}
+                  size="md"
+                  showActions={true}
+                  onEnhancePortraitAI={handleEnhancePortraitAI}
+                  enhancingAI={enhancingPortrait}
+                />
+              </HoloCard>
 
               {/* BOTÃO ABRIR PACK FC 26 / WALKOUT */}
               <div className="w-full pt-1 flex justify-center">
@@ -635,7 +638,7 @@ export default function PlayerProfilePage() {
                   <select
                     value={preferredFoot}
                     onChange={(e) => setPreferredFoot(e.target.value as 'D' | 'E')}
-                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
+                    className="w-full h-8 px-1.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
                   >
                     <option value="D">🦶 D (Dir)</option>
                     <option value="E">🦶 E (Esq)</option>
@@ -648,7 +651,7 @@ export default function PlayerProfilePage() {
                   <select
                     value={skillMoves}
                     onChange={(e) => setSkillMoves(Number(e.target.value))}
-                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-amber-400"
+                    className="w-full h-8 px-1.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-amber-400"
                   >
                     {[1, 2, 3, 4, 5].map((n) => (
                       <option key={n} value={n}>
@@ -664,7 +667,7 @@ export default function PlayerProfilePage() {
                   <select
                     value={weakFoot}
                     onChange={(e) => setWeakFoot(Number(e.target.value))}
-                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-amber-400"
+                    className="w-full h-8 px-1.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-amber-400"
                   >
                     {[1, 2, 3, 4, 5].map((n) => (
                       <option key={n} value={n}>
@@ -680,7 +683,7 @@ export default function PlayerProfilePage() {
                   <select
                     value={nationality}
                     onChange={(e) => setNationality(e.target.value)}
-                    className="w-full h-8 px-1.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                    className="w-full h-8 px-1.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                   >
                     <option value="BR">🇧🇷 BR</option>
                     <option value="AR">🇦🇷 AR</option>
@@ -693,7 +696,7 @@ export default function PlayerProfilePage() {
           {/* COLUNA DIREITA (8 COLUNAS): IDENTIDADE + ABAS DE BUILD, CARTAS, FOTOS, HORÁRIOS, CARREIRA */}
           <div className="lg:col-span-8 space-y-4">
             {/* CABEÇALHO DE IDENTIDADE DUPLA + SALVAR */}
-            <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3.5">
                   {/* Arquétipo Solto (Sem caixa pesada) */}
@@ -705,7 +708,7 @@ export default function PlayerProfilePage() {
 
                   <div className="min-w-0 space-y-0.5">
                     <div className="flex items-center gap-1.5 flex-wrap">
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold uppercase">
                         {primaryPosition} #{shirtNumber}
                       </span>
                       <span
@@ -718,11 +721,11 @@ export default function PlayerProfilePage() {
                         {selectedArchetypeAsset.name}
                       </span>
                     </div>
-                    <h1 className="text-xl sm:text-2xl font-display font-black tracking-tight text-zinc-900 dark:text-white uppercase truncate">
+                    <h1 className="text-xl sm:text-2xl font-display font-black tracking-tight text-white uppercase truncate">
                       {characterName}
                     </h1>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400 truncate">
-                      Titular: <strong className="text-zinc-800 dark:text-zinc-200">{fullName}</strong> • {heightCm} cm / {weightKg} kg • Clube: <strong className="text-[#7C5CFC]">{currentTeam?.name || 'Furia del Plata'}</strong>
+                      Titular: <strong className="text-zinc-800 dark:text-zinc-200">{fullName}</strong> • {heightCm} cm / {weightKg} kg • Clube: <strong className="text-[#00E599]">{currentTeam?.name || 'Furia del Plata'}</strong>
                     </p>
                   </div>
                 </div>
@@ -740,7 +743,7 @@ export default function PlayerProfilePage() {
               {/* Edição Rápida da Identidade Dupla */}
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 pt-3 border-t border-zinc-100 dark:border-white/[0.07]">
                 <div>
-                  <label className="text-[10px] font-extrabold uppercase text-[#7C5CFC] block mb-1">
+                  <label className="text-[10px] font-extrabold uppercase text-[#00E599] block mb-1">
                     Nome do Boneco (Carta FC 26 & Súmulas)
                   </label>
                   <input
@@ -748,7 +751,7 @@ export default function PlayerProfilePage() {
                     value={characterName}
                     onChange={(e) => setCharacterName(e.target.value)}
                     placeholder="Ex: JEFHE, HAALANDINHO..."
-                    className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold text-zinc-900 dark:text-white"
+                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold text-white"
                   />
                 </div>
 
@@ -761,7 +764,7 @@ export default function PlayerProfilePage() {
                     value={fullName}
                     onChange={(e) => setFullName(e.target.value)}
                     placeholder="Ex: Jefherson"
-                    className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-bold text-zinc-900 dark:text-white"
+                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-bold text-white"
                   />
                 </div>
 
@@ -773,7 +776,7 @@ export default function PlayerProfilePage() {
                     <select
                       value={primaryPosition}
                       onChange={(e) => setPrimaryPosition(e.target.value as PlayerPosition)}
-                      className="w-full h-9 px-2 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold text-zinc-900 dark:text-white"
+                      className="w-full h-9 px-2 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold text-white"
                     >
                       {['ATA', 'MEI', 'MC', 'VOL', 'ZAG', 'LD', 'LE', 'GK', 'ST', 'CAM', 'CB'].map((pos) => (
                         <option key={pos} value={pos}>
@@ -792,7 +795,7 @@ export default function PlayerProfilePage() {
                       max={99}
                       value={shirtNumber}
                       onChange={(e) => setShirtNumber(Number(e.target.value))}
-                      className="w-full h-9 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-zinc-900 dark:text-white"
+                      className="w-full h-9 px-2.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold text-white"
                     />
                   </div>
                 </div>
@@ -800,7 +803,7 @@ export default function PlayerProfilePage() {
             </section>
 
             {/* NAVEGAÇÃO DE ABAS DO ATLETA (5 ABAS) */}
-            <div className="p-1.5 rounded-2xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-5 gap-1">
+            <div className="p-1.5 rounded-2xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-5 gap-1">
               {[
                 { id: 'build', label: 'Build & Run', icon: Sliders },
                 { id: 'cards', label: 'Cartas FC 26', icon: Sparkles },
@@ -817,7 +820,7 @@ export default function PlayerProfilePage() {
                     className={cn(
                       'py-2 px-2 rounded-xl text-[11px] font-extrabold transition-all flex items-center justify-center gap-1.5',
                       activeTab === t.id
-                        ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                        ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                         : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
                     )}
                   >
@@ -834,11 +837,11 @@ export default function PlayerProfilePage() {
             {activeTab === 'build' && (
               <div className="space-y-4">
                 {/* 1. PAINEL ACCELERATE AO VIVO */}
-                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
-                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC]">
+                        <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599]">
                           Calculadora Oficial EA FC 26 Clubs
                         </span>
                         <span
@@ -856,7 +859,7 @@ export default function PlayerProfilePage() {
                       </p>
                     </div>
 
-                    <label className="cursor-pointer py-2.5 px-3.5 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shrink-0">
+                    <label className="cursor-pointer py-2.5 px-3.5 rounded-2xl bg-[#00E599] text-[#090A0F] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center gap-1.5 shadow-sm shrink-0">
                       <Camera className="w-4 h-4" />
                       <span>
                         {ocrLoading ? 'Lendo Print...' : '📸 Ler Print de Qualidades (OCR)'}
@@ -871,7 +874,7 @@ export default function PlayerProfilePage() {
                   </div>
 
                   {ocrNotice && (
-                    <div className="p-3 rounded-2xl bg-[#7C5CFC]/15 border border-[#7C5CFC]/30 text-[#7C5CFC] text-xs font-bold">
+                    <div className="p-3 rounded-2xl bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-xs font-bold">
                       {ocrNotice}
                     </div>
                   )}
@@ -885,7 +888,7 @@ export default function PlayerProfilePage() {
                       <span className="text-[#38C958]">
                         ⚖️ Controlada ({accelerateAnalysis.controlledPercent}%)
                       </span>
-                      <span className="text-[#7C5CFC]">
+                      <span className="text-[#00E599]">
                         🚂 Prolongada ({accelerateAnalysis.lengthyPercent}%)
                       </span>
                     </div>
@@ -899,7 +902,7 @@ export default function PlayerProfilePage() {
                         style={{ width: `${accelerateAnalysis.controlledPercent}%` }}
                       />
                       <div
-                        className="h-full bg-[#7C5CFC] transition-all"
+                        className="h-full bg-[#00E599] text-[#090A0F] transition-all"
                         style={{ width: `${accelerateAnalysis.lengthyPercent}%` }}
                       />
                     </div>
@@ -910,9 +913,9 @@ export default function PlayerProfilePage() {
                     {accelerateAnalysis.tips.map((tip, idx) => (
                       <div
                         key={idx}
-                        className="p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 flex items-start gap-2"
+                        className="p-2.5 rounded-2xl bg-white/[0.03] text-[11px] font-semibold text-zinc-700 dark:text-zinc-300 flex items-start gap-2"
                       >
-                        <Zap className="w-3.5 h-3.5 text-[#7C5CFC] shrink-0 mt-0.5" />
+                        <Zap className="w-3.5 h-3.5 text-[#00E599] shrink-0 mt-0.5" />
                         <span>{tip}</span>
                       </div>
                     ))}
@@ -920,10 +923,10 @@ export default function PlayerProfilePage() {
 
                   {/* Sliders de Altura e Peso */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-zinc-100 dark:border-white/[0.07]">
-                    <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] space-y-1.5">
+                    <div className="p-3 rounded-2xl bg-white/[0.03] space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-extrabold">Altura (cm)</span>
-                        <span className="text-xs font-mono font-black text-[#7C5CFC]">{heightCm} cm</span>
+                        <span className="text-xs font-mono font-black text-[#00E599]">{heightCm} cm</span>
                       </div>
                       <input
                         type="range"
@@ -931,7 +934,7 @@ export default function PlayerProfilePage() {
                         max={210}
                         value={heightCm}
                         onChange={(e) => setHeightCm(Number(e.target.value))}
-                        className="w-full accent-[#7C5CFC]"
+                        className="w-full accent-[#00E599]"
                       />
                       <div className="flex justify-between text-[10px] text-zinc-400">
                         <span>150 cm</span>
@@ -940,7 +943,7 @@ export default function PlayerProfilePage() {
                       </div>
                     </div>
 
-                    <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] space-y-1.5">
+                    <div className="p-3 rounded-2xl bg-white/[0.03] space-y-1.5">
                       <div className="flex items-center justify-between">
                         <span className="text-xs font-extrabold">Peso (kg)</span>
                         <span className="text-xs font-mono font-black text-[#38C958]">{weightKg} kg</span>
@@ -963,7 +966,7 @@ export default function PlayerProfilePage() {
                 </section>
 
                 {/* 2. SELETOR VISUAL DE ARQUÉTIPO OFICIAL (Ícones soltos sem borda quadrada pesada) */}
-                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
+                <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
                   <div className="flex items-center justify-between gap-2 flex-wrap">
                     <div className="flex items-center gap-3">
                       <img
@@ -972,7 +975,7 @@ export default function PlayerProfilePage() {
                         className="w-11 h-11 object-contain drop-shadow-md"
                       />
                       <div>
-                        <h2 className="text-sm sm:text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                        <h2 className="text-sm sm:text-base font-display font-extrabold text-white">
                           Arquétipo Oficial: {selectedArchetypeAsset.name}
                         </h2>
                         <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -992,8 +995,8 @@ export default function PlayerProfilePage() {
                           className={cn(
                             'px-2.5 py-1 rounded-full text-[10px] font-extrabold transition-all',
                             archetypeGroupFilter === grp
-                              ? 'bg-[#7C5CFC] text-white'
-                              : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
+                              ? 'bg-[#00E599] text-[#090A0F] font-black'
+                              : 'bg-white/[0.03] text-zinc-600 dark:text-zinc-300'
                           )}
                         >
                           {grp}
@@ -1016,8 +1019,8 @@ export default function PlayerProfilePage() {
                             className={cn(
                               'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5',
                               isSelected
-                                ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-xs'
-                                : 'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/60 hover:border-[#7C5CFC]/40'
+                                ? 'border-[#00E599] bg-[#00E599]/15 border border-[#00E599]/30 shadow-xs'
+                                : 'border-transparent bg-white/[0.03]/60 hover:border-[#00E599]/40'
                             )}
                           >
                             <img
@@ -1025,7 +1028,7 @@ export default function PlayerProfilePage() {
                               alt={arch.name}
                               className="w-12 h-12 object-contain drop-shadow-md"
                             />
-                            <span className="text-xs font-extrabold text-zinc-900 dark:text-white">
+                            <span className="text-xs font-extrabold text-white">
                               {arch.name}
                             </span>
                           </button>
@@ -1036,10 +1039,10 @@ export default function PlayerProfilePage() {
                 </section>
 
                 {/* 3. SELETOR DE PLAYSTYLES (1 CLIQUE = PRATA, 2 CLIQUES = DOURADO+ NA CARTA FC 26) */}
-                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
+                <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
-                      <h2 className="text-sm sm:text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                      <h2 className="text-sm sm:text-base font-display font-extrabold text-white">
                         PlayStyles & PlayStyles+ ({playstyles.length} ativos)
                       </h2>
                       <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -1066,8 +1069,8 @@ export default function PlayerProfilePage() {
                         className={cn(
                           'px-3 py-1.5 rounded-full text-[11px] font-extrabold shrink-0 transition-all',
                           playstyleCategory === cat
-                            ? 'bg-[#7C5CFC] text-white'
-                            : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
+                            ? 'bg-[#00E599] text-[#090A0F] font-black'
+                            : 'bg-white/[0.03] text-zinc-600 dark:text-zinc-300'
                         )}
                       >
                         {cat}
@@ -1092,7 +1095,7 @@ export default function PlayerProfilePage() {
                               'border-amber-400 bg-amber-500/10 shadow-[0_0_16px_rgba(245,158,11,0.2)]',
                             isSilver && 'border-zinc-400 bg-zinc-200/40 dark:bg-[#1c2029]',
                             !sel &&
-                              'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/40 opacity-75 hover:opacity-100'
+                              'border-transparent bg-white/[0.03]/40 opacity-75 hover:opacity-100'
                           )}
                         >
                           <span
@@ -1111,7 +1114,7 @@ export default function PlayerProfilePage() {
                             alt={ps.name}
                             className="w-11 h-11 object-contain drop-shadow-md"
                           />
-                          <span className="text-[11px] font-extrabold text-zinc-900 dark:text-white leading-tight">
+                          <span className="text-[11px] font-extrabold text-white leading-tight">
                             {ps.name}
                           </span>
                         </button>
@@ -1121,9 +1124,9 @@ export default function PlayerProfilePage() {
                 </section>
 
                 {/* 4. EDITOR DOS 31 ATRIBUTOS (ATUALIZA OS 6 MACRO-STATS DA CARTA EM TEMPO REAL) */}
-                <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
                   <div>
-                    <h2 className="text-sm sm:text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                    <h2 className="text-sm sm:text-base font-display font-extrabold text-white">
                       Qualidades do Atleta (31 Atributos → Cálculo Automático PAC/SHO/PAS/DRI/DEF/PHY)
                     </h2>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -1135,9 +1138,9 @@ export default function PlayerProfilePage() {
                     {ATTRIBUTE_GROUPS.map((group) => (
                       <div
                         key={group.id}
-                        className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/70 border border-zinc-200/60 dark:border-white/[0.05] space-y-2.5"
+                        className="p-3.5 rounded-2xl bg-white/[0.03]/70 border border-zinc-200/60 dark:border-white/[0.05] space-y-2.5"
                       >
-                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#7C5CFC]">
+                        <h3 className="text-xs font-extrabold uppercase tracking-wider text-[#00E599]">
                           {group.label}
                         </h3>
 
@@ -1165,7 +1168,7 @@ export default function PlayerProfilePage() {
                                         [field.key]: n,
                                       }));
                                     }}
-                                    className="w-12 h-6 text-center rounded-lg bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-xs text-[#38C958]"
+                                    className="w-12 h-6 text-center rounded-lg bg-[#0D0F17] border border-zinc-200 dark:border-white/10 font-mono font-black text-xs text-[#38C958]"
                                   />
                                 </div>
                                 <div className="w-full h-1.5 rounded-full bg-zinc-200 dark:bg-zinc-800 overflow-hidden">
@@ -1189,10 +1192,10 @@ export default function PlayerProfilePage() {
             {/* ABA 2: GALERIA DE CARTAS FC 26 & DESBLOQUEIO POR MÉRITO       */}
             {/* ============================================================= */}
             {activeTab === 'cards' && (
-              <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+              <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                    <h2 className="text-base font-display font-extrabold text-white">
                       Coleção Oficial de Cartas EA FC 26 ({CARD_DESIGN_ASSETS.length} Designs)
                     </h2>
                     <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -1219,8 +1222,8 @@ export default function PlayerProfilePage() {
                         className={cn(
                           'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-2 relative group',
                           isEquipped
-                            ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-lg shadow-[#7C5CFC]/15'
-                            : 'border-zinc-200/70 dark:border-white/[0.07] bg-[#F5F6FA] dark:bg-[#1c2029]/60 hover:border-[#7C5CFC]/50'
+                            ? 'border-[#00E599] bg-[#00E599]/15 border border-[#00E599]/30 shadow-lg shadow-[#00E599]/15'
+                            : 'border-zinc-200/70 dark:border-white/[0.07] bg-white/[0.03]/60 hover:border-[#00E599]/50'
                         )}
                       >
                         <div className="absolute top-2 right-2">
@@ -1229,7 +1232,7 @@ export default function PlayerProfilePage() {
                               <Check className="w-2.5 h-2.5" /> Equipada
                             </span>
                           ) : isUnlocked ? (
-                            <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/20 text-[#7C5CFC] text-[9px] font-black uppercase">
+                            <span className="px-2 py-0.5 rounded-full bg-[#00E599] text-[#090A0F]/20 text-[#00E599] text-[9px] font-black uppercase">
                               Liberada
                             </span>
                           ) : (
@@ -1246,7 +1249,7 @@ export default function PlayerProfilePage() {
                         />
 
                         <div className="space-y-0.5">
-                          <span className="text-xs font-display font-extrabold text-zinc-900 dark:text-white block">
+                          <span className="text-xs font-display font-extrabold text-white block">
                             {design.name}
                           </span>
                           <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block leading-tight">
@@ -1264,9 +1267,9 @@ export default function PlayerProfilePage() {
             {/* ABA 3: FOTOS REAIS DO PERSONAGEM (ROSTO + CORPO INTEIRO)      */}
             {/* ============================================================= */}
             {activeTab === 'photos' && (
-              <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+              <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
                 <div>
-                  <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                  <h2 className="text-base font-display font-extrabold text-white">
                     Fotos Oficiais do Personagem (Recorte Automático na Carta FC 26 & Estúdio IA)
                   </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -1275,9 +1278,9 @@ export default function PlayerProfilePage() {
                 </div>
 
                 <div className="grid sm:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/10 space-y-3 flex flex-col justify-between">
+                  <div className="p-4 rounded-3xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/10 space-y-3 flex flex-col justify-between">
                     <div className="space-y-2">
-                      <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase">
+                      <span className="px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold uppercase">
                         📸 Foto do Rosto / Busto (Carta FC 26)
                       </span>
                       <h3 className="text-sm font-extrabold">
@@ -1299,7 +1302,7 @@ export default function PlayerProfilePage() {
                       />
                     </div>
 
-                    <label className="cursor-pointer w-full py-2.5 px-4 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
+                    <label className="cursor-pointer w-full py-2.5 px-4 rounded-2xl bg-[#00E599] text-[#090A0F] hover:bg-[#6b4be8] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs">
                       <Upload className="w-4 h-4" />
                       <span>Enviar Foto para a Carta FC 26</span>
                       <input
@@ -1311,7 +1314,7 @@ export default function PlayerProfilePage() {
                     </label>
                   </div>
 
-                  <div className="p-4 rounded-3xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/10 space-y-3 flex flex-col justify-between">
+                  <div className="p-4 rounded-3xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/10 space-y-3 flex flex-col justify-between">
                     <div className="space-y-2">
                       <span className="px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#38C958] text-[10px] font-extrabold uppercase">
                         🧍 Foto de Corpo Inteiro (Estúdio IA)
@@ -1354,9 +1357,9 @@ export default function PlayerProfilePage() {
             {/* ABA 4: DISPONIBILIDADE POR INTERVALOS DE HORÁRIO              */}
             {/* ============================================================= */}
             {activeTab === 'availability' && (
-              <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+              <section className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
                 <div>
-                  <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                  <h2 className="text-base font-display font-extrabold text-white">
                     Meus Intervalos de Horário (Tinder de Agenda)
                   </h2>
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -1375,8 +1378,8 @@ export default function PlayerProfilePage() {
                         className={cn(
                           'px-3 py-2 rounded-2xl text-xs font-extrabold shrink-0 transition-all flex items-center gap-1.5',
                           selectedDay === d.key
-                            ? 'bg-[#7C5CFC] text-white shadow-xs'
-                            : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-700 dark:text-zinc-300'
+                            ? 'bg-[#00E599] text-[#090A0F] font-black shadow-xs'
+                            : 'bg-white/[0.03] text-zinc-700 dark:text-zinc-300'
                         )}
                       >
                         <span>{d.label}</span>
@@ -1407,8 +1410,8 @@ export default function PlayerProfilePage() {
                           className={cn(
                             'p-3 rounded-2xl border text-left transition-all flex items-center justify-between',
                             active
-                              ? 'border-[#38C958] bg-[#38C958]/10 text-zinc-900 dark:text-white font-extrabold'
-                              : 'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/60 text-xs font-semibold text-zinc-600 dark:text-zinc-400'
+                              ? 'border-[#38C958] bg-[#38C958]/10 text-white font-extrabold'
+                              : 'border-transparent bg-white/[0.03]/60 text-xs font-semibold text-zinc-600 dark:text-zinc-400'
                           )}
                         >
                           <span className="text-xs">{preset.label}</span>
@@ -1419,8 +1422,8 @@ export default function PlayerProfilePage() {
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 space-y-2.5">
-                  <span className="text-xs font-extrabold text-[#7C5CFC] flex items-center gap-1.5">
+                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 space-y-2.5">
+                  <span className="text-xs font-extrabold text-[#00E599] flex items-center gap-1.5">
                     <Clock className="w-3.5 h-3.5" />
                     Adicionar Janela Personalizada (Ex: Das 21:30 às 23:30)
                   </span>
@@ -1431,7 +1434,7 @@ export default function PlayerProfilePage() {
                         type="time"
                         value={customStart}
                         onChange={(e) => setCustomStart(e.target.value)}
-                        className="h-9 px-2.5 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
+                        className="h-9 px-2.5 rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
                       />
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -1440,13 +1443,13 @@ export default function PlayerProfilePage() {
                         type="time"
                         value={customEnd}
                         onChange={(e) => setCustomEnd(e.target.value)}
-                        className="h-9 px-2.5 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
+                        className="h-9 px-2.5 rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold"
                       />
                     </div>
                     <button
                       type="button"
                       onClick={() => addCustomRangeForDay(selectedDay)}
-                      className="h-9 px-3.5 rounded-xl bg-[#7C5CFC] text-white text-xs font-bold flex items-center gap-1"
+                      className="h-9 px-3.5 rounded-xl bg-[#00E599] text-[#090A0F] font-black text-xs font-bold flex items-center gap-1"
                     >
                       <Plus className="w-3.5 h-3.5" />
                       Incluir Faixa
@@ -1458,7 +1461,7 @@ export default function PlayerProfilePage() {
                       {(availabilityIntervals[selectedDay] || []).map((slot, sIdx) => (
                         <span
                           key={slot.id || `slot-${sIdx}`}
-                          className="px-3 py-1 rounded-full bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-bold flex items-center gap-2"
+                          className="px-3 py-1 rounded-full bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-bold flex items-center gap-2"
                         >
                           <span>{slot.label}</span>
                           <button
@@ -1481,10 +1484,10 @@ export default function PlayerProfilePage() {
             {/* ============================================================= */}
             {activeTab === 'career' && (
               <section className="space-y-4">
-                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+                <div className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
                   <div className="flex items-center justify-between flex-wrap gap-2">
                     <div>
-                      <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                      <h2 className="text-base font-display font-extrabold text-white">
                         Histórico Oficial de Carreira ({characterName})
                       </h2>
                       <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -1506,9 +1509,9 @@ export default function PlayerProfilePage() {
                     ].map((stat) => (
                       <div
                         key={stat.label}
-                        className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] text-center space-y-1"
+                        className="p-3.5 rounded-2xl bg-white/[0.03] text-center space-y-1"
                       >
-                        <span className="text-xl font-mono font-black text-[#7C5CFC] block tabular-nums">
+                        <span className="text-xl font-mono font-black text-[#00E599] block tabular-nums">
                           {stat.val}
                         </span>
                         <span className="text-[11px] font-bold text-zinc-500 dark:text-zinc-400 block">
@@ -1520,15 +1523,15 @@ export default function PlayerProfilePage() {
                 </div>
 
                 {/* Galeria de Troféus e Premiações Reais (Ícones soltos sem borda quadrada pesada) */}
-                <div className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
-                  <h3 className="text-sm font-display font-extrabold text-zinc-900 dark:text-white">
+                <div className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
+                  <h3 className="text-sm font-display font-extrabold text-white">
                     Sala de Troféus & Insígnias Oficiais da Liga
                   </h3>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     {AWARD_ASSETS.map((aw) => (
                       <div
                         key={aw.id}
-                        className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/50 flex flex-col items-center text-center gap-2 hover:scale-[1.02] transition-transform"
+                        className="p-3.5 rounded-2xl bg-white/[0.03]/50 flex flex-col items-center text-center gap-2 hover:scale-[1.02] transition-transform"
                       >
                         <img
                           src={aw.iconUrl}

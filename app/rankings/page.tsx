@@ -6,6 +6,7 @@ import { useLeagueStore } from '@/lib/data-store';
 import { TEMPLATE_ASSETS } from '@/lib/assets-catalog';
 import { FC26PlayerCard } from '@/components/players/fc26-player-card';
 import { cn } from '@/lib/utils';
+import { HoloCard, CountUp, StatusMark } from '@/components/react-bits';
 import {
   Trophy,
   Calendar,
@@ -159,16 +160,16 @@ export default function RankingsAndBracketPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-5 pb-28 overflow-x-hidden">
+    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-5 pb-28 overflow-x-hidden">
       <main className="max-w-7xl mx-auto space-y-6">
         {/* ================================================================= */}
         {/* 1. TOPO: SELETOR DE CAMPEONATO ATIVO & HISTÓRICO PASSADO          */}
         {/* ================================================================= */}
-        <section className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+        <section className="p-5 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase tracking-wider">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold uppercase tracking-wider">
                   Pilar 2 • Tabela & Rankings E-sports Pro
                 </span>
                 <span
@@ -182,7 +183,7 @@ export default function RankingsAndBracketPage() {
                   {isPastTournament ? '🏆 Temporada Encerrada (Histórico)' : '🟢 Em Andamento • G4 Playoffs'}
                 </span>
               </div>
-              <h1 className="text-xl sm:text-3xl font-display font-black tracking-tight text-zinc-900 dark:text-white">
+              <h1 className="text-xl sm:text-3xl font-display font-black tracking-tight text-white">
                 {tournament?.name || '🇦🇷 Liga Argentina de Clubs — 5x5 LPF'}
               </h1>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -203,8 +204,8 @@ export default function RankingsAndBracketPage() {
                     className={cn(
                       'px-3.5 py-2 rounded-2xl text-xs font-extrabold transition-all flex items-center gap-2 border',
                       active
-                        ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white border-transparent shadow-lg shadow-[#7C5CFC]/25'
-                        : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-700 dark:text-zinc-300 border-zinc-200/70 dark:border-white/10 hover:border-[#7C5CFC]/50'
+                        ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white border-transparent shadow-lg shadow-[#00E599]/20'
+                        : 'bg-white/[0.03] text-zinc-700 dark:text-zinc-300 border-zinc-200/70 dark:border-white/10 hover:border-[#00E599]/50'
                     )}
                   >
                     <Trophy className={cn('w-3.5 h-3.5', finished ? 'text-amber-400' : 'text-[#38C958]')} />
@@ -222,27 +223,27 @@ export default function RankingsAndBracketPage() {
 
           {/* 4 CARDS DE RESUMO RÁPIDO (STITCH KPI ROW) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
-            <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
                   Rodada / Fase
                 </span>
-                <span className="text-lg sm:text-xl font-mono font-black text-zinc-900 dark:text-white">
+                <span className="text-lg sm:text-xl font-mono font-black text-white">
                   {isPastTournament ? 'FINALIZADA' : 'RODADA 06/14'}
                 </span>
                 <span className="text-[10px] font-bold text-[#38C958] block">
                   {isPastTournament ? '🏆 Furia del Plata Campeão' : 'Turno & Returno + G4'}
                 </span>
               </div>
-              <Calendar className="w-7 h-7 text-[#7C5CFC] opacity-80" />
+              <Calendar className="w-7 h-7 text-[#00E599] opacity-80" />
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
                   Gols Marcados
                 </span>
-                <span className="text-lg sm:text-xl font-mono font-black text-zinc-900 dark:text-white">
+                <span className="text-lg sm:text-xl font-mono font-black text-white">
                   {totalGoals} GOLS
                 </span>
                 <span className="text-[10px] font-bold text-amber-400 block">
@@ -256,12 +257,12 @@ export default function RankingsAndBracketPage() {
               />
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
                   Média de Gols / Jogo
                 </span>
-                <span className="text-lg sm:text-xl font-mono font-black text-[#7C5CFC]">
+                <span className="text-lg sm:text-xl font-mono font-black text-[#00E599]">
                   {avgGoalsPerMatch} G/J
                 </span>
                 <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 block">
@@ -271,7 +272,7 @@ export default function RankingsAndBracketPage() {
               <Flame className="w-7 h-7 text-amber-400" />
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
                   Prize Pool Oficial
@@ -293,10 +294,10 @@ export default function RankingsAndBracketPage() {
         {/* ================================================================= */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           {/* TABELA DE CLASSIFICAÇÃO OFICIAL (8 COLUNAS DESKTOP) */}
-          <section className="lg:col-span-8 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm overflow-hidden">
+          <section className="lg:col-span-8 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm overflow-hidden">
             <div className="p-4 sm:p-5 border-b border-zinc-100 dark:border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h2 className="text-base sm:text-lg font-display font-black text-zinc-900 dark:text-white">
+                <h2 className="text-base sm:text-lg font-display font-black text-white">
                   Tabela de Classificação Oficial
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -321,7 +322,7 @@ export default function RankingsAndBracketPage() {
                   <tr className="border-b border-zinc-100 dark:border-white/[0.07] text-[10px] font-mono font-extrabold uppercase tracking-wider text-zinc-400 bg-[#F5F6FA]/60 dark:bg-[#1c2029]/50">
                     <th className="py-3 pl-4 pr-2 w-12">POS</th>
                     <th className="py-3 px-3">CLUBE & CAPITÃO</th>
-                    <th className="py-3 px-2.5 text-center text-[#7C5CFC]">PTS</th>
+                    <th className="py-3 px-2.5 text-center text-[#00E599]">PTS</th>
                     <th className="py-3 px-2 text-center">J</th>
                     <th className="py-3 px-2 text-center">V</th>
                     <th className="py-3 px-2 text-center">E</th>
@@ -381,7 +382,7 @@ export default function RankingsAndBracketPage() {
                             />
                             <div className="min-w-0">
                               <div className="flex items-center gap-1.5">
-                                <span className="font-display font-extrabold text-zinc-900 dark:text-white truncate">
+                                <span className="font-display font-extrabold text-white truncate">
                                   {team.name}
                                 </span>
                                 {pos === 1 && isPastTournament && (
@@ -397,7 +398,7 @@ export default function RankingsAndBracketPage() {
                           </div>
                         </td>
 
-                        <td className="py-3.5 px-2.5 text-center font-mono font-black text-sm text-[#7C5CFC] dark:text-[#38C958] tabular-nums">
+                        <td className="py-3.5 px-2.5 text-center font-mono font-black text-sm text-[#00E599] dark:text-[#38C958] tabular-nums">
                           {team.points}
                         </td>
                         <td className="py-3.5 px-2 text-center font-mono font-semibold text-zinc-600 dark:text-zinc-300 tabular-nums">
@@ -455,13 +456,13 @@ export default function RankingsAndBracketPage() {
           </section>
 
           {/* VISUALIZADOR DE CHAVEAMENTO MATA-MATA DINÂMICO G4 (4 COLUNAS DESKTOP) */}
-          <aside className="lg:col-span-4 p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <aside className="lg:col-span-4 p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                   Playoffs Oficial G4
                 </span>
-                <h2 className="text-base font-display font-black text-zinc-900 dark:text-white">
+                <h2 className="text-base font-display font-black text-white">
                   Chaveamento Mata-Mata
                 </h2>
               </div>
@@ -473,14 +474,14 @@ export default function RankingsAndBracketPage() {
             </div>
 
             {/* SEMIFINAL 1: 1º vs 4º */}
-            <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/[0.07] space-y-2">
+            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/[0.07] space-y-2">
               <div className="flex items-center justify-between text-[10px] font-mono font-extrabold uppercase text-[#38C958]">
                 <span>Semifinal A (1º vs 4º)</span>
                 <span>Ida & Volta</span>
               </div>
 
               <div className="space-y-1.5">
-                <div className="p-2 rounded-xl bg-white dark:bg-[#161920] flex items-center justify-between">
+                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-[10px] font-mono font-black text-[#38C958]">1º</span>
                     <img
@@ -490,12 +491,12 @@ export default function RankingsAndBracketPage() {
                     />
                     <span className="text-xs font-extrabold truncate">{g1?.name}</span>
                   </div>
-                  <span className="font-mono font-black text-xs text-[#7C5CFC]">
+                  <span className="font-mono font-black text-xs text-[#00E599]">
                     {isPastTournament ? '4' : '-'}
                   </span>
                 </div>
 
-                <div className="p-2 rounded-xl bg-white dark:bg-[#161920] flex items-center justify-between">
+                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-[10px] font-mono font-black text-zinc-400">4º</span>
                     <img
@@ -513,14 +514,14 @@ export default function RankingsAndBracketPage() {
             </div>
 
             {/* SEMIFINAL 2: 2º vs 3º */}
-            <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/[0.07] space-y-2">
-              <div className="flex items-center justify-between text-[10px] font-mono font-extrabold uppercase text-[#7C5CFC]">
+            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/[0.07] space-y-2">
+              <div className="flex items-center justify-between text-[10px] font-mono font-extrabold uppercase text-[#00E599]">
                 <span>Semifinal B (2º vs 3º)</span>
                 <span>Ida & Volta</span>
               </div>
 
               <div className="space-y-1.5">
-                <div className="p-2 rounded-xl bg-white dark:bg-[#161920] flex items-center justify-between">
+                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-[10px] font-mono font-black text-[#38C958]">2º</span>
                     <img
@@ -530,12 +531,12 @@ export default function RankingsAndBracketPage() {
                     />
                     <span className="text-xs font-extrabold truncate">{g2?.name}</span>
                   </div>
-                  <span className="font-mono font-black text-xs text-[#7C5CFC]">
+                  <span className="font-mono font-black text-xs text-[#00E599]">
                     {isPastTournament ? '3' : '-'}
                   </span>
                 </div>
 
-                <div className="p-2 rounded-xl bg-white dark:bg-[#161920] flex items-center justify-between">
+                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className="text-[10px] font-mono font-black text-zinc-400">3º</span>
                     <img
@@ -553,7 +554,7 @@ export default function RankingsAndBracketPage() {
             </div>
 
             {/* GRANDE FINAL */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-[#7C5CFC]/20 via-[#1c2029] to-amber-500/15 border border-amber-400/40 space-y-2.5 text-center">
+            <div className="p-4 rounded-2xl bg-gradient-to-br from-[#00E599]/20 via-[#1c2029] to-amber-500/15 border border-amber-400/40 space-y-2.5 text-center">
               <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase">
                 <Crown className="w-3.5 h-3.5" />
                 Grande Final LPF • R$ 560,00
@@ -599,16 +600,16 @@ export default function RankingsAndBracketPage() {
         <section className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                 Rankings Individuais • Clique em qualquer atleta para ver a Carta FC 26
               </span>
-              <h2 className="text-lg sm:text-xl font-display font-black text-zinc-900 dark:text-white">
+              <h2 className="text-lg sm:text-xl font-display font-black text-white">
                 Pódio de Líderes da Temporada (Artilharia, Assistências & MVPs)
               </h2>
             </div>
             <Link
               href="/player"
-              className="text-xs font-extrabold text-[#7C5CFC] hover:underline flex items-center gap-1"
+              className="text-xs font-extrabold text-[#00E599] hover:underline flex items-center gap-1"
             >
               Ver Minha Carta FC 26 <ChevronRight className="w-4 h-4" />
             </Link>
@@ -616,13 +617,13 @@ export default function RankingsAndBracketPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {/* COLUNA 1: CHUTEIRA DE OURO (ARTILHEIROS) */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <div className="p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block">
                     Chuteira de Ouro
                   </span>
-                  <h3 className="text-base font-display font-black text-zinc-900 dark:text-white">
+                  <h3 className="text-base font-display font-black text-white">
                     Artilheiros da Liga
                   </h3>
                 </div>
@@ -643,7 +644,7 @@ export default function RankingsAndBracketPage() {
                       key={p.id}
                       type="button"
                       onClick={() => setSelectedPlayerForCardId(p.id)}
-                      className="w-full p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/80 hover:border-[#7C5CFC] border border-transparent transition-all flex items-center justify-between text-left"
+                      className="w-full p-2.5 rounded-2xl bg-white/[0.03]/80 hover:border-[#00E599] border border-transparent transition-all flex items-center justify-between text-left"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span
@@ -665,7 +666,7 @@ export default function RankingsAndBracketPage() {
                           }}
                         />
                         <div className="min-w-0">
-                          <span className="text-xs font-display font-black text-zinc-900 dark:text-white uppercase block truncate">
+                          <span className="text-xs font-display font-black text-white uppercase block truncate">
                             {p.character_name}
                           </span>
                           <div className="flex items-center gap-1">
@@ -693,13 +694,13 @@ export default function RankingsAndBracketPage() {
             </div>
 
             {/* COLUNA 2: GARÇOM DA TEMPORADA (ASSISTÊNCIAS) */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <div className="p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                     Maestro / Playmaker
                   </span>
-                  <h3 className="text-base font-display font-black text-zinc-900 dark:text-white">
+                  <h3 className="text-base font-display font-black text-white">
                     Líderes de Assistências
                   </h3>
                 </div>
@@ -720,14 +721,14 @@ export default function RankingsAndBracketPage() {
                       key={p.id}
                       type="button"
                       onClick={() => setSelectedPlayerForCardId(p.id)}
-                      className="w-full p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/80 hover:border-[#7C5CFC] border border-transparent transition-all flex items-center justify-between text-left"
+                      className="w-full p-2.5 rounded-2xl bg-white/[0.03]/80 hover:border-[#00E599] border border-transparent transition-all flex items-center justify-between text-left"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span
                           className={cn(
                             'w-6 h-6 rounded-lg font-mono text-xs font-black flex items-center justify-center shrink-0',
                             idx === 0
-                              ? 'bg-[#7C5CFC] text-white'
+                              ? 'bg-[#00E599] text-[#090A0F] text-white'
                               : 'bg-zinc-200 dark:bg-[#161920] text-zinc-500'
                           )}
                         >
@@ -742,7 +743,7 @@ export default function RankingsAndBracketPage() {
                           }}
                         />
                         <div className="min-w-0">
-                          <span className="text-xs font-display font-black text-zinc-900 dark:text-white uppercase block truncate">
+                          <span className="text-xs font-display font-black text-white uppercase block truncate">
                             {p.character_name}
                           </span>
                           <div className="flex items-center gap-1">
@@ -758,7 +759,7 @@ export default function RankingsAndBracketPage() {
                         </div>
                       </div>
                       <div className="text-right shrink-0">
-                        <span className="text-sm font-mono font-black text-[#7C5CFC] block tabular-nums">
+                        <span className="text-sm font-mono font-black text-[#00E599] block tabular-nums">
                           {assists} 👟
                         </span>
                         <span className="text-[9px] text-zinc-400">Ver Carta</span>
@@ -770,13 +771,13 @@ export default function RankingsAndBracketPage() {
             </div>
 
             {/* COLUNA 3: CRAQUE DA GALERA (MVPs / MOTM) */}
-            <div className="p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <div className="p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div className="flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#38C958] block">
                     Man of the Match
                   </span>
-                  <h3 className="text-base font-display font-black text-zinc-900 dark:text-white">
+                  <h3 className="text-base font-display font-black text-white">
                     Ranking de MVPs (Craque)
                   </h3>
                 </div>
@@ -796,7 +797,7 @@ export default function RankingsAndBracketPage() {
                       key={p.id}
                       type="button"
                       onClick={() => setSelectedPlayerForCardId(p.id)}
-                      className="w-full p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/80 hover:border-[#7C5CFC] border border-transparent transition-all flex items-center justify-between text-left"
+                      className="w-full p-2.5 rounded-2xl bg-white/[0.03]/80 hover:border-[#00E599] border border-transparent transition-all flex items-center justify-between text-left"
                     >
                       <div className="flex items-center gap-2.5 min-w-0">
                         <span
@@ -818,7 +819,7 @@ export default function RankingsAndBracketPage() {
                           }}
                         />
                         <div className="min-w-0">
-                          <span className="text-xs font-display font-black text-zinc-900 dark:text-white uppercase block truncate">
+                          <span className="text-xs font-display font-black text-white uppercase block truncate">
                             {p.character_name}
                           </span>
                           <div className="flex items-center gap-1">
@@ -855,7 +856,7 @@ export default function RankingsAndBracketPage() {
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/15 p-6 text-center space-y-4 shadow-2xl"
+              className="relative w-full max-w-md rounded-3xl bg-[#0D0F17] border border-zinc-200 dark:border-white/15 p-6 text-center space-y-4 shadow-2xl"
             >
               <button
                 type="button"
@@ -865,17 +866,21 @@ export default function RankingsAndBracketPage() {
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-xs font-extrabold uppercase">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-xs font-extrabold uppercase">
                 <Sparkles className="w-3.5 h-3.5" />
                 Carta Oficial EA FC 26 Ultimate Team
               </div>
 
-              <FC26PlayerCard
-                player={inspectedPlayer}
-                team={teams.find((t) => t.id === inspectedPlayer.team_id)}
-                size="md"
-                showActions={true}
-              />
+              <div className="flex justify-center">
+                <HoloCard className="p-3 bg-black/80 border-[#00E599]/30">
+                  <FC26PlayerCard
+                    player={inspectedPlayer}
+                    team={teams.find((t) => t.id === inspectedPlayer.team_id)}
+                    size="md"
+                    showActions={true}
+                  />
+                </HoloCard>
+              </div>
             </div>
           </div>
         )}

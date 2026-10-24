@@ -1,0 +1,24 @@
+{
+  "name": "DraftClub PRO • EA FC 26 Pro Clubs",
+  "short_name": "DraftClub",
+  "description": "Plataforma Definitiva de Pro Clubs: Súmula com IA Vision, Estúdio 4:5 e Sala de Draft",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0c0e12",
+  "theme_color": "#00E599",
+  "icons": [
+    {
+      "src": "/assets/awards/1st-place.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/assets/awards/1st-place.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

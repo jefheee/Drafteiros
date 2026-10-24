@@ -210,13 +210,13 @@ export default function CaptainDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
+    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
       <main className="max-w-7xl mx-auto space-y-5">
         {/* SUB-NAVEGAÇÃO RÁPIDA DO PILAR 5 (MEU ESPAÇO) */}
         <WorkspaceNav />
 
         {/* CABEÇALHO DO CAPITÃO */}
-        <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+        <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               {/* Escudo limpo sem caixa quadrada pesada */}
@@ -232,7 +232,7 @@ export default function CaptainDashboardPage() {
 
               <div>
                 <div className="flex items-center gap-2 flex-wrap">
-                  <span className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase">
+                  <span className="px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold uppercase">
                     Painel do Capitão
                   </span>
                   <span
@@ -248,12 +248,12 @@ export default function CaptainDashboardPage() {
                       : '⏳ Aguardando Liberação do Admin'}
                   </span>
                 </div>
-                <h1 className="text-xl sm:text-2xl font-display font-black text-zinc-900 dark:text-white">
+                <h1 className="text-xl sm:text-2xl font-display font-black text-white">
                   {currentTeam?.name}
                 </h1>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
                   {teamPlayers.length} Atletas no Elenco • Código de Convite:{' '}
-                  <strong className="text-[#7C5CFC]">FURIA26</strong>
+                  <strong className="text-[#00E599]">FURIA26</strong>
                 </p>
               </div>
             </div>
@@ -262,7 +262,7 @@ export default function CaptainDashboardPage() {
               <select
                 value={selectedTeamId}
                 onChange={(e) => handleSelectTeam(e.target.value)}
-                className="h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                className="h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
               >
                 {teams.map((t) => (
                   <option key={t.id} value={t.id}>
@@ -282,14 +282,14 @@ export default function CaptainDashboardPage() {
         </section>
 
         {/* NAVEGAÇÃO DE ABAS DO CAPITÃO */}
-        <div className="p-1.5 rounded-2xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-3 gap-1.5">
+        <div className="p-1.5 rounded-2xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-3 gap-1.5">
           <button
             type="button"
             onClick={() => setActiveTab('registration_finance')}
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'registration_finance'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -303,7 +303,7 @@ export default function CaptainDashboardPage() {
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'roster'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -317,7 +317,7 @@ export default function CaptainDashboardPage() {
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'kits_identity'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -328,13 +328,13 @@ export default function CaptainDashboardPage() {
 
         {/* ABA 1: FINANCEIRO DA INSCRIÇÃO */}
         {activeTab === 'registration_finance' && (
-          <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                   Fluxo Oficial: Jogadores ➔ Capitão ➔ Responsável da Liga
                 </span>
-                <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                <h2 className="text-base font-display font-extrabold text-white">
                   Rateio da Inscrição da Equipe (R$ {totalFee.toFixed(2).replace('.', ',')})
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -346,7 +346,7 @@ export default function CaptainDashboardPage() {
                 </p>
               </div>
 
-              <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] text-right shrink-0">
+              <div className="p-3.5 rounded-2xl bg-white/[0.03] text-right shrink-0">
                 <span className="text-[10px] font-extrabold uppercase text-zinc-400 block">
                   Arrecadado pelo Capitão
                 </span>
@@ -364,10 +364,10 @@ export default function CaptainDashboardPage() {
               {contributions.map((member) => (
                 <div
                   key={member.player_id}
-                  className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between gap-2"
+                  className="p-3 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between gap-2"
                 >
                   <div>
-                    <span className="text-xs font-display font-black uppercase text-zinc-900 dark:text-white block">
+                    <span className="text-xs font-display font-black uppercase text-white block">
                       {member.character_name}
                     </span>
                     <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -393,10 +393,10 @@ export default function CaptainDashboardPage() {
               ))}
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#7C5CFC]/10 border border-[#7C5CFC]/30 space-y-3">
+            <div className="p-4 rounded-2xl bg-[#00E599]/10 border border-[#00E599]/30 space-y-3">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
-                  <span className="text-xs font-extrabold text-[#7C5CFC] block">
+                  <span className="text-xs font-extrabold text-[#00E599] block">
                     Repasse Integral da Equipe ao Responsável do Campeonato
                   </span>
                   <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -411,7 +411,7 @@ export default function CaptainDashboardPage() {
                   </p>
                 </div>
 
-                <label className="cursor-pointer py-3 px-4 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm shrink-0">
+                <label className="cursor-pointer py-3 px-4 rounded-2xl bg-gradient-to-r from-[#00E599] to-[#059669] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm shrink-0">
                   <Upload className="w-4 h-4" />
                   <span>
                     📤 Enviar Comprovante Integral (R$ {totalFee.toFixed(2).replace('.', ',')})
@@ -426,12 +426,12 @@ export default function CaptainDashboardPage() {
               </div>
 
               {currentRegistration?.payment_proof_url && (
-                <div className="flex items-center justify-between text-xs pt-2 border-t border-[#7C5CFC]/20">
+                <div className="flex items-center justify-between text-xs pt-2 border-t border-[#00E599]/20">
                   <span className="text-[#38C958] font-bold flex items-center gap-1.5">
                     <FileCheck2 className="w-4 h-4" />
                     Comprovante anexado no banco para auditoria do Admin
                   </span>
-                  <Link href="/admin" className="font-extrabold text-[#7C5CFC] underline">
+                  <Link href="/admin" className="font-extrabold text-[#00E599] underline">
                     Ver na Tesouraria da Liga →
                   </Link>
                 </div>
@@ -442,7 +442,7 @@ export default function CaptainDashboardPage() {
 
         {/* ABA 2: ELENCO DO TIME */}
         {activeTab === 'roster' && (
-          <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
             <div className="flex items-center justify-between gap-2">
               <div>
                 <h2 className="text-base font-display font-extrabold">
@@ -455,7 +455,7 @@ export default function CaptainDashboardPage() {
 
               <Link
                 href="/draft-board"
-                className="px-3.5 py-2 rounded-2xl bg-[#7C5CFC] text-white text-xs font-extrabold flex items-center gap-1.5 shrink-0"
+                className="px-3.5 py-2 rounded-2xl bg-[#00E599] text-[#090A0F] font-black text-xs font-extrabold flex items-center gap-1.5 shrink-0"
               >
                 <UserPlus className="w-3.5 h-3.5" />
                 Ir para Sala de Draft
@@ -466,7 +466,7 @@ export default function CaptainDashboardPage() {
               {teamPlayers.map((p) => (
                 <div
                   key={p.id}
-                  className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/[0.06] flex items-center gap-3"
+                  className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/[0.06] flex items-center gap-3"
                 >
                   <img
                     src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
@@ -479,10 +479,10 @@ export default function CaptainDashboardPage() {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="text-xs font-display font-black uppercase text-zinc-900 dark:text-white truncate">
+                      <span className="text-xs font-display font-black uppercase text-white truncate">
                         {p.character_name}
                       </span>
-                      <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] font-mono text-[10px] font-black">
+                      <span className="px-2 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] font-mono text-[10px] font-black">
                         {p.primary_position} • {p.overall}
                       </span>
                     </div>
@@ -501,7 +501,7 @@ export default function CaptainDashboardPage() {
 
         {/* ABA 3: ESCUDO & UNIFORMES OFICIAIS */}
         {activeTab === 'kits_identity' && (
-          <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
             <div>
               <h2 className="text-base font-display font-extrabold">
                 Identidade Visual & Uniformes (Supabase Storage)
@@ -512,7 +512,7 @@ export default function CaptainDashboardPage() {
             </div>
 
             <div className="grid sm:grid-cols-3 gap-3">
-              <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 space-y-2.5 text-center">
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 space-y-2.5 text-center">
                 <span className="text-xs font-extrabold block">🛡️ Escudo Oficial (PNG)</span>
                 <div className="w-24 h-24 mx-auto flex items-center justify-center">
                   <img
@@ -524,7 +524,7 @@ export default function CaptainDashboardPage() {
                     }}
                   />
                 </div>
-                <label className="cursor-pointer w-full py-2 px-3 rounded-xl bg-[#7C5CFC] text-white text-[11px] font-bold flex items-center justify-center gap-1.5">
+                <label className="cursor-pointer w-full py-2 px-3 rounded-xl bg-[#00E599] text-[#090A0F] font-black text-[11px] font-bold flex items-center justify-center gap-1.5">
                   <Upload className="w-3.5 h-3.5" />
                   Subir Escudo PNG
                   <input
@@ -536,7 +536,7 @@ export default function CaptainDashboardPage() {
                 </label>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 space-y-2.5 text-center">
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 space-y-2.5 text-center">
                 <span className="text-xs font-extrabold block">👕 Uniforme Titular (Home)</span>
                 <div className="w-24 h-24 mx-auto flex items-center justify-center">
                   <img
@@ -560,7 +560,7 @@ export default function CaptainDashboardPage() {
                 </label>
               </div>
 
-              <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 space-y-2.5 text-center">
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 space-y-2.5 text-center">
                 <span className="text-xs font-extrabold block">🎽 Uniforme Reserva (Away)</span>
                 <div className="w-24 h-24 mx-auto flex items-center justify-center">
                   <img
@@ -594,7 +594,7 @@ export default function CaptainDashboardPage() {
                   type="text"
                   value={teamName}
                   onChange={(e) => setTeamName(e.target.value)}
-                  className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                  className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                 />
               </div>
               <div>
@@ -629,7 +629,7 @@ export default function CaptainDashboardPage() {
                 type="text"
                 value={kitDescription}
                 onChange={(e) => setKitDescription(e.target.value)}
-                className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
+                className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
               />
             </div>
 

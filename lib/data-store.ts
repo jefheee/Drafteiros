@@ -388,18 +388,19 @@ export function useLeagueStore() {
           !process.env.NEXT_PUBLIC_SUPABASE_URL.includes('seu-projeto');
         if (!isRealSupabase) return;
 
-        const [tRes, tmRes, plRes, mRes, regRes, incRes] = await Promise.all([
-          supabase.from('tournaments').select('*').order('created_at', { ascending: false }),
-          supabase.from('teams').select('*'),
-          supabase.from('player_profiles').select('*'),
-          supabase
-            .from('matches')
-            .select(
-              '*, home_team:teams!matches_home_team_id_fkey(*), away_team:teams!matches_away_team_id_fkey(*), player_stats:match_player_stats(*, player:player_profiles(*))'
-            ),
-          supabase.from('tournament_registrations').select('*, team:teams(*)'),
-          supabase.from('match_incidents').select('*').order('created_at', { ascending: false }),
-        ]);
+        const [tRes, tmRes, plRes, mRes, stdRes, scRes, asRes, regRes, incRes, finRes] =
+          await Promise.all([
+            supabase.from('tournaments').select('*').order('created_at', { ascending: false }),
+            supabase.from('teams').select('*').order('name', { ascending: true }),
+            supabase.from('player_profiles').select('*').order('name', { ascending: true }),
+            supabase.from('matches').select('*').order('round_number', { ascending: true }),
+            supabase.from('vw_tournament_standings').select('*'),
+            supabase.from('vw_top_scorers').select('*'),
+            supabase.from('vw_top_assists').select('*'),
+            supabase.from('tournament_registrations').select('*'),
+            supabase.from('match_incidents').select('*').order('created_at', { ascending: false }),
+            supabase.from('tournament_finances').select('*'),
+          ]);
 
         const current = getInitialStoreState();
         const next: LeagueStoreState = {
@@ -408,10 +409,14 @@ export function useLeagueStore() {
           teams: tmRes.data && tmRes.data.length > 0 ? (tmRes.data as any) : current.teams,
           players: plRes.data && plRes.data.length > 0 ? (plRes.data as any) : current.players,
           matches: mRes.data && mRes.data.length > 0 ? (mRes.data as any) : current.matches,
+          standings: stdRes.data && stdRes.data.length > 0 ? (stdRes.data as any) : current.standings,
+          scorers: scRes.data && scRes.data.length > 0 ? (scRes.data as any) : current.scorers,
+          assists: asRes.data && asRes.data.length > 0 ? (asRes.data as any) : current.assists,
           registrations:
             regRes.data && regRes.data.length > 0 ? (regRes.data as any) : current.registrations,
           incidents:
             incRes.data && incRes.data.length > 0 ? (incRes.data as any) : current.incidents,
+          finances: finRes.data && finRes.data.length > 0 ? (finRes.data as any) : current.finances,
         };
         saveStoreState(next);
       } catch {

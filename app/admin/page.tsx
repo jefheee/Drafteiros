@@ -279,13 +279,13 @@ export default function AdminDashboardPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
+    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
       <main className="max-w-7xl mx-auto space-y-5">
         {/* SUB-NAVEGAÇÃO RÁPIDA DO PILAR 5 (MEU ESPAÇO) */}
         <WorkspaceNav />
 
         {/* CABEÇALHO DO ADMIN DA LIGA */}
-        <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3">
+        <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3.5">
               <img
@@ -297,7 +297,7 @@ export default function AdminDashboardPage() {
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 text-[10px] font-extrabold uppercase tracking-wider">
                   Painel Master Admin • 100% Premiação & Legacy Stats
                 </span>
-                <h1 className="text-xl sm:text-2xl font-display font-black text-zinc-900 dark:text-white">
+                <h1 className="text-xl sm:text-2xl font-display font-black text-white">
                   ERP da Liga, Histórico Antigo de Carreira & Campeonatos
                 </h1>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -316,7 +316,7 @@ export default function AdminDashboardPage() {
               </Link>
               <Link
                 href="/draft-board"
-                className="py-2.5 px-4 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm"
+                className="py-2.5 px-4 rounded-2xl bg-[#00E599] text-[#090A0F] hover:bg-[#6b4be8] text-white font-extrabold text-xs flex items-center gap-1.5 shadow-sm"
               >
                 <Users className="w-4 h-4" />
                 <span>Sala de Draft (+40)</span>
@@ -333,14 +333,14 @@ export default function AdminDashboardPage() {
         </section>
 
         {/* NAVEGAÇÃO DE ABAS DO ADMIN (5 ABAS INCLUINDO LEGACY STATS) */}
-        <div className="p-1.5 rounded-2xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-2 sm:grid-cols-5 gap-1.5">
+        <div className="p-1.5 rounded-2xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-2 sm:grid-cols-5 gap-1.5">
           <button
             type="button"
             onClick={() => setActiveTab('treasury')}
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'treasury'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -354,7 +354,7 @@ export default function AdminDashboardPage() {
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'legacy_stats'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -368,7 +368,7 @@ export default function AdminDashboardPage() {
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'builder_brackets'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -382,7 +382,7 @@ export default function AdminDashboardPage() {
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'media_audit'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -396,7 +396,7 @@ export default function AdminDashboardPage() {
             className={cn(
               'py-2.5 px-2.5 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'email_center'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -410,7 +410,7 @@ export default function AdminDashboardPage() {
         {/* ================================================================= */}
         {activeTab === 'treasury' && (
           <div className="space-y-4">
-            <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <span className="px-2.5 py-0.5 rounded-full bg-[#38C958]/15 text-[#38C958] text-[10px] font-extrabold uppercase">
@@ -474,7 +474,7 @@ export default function AdminDashboardPage() {
                 ].map((item) => (
                   <div
                     key={item.label}
-                    className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/[0.06] text-center space-y-2"
+                    className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/[0.06] text-center space-y-2"
                   >
                     <img
                       src={item.icon}
@@ -490,7 +490,7 @@ export default function AdminDashboardPage() {
                         type="number"
                         value={item.val}
                         onChange={(e) => item.setter(Number(e.target.value))}
-                        className="w-16 h-7 text-center rounded-lg bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-xs text-[#7C5CFC]"
+                        className="w-16 h-7 text-center rounded-lg bg-[#0D0F17] border border-zinc-200 dark:border-white/10 font-mono font-black text-xs text-[#00E599]"
                       />
                     </div>
                   </div>
@@ -499,7 +499,7 @@ export default function AdminDashboardPage() {
             </section>
 
             {/* Liberação de Equipes */}
-            <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
+            <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-3.5">
               <div>
                 <h3 className="text-base font-display font-extrabold">
                   Liberação de Equipes (Pagamento Integral do Capitão)
@@ -519,7 +519,7 @@ export default function AdminDashboardPage() {
                   return (
                     <div
                       key={reg.id}
-                      className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                      className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <img
@@ -529,14 +529,14 @@ export default function AdminDashboardPage() {
                         />
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-xs sm:text-sm font-display font-extrabold text-zinc-900 dark:text-white">
+                            <span className="text-xs sm:text-sm font-display font-extrabold text-white">
                               {teamObj?.name || 'Clube'}
                             </span>
                             <span
                               className={cn(
                                 'px-2 py-0.5 rounded-full text-[10px] font-extrabold',
                                 isApproved && 'bg-[#38C958]/15 text-[#38C958]',
-                                isPaidByCap && 'bg-[#7C5CFC]/15 text-[#7C5CFC]',
+                                isPaidByCap && 'bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599]',
                                 !isApproved && !isPaidByCap && 'bg-amber-500/15 text-amber-400'
                               )}
                             >
@@ -571,7 +571,7 @@ export default function AdminDashboardPage() {
                             <span>✅ Confirmar Recebimento & Liberar</span>
                           </button>
                         ) : (
-                          <span className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#161920] text-[#38C958] font-extrabold text-xs flex items-center gap-1">
+                          <span className="px-3 py-1.5 rounded-xl bg-[#0D0F17] text-[#38C958] font-extrabold text-xs flex items-center gap-1">
                             <CheckCircle2 className="w-3.5 h-3.5" />
                             Equipe Liberada
                           </span>
@@ -590,12 +590,12 @@ export default function AdminDashboardPage() {
         {/* ================================================================= */}
         {activeTab === 'legacy_stats' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <section className="lg:col-span-7 p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-5">
+            <section className="lg:col-span-7 p-5 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-5">
               <div>
                 <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-400 text-[10px] font-extrabold uppercase tracking-wider">
                   Evolução de Carreira & Desbloqueio de Cartas FC 26
                 </span>
-                <h2 className="text-lg font-display font-black text-zinc-900 dark:text-white mt-1">
+                <h2 className="text-lg font-display font-black text-white mt-1">
                   🏛️ Lançar Histórico Antigo de Campeonatos Passados
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -604,13 +604,13 @@ export default function AdminDashboardPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-[11px] font-extrabold uppercase text-[#7C5CFC] block">
+                <label className="text-[11px] font-extrabold uppercase text-[#00E599] block">
                   Selecionar Jogador da Liga (+40 Atletas)
                 </label>
                 <select
                   value={legacyPlayerId}
                   onChange={(e) => setLegacyPlayerId(e.target.value)}
-                  className="w-full h-11 px-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                  className="w-full h-11 px-3 rounded-2xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                 >
                   {players.map((p) => {
                     const pTeam = teams.find((t) => t.id === p.team_id);
@@ -626,7 +626,7 @@ export default function AdminDashboardPage() {
 
               {/* Métricas a Somar no Histórico do Atleta */}
               <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
-                <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
+                <div className="p-3 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
                   <span className="text-[10px] font-extrabold uppercase text-zinc-400 block">
                     + Partidas
                   </span>
@@ -635,11 +635,11 @@ export default function AdminDashboardPage() {
                     min={0}
                     value={legacyMatches}
                     onChange={(e) => setLegacyMatches(Math.max(0, Number(e.target.value)))}
-                    className="w-full h-9 text-center rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-zinc-900 dark:text-white"
+                    className="w-full h-9 text-center rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-white"
                   />
                 </div>
 
-                <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
+                <div className="p-3 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
                   <span className="text-[10px] font-extrabold uppercase text-[#38C958] block">
                     + Gols ⚽
                   </span>
@@ -648,12 +648,12 @@ export default function AdminDashboardPage() {
                     min={0}
                     value={legacyGoals}
                     onChange={(e) => setLegacyGoals(Math.max(0, Number(e.target.value)))}
-                    className="w-full h-9 text-center rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-[#38C958]"
+                    className="w-full h-9 text-center rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-[#38C958]"
                   />
                 </div>
 
-                <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
-                  <span className="text-[10px] font-extrabold uppercase text-[#7C5CFC] block">
+                <div className="p-3 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
+                  <span className="text-[10px] font-extrabold uppercase text-[#00E599] block">
                     + Assists 👟
                   </span>
                   <input
@@ -661,11 +661,11 @@ export default function AdminDashboardPage() {
                     min={0}
                     value={legacyAssists}
                     onChange={(e) => setLegacyAssists(Math.max(0, Number(e.target.value)))}
-                    className="w-full h-9 text-center rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-[#7C5CFC]"
+                    className="w-full h-9 text-center rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-[#00E599]"
                   />
                 </div>
 
-                <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
+                <div className="p-3 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
                   <span className="text-[10px] font-extrabold uppercase text-amber-400 block">
                     + MVPs ⭐
                   </span>
@@ -674,11 +674,11 @@ export default function AdminDashboardPage() {
                     min={0}
                     value={legacyMotm}
                     onChange={(e) => setLegacyMotm(Math.max(0, Number(e.target.value)))}
-                    className="w-full h-9 text-center rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-amber-400"
+                    className="w-full h-9 text-center rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-amber-400"
                   />
                 </div>
 
-                <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
+                <div className="p-3 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 text-center space-y-1">
                   <span className="text-[10px] font-extrabold uppercase text-amber-500 block">
                     + Títulos 🏆
                   </span>
@@ -687,7 +687,7 @@ export default function AdminDashboardPage() {
                     min={0}
                     value={legacyTitles}
                     onChange={(e) => setLegacyTitles(Math.max(0, Number(e.target.value)))}
-                    className="w-full h-9 text-center rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-amber-500"
+                    className="w-full h-9 text-center rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 font-mono font-black text-sm text-amber-500"
                   />
                 </div>
               </div>
@@ -700,13 +700,13 @@ export default function AdminDashboardPage() {
                   type="text"
                   value={legacyNotes}
                   onChange={(e) => setLegacyNotes(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
                 />
               </div>
 
               {/* Resumo Atual do Atleta */}
               {selectedLegacyPlayer && (
-                <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029]/70 border border-zinc-200/60 dark:border-white/[0.06] grid grid-cols-4 gap-2 text-center">
+                <div className="p-4 rounded-2xl bg-white/[0.03]/70 border border-zinc-200/60 dark:border-white/[0.06] grid grid-cols-4 gap-2 text-center">
                   <div>
                     <span className="text-[10px] font-bold text-zinc-400 block">Jogos Atuais</span>
                     <span className="font-mono font-black text-sm">
@@ -725,7 +725,7 @@ export default function AdminDashboardPage() {
                   </div>
                   <div>
                     <span className="text-[10px] font-bold text-zinc-400 block">Assists Atuais</span>
-                    <span className="font-mono font-black text-sm text-[#7C5CFC]">
+                    <span className="font-mono font-black text-sm text-[#00E599]">
                       {selectedLegacyPlayer.career_stats?.assists ??
                         selectedLegacyPlayer.career_stats?.official_assists ??
                         0}
@@ -743,7 +743,7 @@ export default function AdminDashboardPage() {
               <button
                 type="button"
                 onClick={handleApplyLegacyStats}
-                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] hover:opacity-95 text-white font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#7C5CFC]/25 transition-all"
+                className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#00E599] to-[#059669] hover:opacity-95 text-white font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#00E599]/20 transition-all"
               >
                 <Sparkles className="w-4 h-4" />
                 <span>
@@ -754,13 +754,13 @@ export default function AdminDashboardPage() {
             </section>
 
             {/* PREVIEW AO VIVO DA CARTA FC 26 DO ATLETA SELECIONADO */}
-            <aside className="lg:col-span-5 p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl flex flex-col items-center space-y-3">
+            <aside className="lg:col-span-5 p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl flex flex-col items-center space-y-3">
               <div className="w-full flex items-center justify-between">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#38C958] block">
                     Impacto Direto na Carta FC 26
                   </span>
-                  <h3 className="text-sm font-display font-black text-zinc-900 dark:text-white">
+                  <h3 className="text-sm font-display font-black text-white">
                     {selectedLegacyPlayer?.character_name} • OVR {currentLegacyMacro?.finalOvr}
                   </h3>
                 </div>
@@ -787,13 +787,13 @@ export default function AdminDashboardPage() {
         {activeTab === 'builder_brackets' && (
           <div className="space-y-5">
             {/* GESTÃO DE MÚLTIPLOS CAMPEONATOS (ATIVO & ENCERRADOS) */}
-            <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#38C958] block">
                     Múltiplas Temporadas & Histórico da Liga
                   </span>
-                  <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                  <h2 className="text-base font-display font-extrabold text-white">
                     Campeonatos Cadastrados ({tournaments.length})
                   </h2>
                 </div>
@@ -810,8 +810,8 @@ export default function AdminDashboardPage() {
                       className={cn(
                         'cursor-pointer p-4 rounded-2xl border transition-all flex items-center justify-between gap-3',
                         isCurrent
-                          ? 'border-[#7C5CFC] bg-[#7C5CFC]/15'
-                          : 'border-zinc-200/70 dark:border-white/10 bg-[#F5F6FA] dark:bg-[#1c2029]'
+                          ? 'border-[#00E599] bg-[#00E599]/15 border border-[#00E599]/30'
+                          : 'border-zinc-200/70 dark:border-white/10 bg-white/[0.03]'
                       )}
                     >
                       <div className="space-y-1 min-w-0">
@@ -839,7 +839,7 @@ export default function AdminDashboardPage() {
                           </p>
                         )}
                       </div>
-                      <span className="text-[11px] font-extrabold text-[#7C5CFC] shrink-0">
+                      <span className="text-[11px] font-extrabold text-[#00E599] shrink-0">
                         {isCurrent ? 'Selecionado' : 'Selecionar'}
                       </span>
                     </div>
@@ -848,8 +848,8 @@ export default function AdminDashboardPage() {
               </div>
 
               {/* Criar Novo Campeonato ou Registrar Edição Passada */}
-              <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/10 space-y-3">
-                <span className="text-xs font-extrabold text-[#7C5CFC] block">
+              <div className="p-4 rounded-2xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/10 space-y-3">
+                <span className="text-xs font-extrabold text-[#00E599] block">
                   + Criar Novo Campeonato ou Cadastrar Edição Passada no Histórico
                 </span>
                 <div className="grid sm:grid-cols-3 gap-2.5">
@@ -858,14 +858,14 @@ export default function AdminDashboardPage() {
                     value={newTourneyName}
                     onChange={(e) => setNewTourneyName(e.target.value)}
                     placeholder="Nome (Ex: 2ª Copa Sul-Americana 5x5)"
-                    className="h-9 px-3 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-bold"
+                    className="h-9 px-3 rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-bold"
                   />
                   <input
                     type="text"
                     value={newTourneySeason}
                     onChange={(e) => setNewTourneySeason(e.target.value)}
                     placeholder="Rótulo Curto (Ex: Copa Sul 5x5)"
-                    className="h-9 px-3 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-bold"
+                    className="h-9 px-3 rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-bold"
                   />
                   <button
                     type="button"
@@ -881,7 +881,7 @@ export default function AdminDashboardPage() {
                       type="checkbox"
                       checked={newTourneyFinished}
                       onChange={(e) => setNewTourneyFinished(e.target.checked)}
-                      className="rounded accent-[#7C5CFC]"
+                      className="rounded accent-[#00E599]"
                     />
                     Cadastrar como Campeonato Encerrado (Histórico)
                   </label>
@@ -891,7 +891,7 @@ export default function AdminDashboardPage() {
                       value={newTourneyChampion}
                       onChange={(e) => setNewTourneyChampion(e.target.value)}
                       placeholder="Clube Campeão"
-                      className="h-8 px-2.5 rounded-lg bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-bold"
+                      className="h-8 px-2.5 rounded-lg bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-bold"
                     />
                   )}
                 </div>
@@ -899,9 +899,9 @@ export default function AdminDashboardPage() {
             </section>
 
             {/* CONFIGURAÇÃO DE FORMATO E CHAVEAMENTO */}
-            <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                   Qualquer Formato (3v3, 4v4, 5v5, 7v7, 11v11)
                 </span>
                 <h2 className="text-base font-display font-extrabold">
@@ -918,7 +918,7 @@ export default function AdminDashboardPage() {
                     type="text"
                     value={champName}
                     onChange={(e) => setChampName(e.target.value)}
-                    className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                   />
                 </div>
 
@@ -934,7 +934,7 @@ export default function AdminDashboardPage() {
                       const num = parseInt(mode.split('v')[0], 10);
                       if (!isNaN(num)) setStartersCount(num);
                     }}
-                    className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                   >
                     <option value="3v3">3v3 (Arena Rápida)</option>
                     <option value="4v4">4v4 (Futebol Compacto)</option>
@@ -956,7 +956,7 @@ export default function AdminDashboardPage() {
                     max={11}
                     value={startersCount}
                     onChange={(e) => setStartersCount(Number(e.target.value))}
-                    className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-black"
+                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-black"
                   />
                 </div>
                 <div>
@@ -969,7 +969,7 @@ export default function AdminDashboardPage() {
                     max={15}
                     value={reservesCount}
                     onChange={(e) => setReservesCount(Number(e.target.value))}
-                    className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-black"
+                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-black"
                   />
                 </div>
                 <div>
@@ -982,13 +982,13 @@ export default function AdminDashboardPage() {
                     max={64}
                     value={teamCountInput}
                     onChange={(e) => setTeamCountInput(Math.max(2, Number(e.target.value)))}
-                    className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-black text-[#7C5CFC]"
+                    className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-black text-[#00E599]"
                   />
                 </div>
               </div>
 
               <div className="space-y-2.5 pt-2 border-t border-zinc-100 dark:border-white/[0.07]">
-                <span className="text-xs font-extrabold text-[#7C5CFC] block">
+                <span className="text-xs font-extrabold text-[#00E599] block">
                   Calculadora Automática de Chaveamento para {teamCountInput} Equipes:
                 </span>
                 <div className="grid sm:grid-cols-3 gap-2.5">
@@ -1002,22 +1002,22 @@ export default function AdminDashboardPage() {
                         className={cn(
                           'p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between gap-2',
                           isSelected
-                            ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-xs'
-                            : 'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/60'
+                            ? 'border-[#00E599] bg-[#00E599]/15 border border-[#00E599]/30 shadow-xs'
+                            : 'border-transparent bg-white/[0.03]/60'
                         )}
                       >
                         <div className="space-y-1">
                           <span className="px-2 py-0.5 rounded-full bg-[#38C958]/15 text-[#38C958] text-[9px] font-extrabold">
                             {opt.recommendedFor}
                           </span>
-                          <h4 className="text-xs font-extrabold text-zinc-900 dark:text-white">
+                          <h4 className="text-xs font-extrabold text-white">
                             {opt.title}
                           </h4>
                           <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-snug">
                             {opt.summary}
                           </p>
                         </div>
-                        <span className="text-[10px] font-mono font-black text-[#7C5CFC]">
+                        <span className="text-[10px] font-mono font-black text-[#00E599]">
                           📊 Estimativa: {opt.estimatedMatches} jogos totais
                         </span>
                       </button>
@@ -1036,12 +1036,12 @@ export default function AdminDashboardPage() {
                     value={newRuleText}
                     onChange={(e) => setNewRuleText(e.target.value)}
                     placeholder="Digite uma nova regra personalizada..."
-                    className="flex-1 h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs"
+                    className="flex-1 h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs"
                   />
                   <button
                     type="button"
                     onClick={handleAddCustomRule}
-                    className="px-3.5 h-9 rounded-xl bg-[#7C5CFC] text-white text-xs font-extrabold flex items-center gap-1 shrink-0"
+                    className="px-3.5 h-9 rounded-xl bg-[#00E599] text-[#090A0F] font-black text-xs font-extrabold flex items-center gap-1 shrink-0"
                   >
                     <Plus className="w-3.5 h-3.5" /> Adicionar Regra
                   </button>
@@ -1051,7 +1051,7 @@ export default function AdminDashboardPage() {
                   {customRules.map((rule, idx) => (
                     <div
                       key={idx}
-                      className="p-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] flex items-center justify-between gap-2 text-xs"
+                      className="p-2.5 rounded-xl bg-white/[0.03] flex items-center justify-between gap-2 text-xs"
                     >
                       <span className="font-semibold">
                         {idx + 1}. {rule}
@@ -1084,7 +1084,7 @@ export default function AdminDashboardPage() {
         {/* ABA 4: AUDITORIA DE FOTOS DE PERSONAGENS & PRINTS DE PARTIDA      */}
         {/* ================================================================= */}
         {activeTab === 'media_audit' && (
-          <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
             <div>
               <h2 className="text-base font-display font-extrabold">
                 Auditoria de Mídia do Admin (Supabase Storage)
@@ -1095,14 +1095,14 @@ export default function AdminDashboardPage() {
             </div>
 
             <div className="space-y-2">
-              <span className="text-xs font-extrabold text-[#7C5CFC] block">
+              <span className="text-xs font-extrabold text-[#00E599] block">
                 Prints de Súmula / Desempenho Enviados nas Partidas:
               </span>
               <div className="grid sm:grid-cols-2 gap-3">
                 {matches.map((m) => (
                   <div
                     key={m.id}
-                    className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 space-y-2"
+                    className="p-3 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 space-y-2"
                   >
                     <div className="flex items-center justify-between text-xs font-extrabold">
                       <span>
@@ -1130,7 +1130,7 @@ export default function AdminDashboardPage() {
                 {players.slice(0, 18).map((p) => (
                   <div
                     key={p.id}
-                    className="p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/60 dark:border-white/10 text-center space-y-1"
+                    className="p-2.5 rounded-2xl bg-white/[0.03] border border-zinc-200/60 dark:border-white/10 text-center space-y-1"
                   >
                     <img
                       src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
@@ -1158,7 +1158,7 @@ export default function AdminDashboardPage() {
         {/* ABA 5: CENTRAL DE DISPARO DE E-MAILS & NOTIFICAÇÕES               */}
         {/* ================================================================= */}
         {activeTab === 'email_center' && (
-          <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
             <div>
               <h2 className="text-base font-display font-extrabold">
                 📧 Disparar E-mails & Notificações Oficiais
@@ -1176,7 +1176,7 @@ export default function AdminDashboardPage() {
                 <select
                   value={emailEventType}
                   onChange={(e) => setEmailEventType(e.target.value as any)}
-                  className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                 >
                   <option value="registration_approved">
                     🏆 Inscrição Integral Confirmada & Equipe Liberada
@@ -1204,7 +1204,7 @@ export default function AdminDashboardPage() {
                   type="text"
                   value={emailRecipientsText}
                   onChange={(e) => setEmailRecipientsText(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
                 />
               </div>
             </div>
@@ -1217,7 +1217,7 @@ export default function AdminDashboardPage() {
                 rows={3}
                 value={emailCustomMessage}
                 onChange={(e) => setEmailCustomMessage(e.target.value)}
-                className="w-full p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
+                className="w-full p-3 rounded-2xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
               />
             </div>
 
@@ -1225,7 +1225,7 @@ export default function AdminDashboardPage() {
               type="button"
               onClick={handleSendEmails}
               disabled={emailSending}
-              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-3.5 rounded-2xl bg-gradient-to-r from-[#00E599] to-[#059669] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm"
             >
               <Mail className="w-4 h-4" />
               <span>

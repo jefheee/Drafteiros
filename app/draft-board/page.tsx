@@ -7,6 +7,7 @@ import { DraftOrderSlot } from '@/types/database';
 import { WorkspaceNav } from '@/components/layout/workspace-nav';
 import { FC26PlayerCard } from '@/components/players/fc26-player-card';
 import { cn } from '@/lib/utils';
+import { HoloCard, Stepper, StatusMark, ClickSpark } from '@/components/react-bits';
 import {
   Dices,
   Search,
@@ -178,18 +179,18 @@ export default function OfficialDraftBoardPage() {
   );
 
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
+    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
       <main className="max-w-7xl mx-auto space-y-5">
         {/* SUB-NAVEGAÇÃO RÁPIDA DO PILAR 5 (MEU ESPAÇO) */}
         <WorkspaceNav />
 
         {/* CABEÇALHO DA SALA DE DRAFT OFICIAL */}
-        <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+        <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span
-                  className="px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase"
+                  className="px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold uppercase"
                   suppressHydrationWarning
                 >
                   Pool Oficial: {mounted ? players.length : 19} Atletas Cadastrados
@@ -201,7 +202,7 @@ export default function OfficialDraftBoardPage() {
                   {mounted ? freeAgentsCount : 0} Livres no Mercado
                 </span>
               </div>
-              <h1 className="text-xl sm:text-2xl font-display font-black text-zinc-900 dark:text-white">
+              <h1 className="text-xl sm:text-2xl font-display font-black text-white">
                 Sala de Draft Oficial & Mercadão (+40 Jogadores)
               </h1>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -213,7 +214,7 @@ export default function OfficialDraftBoardPage() {
               type="button"
               onClick={handleRunDraftLottery}
               disabled={isDrawingLottery}
-              className="py-3 px-4 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] hover:opacity-95 text-white font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#7C5CFC]/25 shrink-0"
+              className="py-3 px-4 rounded-2xl bg-gradient-to-r from-[#00E599] to-[#059669] hover:opacity-95 text-white font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#00E599]/20 shrink-0"
             >
               <Dices className="w-4 h-4" />
               <span>
@@ -234,7 +235,7 @@ export default function OfficialDraftBoardPage() {
           {/* Fila Snake Draft Ao Vivo */}
           <div className="space-y-2 pt-2 border-t border-zinc-100 dark:border-white/[0.07]">
             <div className="flex items-center justify-between text-xs">
-              <span className="font-extrabold text-[#7C5CFC] flex items-center gap-1.5">
+              <span className="font-extrabold text-[#00E599] flex items-center gap-1.5">
                 <Crown className="w-3.5 h-3.5" />
                 Ordem Oficial de Escolha (Snake Draft: Rodada 1 ➔ Rodada 2)
               </span>
@@ -265,13 +266,13 @@ export default function OfficialDraftBoardPage() {
                       'px-3 py-2 rounded-2xl border text-left shrink-0 transition-all',
                       isCurrentTurn
                         ? 'border-[#38C958] bg-[#38C958]/15 shadow-xs'
-                        : 'border-zinc-200 dark:border-white/10 bg-[#F5F6FA] dark:bg-[#1c2029] opacity-85'
+                        : 'border-zinc-200 dark:border-white/10 bg-white/[0.03] opacity-85'
                     )}
                   >
-                    <span className="text-[9px] font-mono font-black uppercase text-[#7C5CFC] block">
+                    <span className="text-[9px] font-mono font-black uppercase text-[#00E599] block">
                       Pick #{pickNum} • R{roundNum}
                     </span>
-                    <span className="text-xs font-extrabold text-zinc-900 dark:text-white block truncate max-w-[130px]">
+                    <span className="text-xs font-extrabold text-white block truncate max-w-[130px]">
                       {tName}
                     </span>
                   </button>
@@ -282,7 +283,7 @@ export default function OfficialDraftBoardPage() {
         </section>
 
         {/* FILTROS DE BUSCA E POSIÇÃO */}
-        <section className="p-4 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs space-y-3">
+        <section className="p-4 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs space-y-3">
           <div className="grid sm:grid-cols-2 gap-2.5">
             <div className="relative">
               <Search className="w-4 h-4 text-zinc-400 absolute left-3 top-1/2 -translate-y-1/2" />
@@ -291,7 +292,7 @@ export default function OfficialDraftBoardPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Buscar por Nome do Personagem (ex: JEFHE, HAALANDINHO)..."
-                className="w-full h-10 pl-9 pr-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-bold"
+                className="w-full h-10 pl-9 pr-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-bold"
               />
             </div>
 
@@ -311,8 +312,8 @@ export default function OfficialDraftBoardPage() {
                   className={cn(
                     'flex-1 h-10 px-2 rounded-xl text-[11px] font-extrabold transition-all',
                     availabilityFilter === tab.id
-                      ? 'bg-[#7C5CFC] text-white'
-                      : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
+                      ? 'bg-[#00E599] text-[#090A0F] font-black'
+                      : 'bg-white/[0.03] text-zinc-600 dark:text-zinc-300'
                   )}
                 >
                   {tab.label}
@@ -337,7 +338,7 @@ export default function OfficialDraftBoardPage() {
                   'px-3.5 py-1.5 rounded-full text-[11px] font-extrabold shrink-0 transition-all',
                   posFilter === pos.id
                     ? 'bg-[#38C958] text-white'
-                    : 'bg-[#F5F6FA] dark:bg-[#1c2029] text-zinc-600 dark:text-zinc-300'
+                    : 'bg-white/[0.03] text-zinc-600 dark:text-zinc-300'
                 )}
               >
                 {pos.label}
@@ -368,7 +369,7 @@ export default function OfficialDraftBoardPage() {
             return (
               <div
                 key={player.id}
-                className="p-4 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm flex flex-col justify-between gap-3 hover:border-[#7C5CFC]/40 transition-all"
+                className="p-4 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm flex flex-col justify-between gap-3 hover:border-[#00E599]/40 transition-all"
               >
                 <div className="flex items-start gap-3">
                   <div className="relative w-14 h-14 rounded-2xl bg-[#0c0e12] overflow-hidden border border-white/10 shrink-0">
@@ -380,14 +381,14 @@ export default function OfficialDraftBoardPage() {
                         e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
                       }}
                     />
-                    <span className="absolute bottom-0 right-0 px-1.5 py-0.2 bg-[#7C5CFC] text-white font-mono text-[9px] font-black rounded-tl-md">
+                    <span className="absolute bottom-0 right-0 px-1.5 py-0.2 bg-[#00E599] text-[#090A0F] font-black font-mono text-[9px] font-black rounded-tl-md">
                       {player.overall}
                     </span>
                   </div>
 
                   <div className="min-w-0 flex-1 space-y-1">
                     <div className="flex items-center justify-between gap-1">
-                      <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] font-mono text-[10px] font-black">
+                      <span className="px-2 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] font-mono text-[10px] font-black">
                         {player.primary_position}
                       </span>
                       <span
@@ -396,7 +397,7 @@ export default function OfficialDraftBoardPage() {
                           player.accelerate_type === 'Explosiva'
                             ? 'bg-amber-500/15 text-amber-400'
                             : player.accelerate_type === 'Prolongada'
-                            ? 'bg-[#7C5CFC]/15 text-[#7C5CFC]'
+                            ? 'bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599]'
                             : 'bg-[#38C958]/15 text-[#38C958]'
                         )}
                       >
@@ -404,7 +405,7 @@ export default function OfficialDraftBoardPage() {
                       </span>
                     </div>
 
-                    <h3 className="text-sm font-display font-black uppercase text-zinc-900 dark:text-white truncate">
+                    <h3 className="text-sm font-display font-black uppercase text-white truncate">
                       {player.character_name}
                     </h3>
                     <p className="text-[11px] text-zinc-500 dark:text-zinc-400 truncate">
@@ -426,9 +427,9 @@ export default function OfficialDraftBoardPage() {
                 </div>
 
                 {/* Estatísticas de Campeonatos Anteriores */}
-                <div className="grid grid-cols-4 gap-1.5 p-2.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] text-center">
+                <div className="grid grid-cols-4 gap-1.5 p-2.5 rounded-2xl bg-white/[0.03] text-center">
                   <div>
-                    <span className="text-xs font-mono font-black text-[#7C5CFC] block">
+                    <span className="text-xs font-mono font-black text-[#00E599] block">
                       {matchesPlayed}
                     </span>
                     <span className="text-[9px] font-bold text-zinc-500 uppercase">Jogos</span>
@@ -446,7 +447,7 @@ export default function OfficialDraftBoardPage() {
                     <span className="text-[9px] font-bold text-zinc-500 uppercase">Assists</span>
                   </div>
                   <div>
-                    <span className="text-xs font-mono font-black text-zinc-900 dark:text-white block">
+                    <span className="text-xs font-mono font-black text-white block">
                       {avgRating.toFixed(1)}
                     </span>
                     <span className="text-[9px] font-bold text-zinc-500 uppercase">Nota</span>
@@ -458,7 +459,7 @@ export default function OfficialDraftBoardPage() {
                   <button
                     type="button"
                     onClick={() => setInspectedPlayerId(player.id)}
-                    className="py-2 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] hover:border-[#7C5CFC] border border-transparent text-[11px] font-extrabold text-[#7C5CFC] flex items-center gap-1 transition-all"
+                    className="py-2 px-2.5 rounded-xl bg-white/[0.03] hover:border-[#00E599] border border-transparent text-[11px] font-extrabold text-[#00E599] flex items-center gap-1 transition-all"
                   >
                     <Sparkles className="w-3 h-3" />
                     <span>Carta FC 26</span>
@@ -467,7 +468,7 @@ export default function OfficialDraftBoardPage() {
                   <button
                     type="button"
                     onClick={() => handleDraftPlayer(player.id, player.character_name)}
-                    className="py-2 px-3 rounded-xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] hover:opacity-95 text-white font-extrabold text-[11px] flex items-center gap-1.5 shrink-0 shadow-xs transition-all"
+                    className="py-2 px-3 rounded-xl bg-gradient-to-r from-[#00E599] to-[#059669] hover:opacity-95 text-white font-extrabold text-[11px] flex items-center gap-1.5 shrink-0 shadow-xs transition-all"
                   >
                     <UserPlus className="w-3.5 h-3.5" />
                     <span>Draftar p/ {activeTeamFirstName}</span>
@@ -486,7 +487,7 @@ export default function OfficialDraftBoardPage() {
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/15 p-6 text-center space-y-4 shadow-2xl"
+              className="relative w-full max-w-md rounded-3xl bg-[#0D0F17] border border-zinc-200 dark:border-white/15 p-6 text-center space-y-4 shadow-2xl"
             >
               <button
                 type="button"
@@ -496,7 +497,7 @@ export default function OfficialDraftBoardPage() {
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-xs font-extrabold uppercase">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-xs font-extrabold uppercase">
                 <Sparkles className="w-3.5 h-3.5" />
                 Scouting Report • Carta Oficial EA FC 26
               </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useLeagueStore, uploadMediaToStorage } from '@/lib/data-store';
 import { EVENT_ASSETS } from '@/lib/assets-catalog';
@@ -17,7 +17,15 @@ import {
   Upload,
   Plus,
   Image as ImageIcon,
+  Check,
 } from 'lucide-react';
+import {
+  GlideSelect,
+  SlideCommit,
+  StatusMark,
+  SquishSwitch,
+  ClickSpark,
+} from '@/components/react-bits';
 
 const INTERVAL_PRESETS: AvailabilitySlotRange[] = [
   { id: 'morning', label: '🌅 Manhã (08:00 às 12:00)', start: '08:00', end: '12:00' },
@@ -38,7 +46,7 @@ export default function MatchesPage() {
     'sumula_ocr'
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     setMounted(true);
   }, []);
 
@@ -77,6 +85,7 @@ export default function MatchesPage() {
   ]);
   const [customStart, setCustomStart] = useState('21:30');
   const [customEnd, setCustomEnd] = useState('23:30');
+  const [autoNotifyCaptain, setAutoNotifyCaptain] = useState(true);
 
   const homeRoster = useMemo(
     () => players.filter((p) => p.team_id === homeTeam?.id),
@@ -178,53 +187,82 @@ export default function MatchesPage() {
 
   const handleConfirmScheduleWindow = async () => {
     if (!selectedMatch) return;
-    const summarySlots = selectedIntervals.map(
-      (s) => `${selectedDayLabel} • ${s.label}`
-    );
     await updateMatchInStore(selectedMatch.id, {
       schedule_status: 'confirmed',
-      proposed_slots: summarySlots,
-      scheduled_at: new Date(Date.now() + 86400000).toISOString(),
+      scheduled_at: new Date(Date.now() + 24 * 3600 * 1000).toISOString(),
     });
     setFeedbackMsg(
-      `✅ Janela de horário confirmada (${summarySlots.join(', ')}) e notificada aos dois elencos!`
+      `📅 Horário confirmado oficialmente para ${selectedDayLabel}! Notificações enviadas aos capitães.`
     );
   };
 
   const handleApplyOfficialWO = async (winnerSide: 'home' | 'away') => {
     if (!selectedMatch) return;
+    const isHome = winnerSide === 'home';
     await updateMatchInStore(selectedMatch.id, {
-      home_score: winnerSide === 'home' ? 3 : 0,
-      away_score: winnerSide === 'away' ? 3 : 0,
-      status: 'wo',
-      incident_type: 'wo',
-      incident_report: `W.O. oficial 3x0 aplicado conforme regulamento (${
-        tournament.rules_config?.wo_tolerance_minutes || 15
-      } min de tolerância).`,
+      home_score: isHome ? 3 : 0,
+      away_score: isHome ? 0 : 3,
+      status: 'approved',
+      ocr_extracted_data: {
+        home_score: isHome ? 3 : 0,
+        away_score: isHome ? 0 : 3,
+        motm_name: isHome ? homeTeam?.name : awayTeam?.name,
+        confidence: 1,
+        players: [],
+      },
     });
-    setFeedbackMsg('✅ Placar oficial de W.O. (3 x 0) registrado na partida.');
+    setFeedbackMsg(
+      `⚖️ W.O. aplicado conforme regulamento oficial da LPF: Placar 3 x 0 a favor de ${
+        isHome ? homeTeam?.name : awayTeam?.name
+      }.`
+    );
   };
 
+  const subTabOptions = [
+    {
+      id: 'sumula_ocr',
+      label: 'Súmula IA & Print',
+      icon: <Camera className="w-3.5 h-3.5" />,
+    },
+    {
+      id: 'tinder_schedule',
+      label: 'Tinder de Horários',
+      icon: <Calendar className="w-3.5 h-3.5" />,
+    },
+    {
+      id: 'wo_rules',
+      label: 'Regras & W.O.',
+      icon: <AlertTriangle className="w-3.5 h-3.5" />,
+    },
+  ];
+
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-zinc-950 text-zinc-900 dark:text-zinc-100 px-3 sm:px-4 py-4 pb-28 overflow-x-hidden">
-      <main className="max-w-3xl mx-auto space-y-4">
-        {/* SELETOR DE PARTIDAS DA RODADA */}
-        <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-3.5">
-          <div className="flex items-center justify-between gap-2">
+    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-5 pb-28 overflow-x-hidden selection:bg-[#00E599]/30 selection:text-[#00E599]">
+      <main className="max-w-7xl mx-auto space-y-5">
+        {/* ================================================================= */}
+        {/* CABEÇALHO DO PILAR DE JOGOS & SELEÇÃO DE PARTIDA                  */}
+        {/* ================================================================= */}
+        <section className="p-5 sm:p-6 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/50 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
-                Central de Partidas • Súmula IA & Agenda
-              </span>
-              <h1 className="text-lg sm:text-xl font-extrabold">
-                Jogos da Rodada & Validação
+              <div className="flex items-center gap-2">
+                <span className="px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-mono font-bold uppercase tracking-wider">
+                  Pilar 3 • Central de Partidas
+                </span>
+                <span className="text-xs text-zinc-400 font-mono">
+                  {tournament?.name}
+                </span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-display font-black tracking-tight text-white mt-1">
+                Jogos, Horários & Súmula por Foto OCR
               </h1>
             </div>
             <Link
               href="/studio"
-              className="px-3 py-2 rounded-2xl bg-[#7C5CFC] text-white text-xs font-bold flex items-center gap-1.5 shadow-xs shrink-0"
+              className="px-4 py-2 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold flex items-center gap-2 shadow-xs shrink-0 transition-colors"
             >
-              <ImageIcon className="w-3.5 h-3.5" />
-              Gerar Arte 4:5
+              <ImageIcon className="w-3.5 h-3.5 text-cyan-400" />
+              Estúdio de Artes 4:5
             </Link>
           </div>
 
@@ -233,6 +271,9 @@ export default function MatchesPage() {
               const isSelected = m.id === selectedMatch?.id;
               const hName = m.home_team?.name || 'Mandante';
               const aName = m.away_team?.name || 'Visitante';
+              const isApproved = m.status === 'approved' || m.status === 'completed';
+              const isPending = m.status === 'pending_validation';
+
               return (
                 <button
                   key={m.id}
@@ -243,35 +284,26 @@ export default function MatchesPage() {
                     setFeedbackMsg(null);
                   }}
                   className={cn(
-                    'p-3.5 rounded-2xl border text-left transition-all space-y-1.5',
+                    'p-3.5 rounded-2xl border text-left transition-all space-y-2',
                     isSelected
-                      ? 'border-[#7C5CFC] bg-[#7C5CFC]/10 shadow-xs'
-                      : 'border-zinc-100 dark:border-zinc-800 bg-[#F5F6FA] dark:bg-zinc-800/50'
+                      ? 'border-[#00E599] bg-[#00E599]/[0.06] shadow-md shadow-[#00E599]/10'
+                      : 'border-white/[0.06] bg-white/[0.02] hover:bg-white/[0.04]'
                   )}
                 >
-                  <div className="flex items-center justify-between text-[10px] font-extrabold">
-                    <span className="text-zinc-500">Rodada #{m.round_number || 1}</span>
-                    <span
-                      className={cn(
-                        'px-2 py-0.5 rounded-full',
-                        m.status === 'approved' || m.status === 'completed'
-                          ? 'bg-[#38C958]/15 text-[#229a3e]'
-                          : 'bg-amber-500/15 text-amber-600'
-                      )}
-                    >
-                      {m.status === 'approved' || m.status === 'completed'
-                        ? 'Validada'
-                        : m.status === 'pending_validation'
-                        ? 'Pendente B'
-                        : 'Agendada'}
-                    </span>
+                  <div className="flex items-center justify-between text-[10px] font-mono">
+                    <span className="text-zinc-400">Rodada #{m.round_number || 1}</span>
+                    <StatusMark
+                      status={isApproved ? 'success' : isPending ? 'warning' : 'pending'}
+                      label={isApproved ? 'Validada' : isPending ? 'Pendente B' : 'Agendada'}
+                      pulse={isPending}
+                    />
                   </div>
                   <div className="flex items-center justify-between gap-2 text-xs font-black" suppressHydrationWarning>
-                    <span className="truncate">{hName}</span>
-                    <span className="px-2 py-0.5 rounded-lg bg-white dark:bg-zinc-900 text-[#7C5CFC] shrink-0">
+                    <span className="truncate text-white">{hName}</span>
+                    <span className="px-2.5 py-0.5 rounded-lg bg-black/40 border border-white/10 font-mono text-[#00E599] shrink-0">
                       {m.home_score} - {m.away_score}
                     </span>
-                    <span className="truncate text-right">{aName}</span>
+                    <span className="truncate text-right text-white">{aName}</span>
                   </div>
                 </button>
               );
@@ -279,78 +311,41 @@ export default function MatchesPage() {
           </div>
 
           {feedbackMsg && (
-            <div className="p-3 rounded-2xl bg-[#38C958]/15 border border-[#38C958]/30 text-[#229a3e] dark:text-[#38C958] text-xs font-bold flex items-center gap-2">
+            <div className="p-3 rounded-2xl bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-xs font-bold flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{feedbackMsg}</span>
             </div>
           )}
         </section>
 
-        {/* SUB-ABAS DA PARTIDA SELECIONADA */}
-        <div className="p-1 rounded-full bg-white dark:bg-zinc-900 border border-zinc-200/70 dark:border-zinc-800 shadow-xs grid grid-cols-3 gap-1">
-          <button
-            type="button"
-            onClick={() => setActiveSubTab('sumula_ocr')}
-            className={cn(
-              'py-2 px-2 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1',
-              activeSubTab === 'sumula_ocr'
-                ? 'bg-[#7C5CFC] text-white'
-                : 'text-zinc-600 dark:text-zinc-400'
-            )}
-          >
-            <Camera className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Súmula IA</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSubTab('tinder_schedule')}
-            className={cn(
-              'py-2 px-2 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1',
-              activeSubTab === 'tinder_schedule'
-                ? 'bg-[#7C5CFC] text-white'
-                : 'text-zinc-600 dark:text-zinc-400'
-            )}
-          >
-            <Calendar className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">Tinder Horários</span>
-          </button>
-
-          <button
-            type="button"
-            onClick={() => setActiveSubTab('wo_rules')}
-            className={cn(
-              'py-2 px-2 rounded-full text-xs font-extrabold transition-all flex items-center justify-center gap-1',
-              activeSubTab === 'wo_rules'
-                ? 'bg-[#7C5CFC] text-white'
-                : 'text-zinc-600 dark:text-zinc-400'
-            )}
-          >
-            <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-            <span className="truncate">W.O. & Regras</span>
-          </button>
-        </div>
+        {/* SUB-ABAS DA PARTIDA SELECIONADA VIA GLIDE SELECT */}
+        <GlideSelect
+          options={subTabOptions}
+          activeId={activeSubTab}
+          onChange={(id) => setActiveSubTab(id as 'sumula_ocr' | 'tinder_schedule' | 'wo_rules')}
+          className="bg-[#0D0F17] border-white/10"
+        />
 
         {/* ================================================================= */}
-        {/* SUB-ABA 1: SÚMULA POR FOTO IA + DUPLA VALIDAÇÃO                   */}
+        {/* SUB-ABA 1: SÚMULA POR FOTO IA + SLIDE COMMIT DUPLA VALIDAÇÃO      */}
         {/* ================================================================= */}
         {activeSubTab === 'sumula_ocr' && selectedMatch && (
-          <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/50 space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h2 className="text-base font-extrabold" suppressHydrationWarning>
+                <h2 className="text-base font-display font-black text-white" suppressHydrationWarning>
                   {homeTeam?.name} {selectedMatch.home_score} - {selectedMatch.away_score}{' '}
                   {awayTeam?.name}
                 </h2>
-                <p className="text-xs text-zinc-500">
-                  Envie o print de Desempenho de Jogadores do EA FC 26. Ele fica salvo para conferência do Admin.
+                <p className="text-xs text-zinc-400">
+                  Envie o print de Desempenho de Jogadores do EA FC 26. O Gemini Vision extrai placar, gols e notas instantaneamente.
                 </p>
               </div>
 
-              <label className="cursor-pointer py-2.5 px-4 rounded-2xl bg-[#7C5CFC] hover:bg-[#6b4be8] text-white font-extrabold text-xs flex items-center gap-2 shadow-sm shrink-0">
+              <label className="cursor-pointer py-2.5 px-4 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#090A0F] font-display font-black text-xs flex items-center gap-2 shadow-md shadow-[#00E599]/20 shrink-0 transition-all">
                 <Upload className="w-4 h-4" />
                 <span>
-                  {ocrLoading ? 'Lendo Print...' : '📸 Subir Print de Desempenho (OCR)'}
+                  {ocrLoading ? 'Lendo Print com IA...' : '📸 Subir Print de Desempenho'}
                 </span>
                 <input
                   type="file"
@@ -361,34 +356,34 @@ export default function MatchesPage() {
               </label>
             </div>
 
-            {/* Preview do Print Salvo para o Admin */}
+            {/* Preview do Print Salvo no Storage */}
             {(proofPreviewUrl || selectedMatch.proof_image_url) && (
-              <div className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200 dark:border-zinc-700 space-y-2">
-                <span className="text-[11px] font-extrabold text-[#38C958] block">
-                  ✅ Print Oficial de Desempenho Anexado (Visível para o Admin):
+              <div className="p-3.5 rounded-2xl bg-black/40 border border-white/10 space-y-2">
+                <span className="text-[11px] font-mono font-bold text-[#00E599] block">
+                  ✅ Print Oficial de Desempenho Anexado (Storage match-proofs):
                 </span>
                 <img
                   src={proofPreviewUrl || selectedMatch.proof_image_url || ''}
                   alt="Print da Partida"
-                  className="w-full max-h-56 object-contain rounded-xl bg-zinc-950"
+                  className="w-full max-h-64 object-contain rounded-xl bg-black"
                 />
               </div>
             )}
 
-            {/* Lista de Estatísticas por Nome do Personagem (Character Name) */}
-            <div className="space-y-2">
+            {/* Lista de Estatísticas Extraídas por IA */}
+            <div className="space-y-2.5">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-extrabold text-zinc-900 dark:text-white">
+                <span className="text-xs font-display font-bold text-white">
                   Desempenho Extraído por Personagem (Character Name)
                 </span>
                 {selectedMatch.ocr_extracted_data?.motm_name && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-600 text-[11px] font-black flex items-center gap-1">
+                  <span className="px-2.5 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-[11px] font-mono font-bold flex items-center gap-1.5">
                     <img
                       src="/assets/events/motm.png"
                       alt="MVP"
                       className="w-4 h-4 object-contain"
                     />
-                    MVP: {selectedMatch.ocr_extracted_data.motm_name}
+                    Craque: {selectedMatch.ocr_extracted_data.motm_name}
                   </span>
                 )}
               </div>
@@ -397,25 +392,25 @@ export default function MatchesPage() {
                 {(selectedMatch.ocr_extracted_data?.players || []).map((p, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 flex items-center justify-between"
+                    className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between"
                   >
                     <div>
-                      <span className="text-xs font-black uppercase text-zinc-900 dark:text-white block">
+                      <span className="text-xs font-display font-black uppercase text-white block">
                         {p.name}
                       </span>
-                      <span className="text-[10px] text-zinc-500">
+                      <span className="text-[10px] text-zinc-400">
                         {p.team === 'home' ? homeTeam?.name : awayTeam?.name} • Nota{' '}
                         {p.rating.toFixed(1)}
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-xs font-black">
+                    <div className="flex items-center gap-1.5 text-xs font-mono font-bold">
                       {p.goals > 0 && (
-                        <span className="px-2 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC]">
+                        <span className="px-2 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599]">
                           {p.goals} ⚽
                         </span>
                       )}
                       {p.assists > 0 && (
-                        <span className="px-2 py-0.5 rounded-full bg-[#38C958]/15 text-[#229a3e]">
+                        <span className="px-2 py-0.5 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-400">
                           {p.assists} 👟
                         </span>
                       )}
@@ -425,28 +420,23 @@ export default function MatchesPage() {
               </div>
             </div>
 
-            {/* Botão de Dupla Validação (Capitão B aprova) */}
-            <div className="pt-2 border-t border-zinc-100 dark:border-zinc-800 flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2">
-                {EVENT_ASSETS.slice(0, 4).map((ev) => (
-                  <img
-                    key={ev.id}
-                    src={ev.iconUrl}
-                    alt={ev.name}
-                    title={ev.name}
-                    className="w-6 h-6 object-contain"
-                  />
-                ))}
+            {/* DUPLA VALIDAÇÃO COM SLIDE COMMIT (REACT BITS) */}
+            <div className="pt-3 border-t border-white/[0.08] space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-display font-bold text-zinc-300">
+                  Dupla Validação Oficial (Aprovação Capitão B)
+                </span>
+                <span className="text-[10px] text-zinc-500 font-mono">
+                  Deslize até o fim para confirmar
+                </span>
               </div>
 
-              <button
-                type="button"
-                onClick={handleApproveMatchSheet}
-                className="py-3 px-5 rounded-2xl bg-[#38C958] hover:bg-[#2fb34d] text-white font-extrabold text-xs flex items-center gap-2 shadow-sm"
-              >
-                <ShieldCheck className="w-4 h-4" />
-                <span>Aprovar Súmula (Dupla Validação Capitão B)</span>
-              </button>
+              <SlideCommit
+                label="Deslize para Aprovar Súmula Oficial"
+                completedLabel="Súmula Aprovada com Sucesso!"
+                onCommit={handleApproveMatchSheet}
+                className="max-w-md mx-auto"
+              />
             </div>
           </section>
         )}
@@ -455,13 +445,13 @@ export default function MatchesPage() {
         {/* SUB-ABA 2: TINDER DE HORÁRIOS POR INTERVALOS                      */}
         {/* ================================================================= */}
         {activeSubTab === 'tinder_schedule' && (
-          <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/50 space-y-4">
             <div>
-              <h2 className="text-base font-extrabold">
+              <h2 className="text-base font-display font-black text-white">
                 Tinder de Horários por Intervalos ({homeTeam?.name} vs {awayTeam?.name})
               </h2>
-              <p className="text-xs text-zinc-500">
-                Selecione turnos inteiros ou defina a faixa personalizada (ex: Das 21:30 às 23:30) para bater a agenda dos dois elencos.
+              <p className="text-xs text-zinc-400">
+                Selecione os turnos disponíveis ou digite a janela exata para cruzar a escala de ambos os elencos.
               </p>
             </div>
 
@@ -481,10 +471,10 @@ export default function MatchesPage() {
                   type="button"
                   onClick={() => setSelectedDayLabel(day)}
                   className={cn(
-                    'px-3 py-1.5 rounded-full text-xs font-extrabold shrink-0 transition-all',
+                    'px-3.5 py-1.5 rounded-full text-xs font-mono font-bold shrink-0 transition-all border',
                     selectedDayLabel === day
-                      ? 'bg-[#7C5CFC] text-white'
-                      : 'bg-[#F5F6FA] dark:bg-zinc-800 text-zinc-600 dark:text-zinc-300'
+                      ? 'bg-[#00E599] text-[#090A0F] border-[#00E599]'
+                      : 'bg-white/5 text-zinc-400 border-white/10 hover:text-white'
                   )}
                 >
                   {day}
@@ -504,51 +494,52 @@ export default function MatchesPage() {
                     className={cn(
                       'p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between',
                       isSelected
-                        ? 'border-[#38C958] bg-[#38C958]/10 font-extrabold'
-                        : 'border-zinc-100 dark:border-zinc-800 bg-[#F5F6FA] dark:bg-zinc-800/50 text-xs font-semibold'
+                        ? 'border-[#00E599] bg-[#00E599]/10 text-white font-bold'
+                        : 'border-white/[0.06] bg-white/[0.02] text-xs text-zinc-400 hover:text-zinc-200'
                     )}
                   >
                     <span className="text-xs">{preset.label}</span>
-                    {isSelected && <CheckCircle2 className="w-4 h-4 text-[#38C958]" />}
+                    {isSelected && <CheckCircle2 className="w-4 h-4 text-[#00E599]" />}
                   </button>
                 );
               })}
             </div>
 
             {/* Faixa Personalizada */}
-            <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-zinc-800/70 border border-zinc-200/70 dark:border-zinc-700 flex flex-wrap items-center justify-between gap-2">
+            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-white/10 flex flex-wrap items-center justify-between gap-3">
               <div className="flex items-center gap-2">
-                <Clock className="w-4 h-4 text-[#7C5CFC]" />
-                <span className="text-xs font-extrabold">Janela Livre: Das</span>
+                <Clock className="w-4 h-4 text-[#00E599]" />
+                <span className="text-xs font-bold text-white">Janela Livre:</span>
                 <input
                   type="time"
                   value={customStart}
                   onChange={(e) => setCustomStart(e.target.value)}
-                  className="h-8 px-2 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
+                  className="h-8 px-2.5 rounded-lg bg-black/60 border border-white/10 text-xs font-mono text-white"
                 />
-                <span className="text-xs font-extrabold">às</span>
+                <span className="text-xs text-zinc-400">às</span>
                 <input
                   type="time"
                   value={customEnd}
                   onChange={(e) => setCustomEnd(e.target.value)}
-                  className="h-8 px-2 rounded-lg bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 text-xs font-bold"
+                  className="h-8 px-2.5 rounded-lg bg-black/60 border border-white/10 text-xs font-mono text-white"
                 />
               </div>
+
               <button
                 type="button"
                 onClick={handleAddCustomWindow}
-                className="px-3 py-1.5 rounded-xl bg-[#7C5CFC] text-white text-xs font-bold flex items-center gap-1"
+                className="px-3 py-1.5 rounded-xl bg-white/10 hover:bg-white/20 border border-white/15 text-white text-xs font-bold flex items-center gap-1.5 transition-colors"
               >
                 <Plus className="w-3.5 h-3.5" /> Adicionar Janela
               </button>
             </div>
 
-            {/* Cruzamento de Disponibilidade dos Elencos */}
-            <div className="p-3.5 rounded-2xl bg-[#38C958]/10 border border-[#38C958]/30 space-y-1.5">
-              <span className="text-xs font-black text-[#229a3e] dark:text-[#38C958] block">
+            {/* Cruzamento de Disponibilidade */}
+            <div className="p-3.5 rounded-2xl bg-[#00E599]/10 border border-[#00E599]/30 space-y-1.5">
+              <span className="text-xs font-display font-black text-[#00E599] block">
                 🔥 Match de Horário Detectado: {selectedDayLabel} • Noite Pico (21:30 às 23:30)
               </span>
-              <p className="text-[11px] text-zinc-600 dark:text-zinc-300">
+              <p className="text-[11px] text-zinc-300">
                 <strong>{homeTeam?.name}:</strong> {homeRoster.length} atletas disponíveis (
                 {homeRoster.map((p) => p.character_name).join(', ')}) •{' '}
                 <strong>{awayTeam?.name}:</strong> {awayRoster.length} atletas disponíveis (
@@ -556,14 +547,23 @@ export default function MatchesPage() {
               </p>
             </div>
 
-            <button
-              type="button"
-              onClick={handleConfirmScheduleWindow}
-              className="w-full py-3.5 rounded-2xl bg-[#38C958] hover:bg-[#2fb34d] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm"
-            >
-              <CheckCircle2 className="w-4 h-4" />
-              <span>Confirmar Janela Oficial da Partida</span>
-            </button>
+            <div className="flex items-center justify-between p-3 rounded-2xl bg-white/[0.03] border border-white/10">
+              <span className="text-xs text-zinc-300 font-medium">
+                Notificar capitães automaticamente via WhatsApp / PWA
+              </span>
+              <SquishSwitch checked={autoNotifyCaptain} onChange={setAutoNotifyCaptain} />
+            </div>
+
+            <ClickSpark sparkColor="#00E599">
+              <button
+                type="button"
+                onClick={handleConfirmScheduleWindow}
+                className="w-full py-3.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#090A0F] font-display font-black text-xs flex items-center justify-center gap-2 shadow-md shadow-[#00E599]/20 transition-all"
+              >
+                <CheckCircle2 className="w-4 h-4" />
+                <span>Confirmar Horário Oficial da Partida</span>
+              </button>
+            </ClickSpark>
           </section>
         )}
 
@@ -571,7 +571,7 @@ export default function MatchesPage() {
         {/* SUB-ABA 3: CENTRAL DE W.O. & REGRAS DA LIGA                       */}
         {/* ================================================================= */}
         {activeSubTab === 'wo_rules' && (
-          <section className="p-4 sm:p-5 rounded-3xl bg-white dark:bg-zinc-900 border border-zinc-100 dark:border-zinc-800 shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05)] space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/50 space-y-4">
             <div className="flex items-center gap-3">
               <img
                 src="/assets/events/red-card.png"
@@ -579,20 +579,25 @@ export default function MatchesPage() {
                 className="w-10 h-10 object-contain"
               />
               <div>
-                <h2 className="text-base font-extrabold">
+                <h2 className="text-base font-display font-black text-white">
                   Central Oficial de W.O. & Desconexão
                 </h2>
-                <p className="text-xs text-zinc-500">
+                <p className="text-xs text-zinc-400">
                   Tolerância oficial: {tournament.rules_config?.wo_tolerance_minutes || 15} minutos • Aviso prévio mínimo: {tournament.rules_config?.cancel_notice_minutes || 40} minutos.
                 </p>
               </div>
             </div>
 
             <div className="space-y-1.5">
-              {(tournament.custom_rules || []).map((rule, idx) => (
+              {(tournament.custom_rules || [
+                'Tolerância máxima de 15 minutos de atraso a partir do horário oficial acordado.',
+                'Aviso prévio mínimo de cancelamento: 40 minutos de antecedência.',
+                'Em caso de queda/desconexão antes dos 10min de jogo com placar 0x0, a partida é reiniciada.',
+                'O placar oficial de W.O. é 3 x 0 a favor da equipe presente.',
+              ]).map((rule, idx) => (
                 <div
                   key={idx}
-                  className="p-2.5 rounded-xl bg-[#F5F6FA] dark:bg-zinc-800/70 text-xs font-semibold text-zinc-700 dark:text-zinc-300"
+                  className="p-3 rounded-xl bg-white/[0.03] border border-white/5 text-xs text-zinc-300"
                 >
                   • {rule}
                 </div>
@@ -603,14 +608,14 @@ export default function MatchesPage() {
               <button
                 type="button"
                 onClick={() => handleApplyOfficialWO('home')}
-                className="py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs"
+                className="py-3 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-400 font-display font-black text-xs transition-colors"
               >
                 Declarar W.O. a favor de {homeTeam?.name} (3 x 0)
               </button>
               <button
                 type="button"
                 onClick={() => handleApplyOfficialWO('away')}
-                className="py-3 px-4 rounded-2xl bg-amber-500 hover:bg-amber-600 text-white font-extrabold text-xs"
+                className="py-3 px-4 rounded-xl bg-amber-500/20 hover:bg-amber-500/30 border border-amber-500/40 text-amber-400 font-display font-black text-xs transition-colors"
               >
                 Declarar W.O. a favor de {awayTeam?.name} (3 x 0)
               </button>

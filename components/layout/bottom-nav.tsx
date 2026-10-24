@@ -16,6 +16,12 @@ import { cn } from '@/lib/utils';
 
 export function BottomNav() {
   const pathname = usePathname();
+
+  // Não renderiza barra in-app na Landing Page
+  if (pathname === '/' || pathname === '/landing') {
+    return null;
+  }
+
   const { session } = useAuth();
   const { players, teams } = useLeagueStore();
 
@@ -48,10 +54,10 @@ export function BottomNav() {
   const tabs = [
     {
       id: 'home',
-      label: 'Início',
-      href: '/',
+      label: 'Painel',
+      href: '/dashboard',
       icon: Home,
-      isActive: pathname === '/',
+      isActive: pathname === '/dashboard',
       isAvatar: false,
     },
     {
@@ -96,7 +102,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Navegação Principal Mobile"
-      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-20px)] max-w-[430px] h-14 bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] rounded-full px-2.5 flex items-center justify-between shadow-2xl shadow-[#7C5CFC]/30 border border-white/20 select-none lg:hidden"
+      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-20px)] max-w-[430px] h-14 bg-[#0d0f17]/95 backdrop-blur-2xl rounded-full px-2.5 flex items-center justify-between shadow-2xl shadow-black/80 border border-white/10 select-none lg:hidden"
     >
       {tabs.map((tab) => {
         const Icon = tab.icon;
@@ -108,16 +114,16 @@ export function BottomNav() {
             href={tab.href}
             className={cn(
               active
-                ? 'px-3 py-1.5 rounded-full bg-white text-[#7C5CFC] font-extrabold text-xs flex items-center gap-1.5 shrink-0 shadow-xs transition-all'
-                : 'w-9 h-9 flex items-center justify-center text-white/90 hover:text-white shrink-0 rounded-full transition-all'
+                ? 'px-3 py-1.5 rounded-full bg-[#00E599] text-[#090A0F] font-black text-xs flex items-center gap-1.5 shrink-0 shadow-sm shadow-[#00E599]/30 transition-all'
+                : 'w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 rounded-full transition-all'
             )}
           >
             {tab.isAvatar ? (
               <span
                 suppressHydrationWarning
                 className={cn(
-                  'w-6 h-6 rounded-full overflow-hidden flex items-center justify-center border transition-all shrink-0 bg-white/20',
-                  active ? 'border-[#7C5CFC]' : 'border-white/70'
+                  'w-6 h-6 rounded-full overflow-hidden flex items-center justify-center border transition-all shrink-0 bg-white/10',
+                  active ? 'border-[#090A0F] ring-1 ring-[#00E599]' : 'border-white/30'
                 )}
               >
                 <img

@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from 'next/font/google';
 import './globals.css';
 import { Header } from '@/components/layout/header';
@@ -24,9 +24,20 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'DraftClub PRO • Tactical Obsidian & Pitch Edition (EA FC 26)',
+  title: 'DraftClub PRO • Plataforma Oficial de EA FC 26 Pro Clubs',
   description:
-    'Plataforma E-sports de EA FC 26 Pro Clubs: Cartas FC 26 Ultimate Team, Tabela & Mata-Mata, Súmula IA Vision, Estúdio 4:5 e Sala de Draft.',
+    'Sua liga de Pro Clubs sem discussão no WhatsApp. Súmula com IA Vision por foto, Estúdio de Banners 4:5 pro Instagram, Sala de Draft estilo NBA e Gestão Financeira transparente.',
+  manifest: '/manifest.json',
+  icons: {
+    icon: '/assets/awards/1st-place.png',
+    apple: '/assets/awards/1st-place.png',
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: '#00E599',
+  width: 'device-width',
+  initialScale: 1,
 };
 
 export default function RootLayout({
@@ -40,10 +51,10 @@ export default function RootLayout({
       className={`dark overflow-x-hidden max-w-[100vw] ${jakarta.variable} ${inter.variable} ${jetbrainsMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-[#F5F6FA] dark:bg-[#0c0e12] text-[#18181B] dark:text-[#f1f3f9] antialiased min-h-screen flex flex-col overflow-x-hidden max-w-[100vw] selection:bg-[#7C5CFC] selection:text-white transition-colors">
+      <body className="bg-[#0c0e12] text-[#f1f3f9] antialiased min-h-screen flex flex-col overflow-x-hidden max-w-[100vw] selection:bg-[#00E599] selection:text-zinc-950">
         <AuthProvider>
           <Header />
-          <div className="flex-1 w-full max-w-[100vw] overflow-x-hidden pb-28 lg:pb-12">
+          <div className="flex-1 w-full max-w-[100vw] overflow-x-hidden">
             {children}
           </div>
           <BottomNav />

@@ -63,7 +63,7 @@ export default function MarketSearchPage() {
           </div>
           <Link
             href="/draft-board"
-            className="px-3.5 py-2 rounded-2xl bg-[#7C5CFC] text-white text-xs font-extrabold flex items-center gap-1.5 shrink-0"
+            className="px-3.5 py-2 rounded-2xl bg-[#00E599] text-[#090A0F] font-black text-xs font-extrabold flex items-center gap-1.5 shrink-0"
           >
             <Users className="w-3.5 h-3.5" />
             Sala de Draft
@@ -78,7 +78,7 @@ export default function MarketSearchPage() {
             className={cn(
               'py-2 rounded-full text-xs font-extrabold transition-all',
               activeTab === 'players'
-                ? 'bg-[#7C5CFC] text-white shadow-xs'
+                ? 'bg-[#00E599] text-[#090A0F] font-black shadow-xs'
                 : 'text-[#71717A] hover:text-[#18181B] dark:hover:text-white'
             )}
           >
@@ -90,7 +90,7 @@ export default function MarketSearchPage() {
             className={cn(
               'py-2 rounded-full text-xs font-extrabold transition-all',
               activeTab === 'teams'
-                ? 'bg-[#7C5CFC] text-white shadow-xs'
+                ? 'bg-[#00E599] text-[#090A0F] font-black shadow-xs'
                 : 'text-[#71717A] hover:text-[#18181B] dark:hover:text-white'
             )}
           >
@@ -121,8 +121,8 @@ export default function MarketSearchPage() {
             className={cn(
               'w-10 h-10 rounded-full border flex items-center justify-center shrink-0 transition-all',
               filterOpen
-                ? 'bg-[#7C5CFC] text-white border-[#7C5CFC]'
-                : 'bg-white dark:bg-zinc-900 text-[#7C5CFC] border-zinc-200/70 dark:border-zinc-800'
+                ? 'bg-[#00E599] text-[#090A0F] font-black border-[#00E599]'
+                : 'bg-white dark:bg-zinc-900 text-[#00E599] border-zinc-200/70 dark:border-zinc-800'
             )}
             title="Filtrar"
           >
@@ -140,7 +140,7 @@ export default function MarketSearchPage() {
                   setSelectedPosition('ALL');
                   setFilterOpen(false);
                 }}
-                className="text-[11px] font-bold text-[#7C5CFC]"
+                className="text-[11px] font-bold text-[#00E599]"
               >
                 Limpar
               </button>
@@ -156,7 +156,7 @@ export default function MarketSearchPage() {
                     className={cn(
                       'px-3 py-1 rounded-full text-xs font-bold border transition-all',
                       selectedPosition === pos
-                        ? 'bg-[#7C5CFC] text-white border-[#7C5CFC]'
+                        ? 'bg-[#00E599] text-[#090A0F] font-black border-[#00E599]'
                         : 'bg-[#F5F6FA] dark:bg-zinc-800 text-[#71717A] border-zinc-200 dark:border-zinc-700'
                     )}
                   >
@@ -176,12 +176,12 @@ export default function MarketSearchPage() {
                 <Link
                   key={team.id}
                   href="/captain"
-                  className="bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-zinc-100 dark:border-zinc-800 hover:border-[#7C5CFC]/50 transition-all flex items-center justify-between gap-3"
+                  className="bg-white dark:bg-zinc-900 rounded-3xl p-4 border border-zinc-100 dark:border-zinc-800 hover:border-[#00E599]/50 transition-all flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <div
                       className="w-12 h-12 rounded-2xl flex items-center justify-center text-white font-black text-xs shrink-0 overflow-hidden"
-                      style={{ backgroundColor: team.primary_color || '#7C5CFC' }}
+                      style={{ backgroundColor: team.primary_color || '#00E599' }}
                     >
                       <img
                         src={team.logo_url || '/assets/templates/default-crest.png'}
@@ -227,10 +227,10 @@ export default function MarketSearchPage() {
                 <Link
                   key={player.id}
                   href="/draft-board"
-                  className="bg-white dark:bg-zinc-900 rounded-3xl p-3.5 border border-zinc-100 dark:border-zinc-800 hover:border-[#7C5CFC]/50 transition-all flex items-center justify-between gap-3"
+                  className="bg-white dark:bg-zinc-900 rounded-3xl p-3.5 border border-zinc-100 dark:border-zinc-800 hover:border-[#00E599]/50 transition-all flex items-center justify-between gap-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <div className="w-12 h-12 rounded-2xl bg-[#7C5CFC]/15 text-[#7C5CFC] font-black text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                    <div className="w-12 h-12 rounded-2xl bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] font-black text-xs flex items-center justify-center shrink-0 overflow-hidden">
                       <img
                         src={
                           player.avatar_face_url ||
@@ -246,7 +246,7 @@ export default function MarketSearchPage() {
                         <h3 className="text-xs sm:text-sm font-black uppercase text-[#18181B] dark:text-white truncate">
                           {player.character_name || player.ea_Tag}
                         </h3>
-                        <span className="px-2 py-0.2 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold">
+                        <span className="px-2 py-0.2 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold">
                           {player.primary_position} • {player.overall}
                         </span>
                       </div>

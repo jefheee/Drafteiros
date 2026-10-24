@@ -566,7 +566,7 @@ export function FC26PlayerCard({
               type="button"
               onClick={onEnhancePortraitAI}
               disabled={enhancingAI}
-              className="px-3 py-1.5 rounded-full bg-[#7C5CFC]/20 hover:bg-[#7C5CFC]/30 border border-[#7C5CFC]/50 text-[#7C5CFC] dark:text-violet-300 text-[11px] font-extrabold flex items-center gap-1.5 transition-all disabled:opacity-50"
+              className="px-3 py-1.5 rounded-full bg-[#00E599]/15 hover:bg-[#00E599]/25 border border-[#00E599]/50 text-[#00E599] dark:text-violet-300 text-[11px] font-extrabold flex items-center gap-1.5 transition-all disabled:opacity-50"
             >
               <Sparkles className="w-3.5 h-3.5" />
               {enhancingAI ? 'Recriando...' : '✨ Ajustar Retrato com IA'}
@@ -577,7 +577,7 @@ export function FC26PlayerCard({
             type="button"
             onClick={handleDownloadCardPng}
             disabled={downloading}
-            className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white text-[11px] font-extrabold flex items-center gap-1.5 shadow-md hover:opacity-95 transition-all"
+            className="px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#00E599] to-[#059669] text-white text-[11px] font-extrabold flex items-center gap-1.5 shadow-md hover:opacity-95 transition-all"
           >
             <Download className="w-3.5 h-3.5" />
             {downloading ? 'Exportando...' : 'Baixar Carta PNG'}
@@ -642,7 +642,7 @@ export function FC26PackOpener({
         <div className="fixed inset-0 z-50 bg-black/85 backdrop-blur-xl flex items-center justify-center p-4">
           <div className="relative w-full max-w-lg rounded-3xl bg-gradient-to-b from-[#161920] to-[#0c0e12] border border-amber-500/40 p-6 text-center shadow-[0_0_80px_rgba(124,92,252,0.35)] overflow-hidden">
             {/* Feixes de luz de estádio no fundo */}
-            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-gradient-to-b from-[#7C5CFC]/35 via-amber-500/20 to-transparent blur-3xl pointer-events-none" />
+            <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-96 h-96 rounded-full bg-gradient-to-b from-[#00E599]/30 via-amber-500/20 to-transparent blur-3xl pointer-events-none" />
 
             <button
               type="button"
@@ -668,7 +668,7 @@ export function FC26PackOpener({
 
             {stage === 'position' && (
               <div className="py-20 space-y-4 animate-pulse">
-                <span className="text-xs font-mono uppercase tracking-widest text-[#7C5CFC] block">
+                <span className="text-xs font-mono uppercase tracking-widest text-[#00E599] block">
                   POSIÇÃO TÁTICA...
                 </span>
                 <div className="text-6xl font-display font-black text-white tracking-tighter">

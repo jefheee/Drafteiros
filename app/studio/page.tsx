@@ -6,6 +6,7 @@ import { TEMPLATE_ASSETS, CARD_DESIGN_ASSETS } from '@/lib/assets-catalog';
 import { RoleplayType, RoleplayResult, CharacterPromptResult } from '@/lib/gemini';
 import { FC26PlayerCard, FC26PackOpener } from '@/components/players/fc26-player-card';
 import { cn } from '@/lib/utils';
+import { GlideSelect, HoloCard, LatticeLoader, ClickSpark, RefineFrame } from '@/components/react-bits';
 import {
   Sparkles,
   Download,
@@ -654,15 +655,15 @@ export default function MediaStudioPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#F5F6FA] dark:bg-[#0c0e12] text-zinc-900 dark:text-[#f1f3f9] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
+    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-4 pb-28 overflow-x-hidden">
       <main className="max-w-7xl mx-auto space-y-5">
         {/* CABEÇALHO DO ESTÚDIO (STITCH REDESIGN) */}
-        <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#7C5CFC]/15 text-[#7C5CFC] text-[10px] font-extrabold uppercase tracking-wider">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold uppercase tracking-wider">
               Pilar 4 • Estúdio 4:5 & Packs FC 26
             </span>
-            <h1 className="text-xl sm:text-2xl font-display font-black text-zinc-900 dark:text-white">
+            <h1 className="text-xl sm:text-2xl font-display font-black text-white">
               Estúdio Criativo Pós-Jogo, Cenas IA & Walkout FC 26
             </h1>
             <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -672,14 +673,14 @@ export default function MediaStudioPage() {
         </section>
 
         {/* ABAS DO ESTÚDIO (4 MODOS) */}
-        <div className="p-1.5 rounded-2xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+        <div className="p-1.5 rounded-2xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xs grid grid-cols-2 sm:grid-cols-4 gap-1.5">
           <button
             type="button"
             onClick={() => setActiveTab('post_match_canvas')}
             className={cn(
               'py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'post_match_canvas'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -693,7 +694,7 @@ export default function MediaStudioPage() {
             className={cn(
               'py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'ai_generator'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -707,7 +708,7 @@ export default function MediaStudioPage() {
             className={cn(
               'py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'fc26_packs'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -721,7 +722,7 @@ export default function MediaStudioPage() {
             className={cn(
               'py-2.5 px-3 rounded-xl text-xs font-extrabold transition-all flex items-center justify-center gap-1.5',
               activeTab === 'roleplay'
-                ? 'bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white shadow-sm'
+                ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white shadow-sm'
                 : 'text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-white'
             )}
           >
@@ -736,14 +737,14 @@ export default function MediaStudioPage() {
         {activeTab === 'post_match_canvas' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             {/* COLUNA ESQUERDA (7 COLUNAS): CONTROLES DO PLACAR & FUNDO DE ESTÁDIO */}
-            <div className="lg:col-span-7 p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-5">
+            <div className="lg:col-span-7 p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-5">
               {/* Botão Principal de Upload de Foto da Partida / Imagem Gerada pela IA */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-[#7C5CFC]/15 via-[#5b3fd9]/10 to-[#38C958]/10 border border-[#7C5CFC]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 rounded-2xl bg-gradient-to-r from-[#00E599]/15 via-emerald-950/20 to-black/30 border border-[#00E599]/40 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="space-y-0.5">
                   <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#38C958] block">
                     Fundo Personalizado 1080x1350
                   </span>
-                  <h2 className="text-sm font-display font-black text-zinc-900 dark:text-white">
+                  <h2 className="text-sm font-display font-black text-white">
                     Print da Comemoração ou Imagem Gerada pela IA
                   </h2>
                   <p className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -751,7 +752,7 @@ export default function MediaStudioPage() {
                   </p>
                 </div>
 
-                <label className="cursor-pointer py-3 px-4 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#7C5CFC]/25 shrink-0 hover:opacity-95 transition-all">
+                <label className="cursor-pointer py-3 px-4 rounded-2xl bg-gradient-to-r from-[#00E599] to-[#059669] text-white font-display font-extrabold text-xs flex items-center justify-center gap-2 shadow-lg shadow-[#00E599]/20 shrink-0 hover:opacity-95 transition-all">
                   <Camera className="w-4 h-4" />
                   <span>📸 Subir Foto da Partida / Imagem IA</span>
                   <input
@@ -764,13 +765,13 @@ export default function MediaStudioPage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-[11px] font-extrabold uppercase text-[#7C5CFC] block">
+                <label className="text-[11px] font-extrabold uppercase text-[#00E599] block">
                   Puxar Dados de Partida da Rodada
                 </label>
                 <select
                   value={selectedMatchId}
                   onChange={(e) => handleSelectMatch(e.target.value)}
-                  className="w-full h-10 px-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                  className="w-full h-10 px-3 rounded-2xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                 >
                   {matches.map((m) => (
                     <option key={m.id} value={m.id}>
@@ -790,7 +791,7 @@ export default function MediaStudioPage() {
                   <select
                     value={homeTeamId}
                     onChange={(e) => setHomeTeamId(e.target.value)}
-                    className="w-full h-10 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-bold"
+                    className="w-full h-10 px-2.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-bold"
                   >
                     {teams.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -807,7 +808,7 @@ export default function MediaStudioPage() {
                   <select
                     value={awayTeamId}
                     onChange={(e) => setAwayTeamId(e.target.value)}
-                    className="w-full h-10 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-bold"
+                    className="w-full h-10 px-2.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-bold"
                   >
                     {teams.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -829,7 +830,7 @@ export default function MediaStudioPage() {
                     max={99}
                     value={homeScore}
                     onChange={(e) => setHomeScore(Number(e.target.value))}
-                    className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-sm font-mono font-black text-center"
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-sm font-mono font-black text-center"
                   />
                 </div>
                 <div>
@@ -842,7 +843,7 @@ export default function MediaStudioPage() {
                     max={99}
                     value={awayScore}
                     onChange={(e) => setAwayScore(Number(e.target.value))}
-                    className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-sm font-mono font-black text-center"
+                    className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-sm font-mono font-black text-center"
                   />
                 </div>
                 <div>
@@ -853,7 +854,7 @@ export default function MediaStudioPage() {
                     type="text"
                     value={leagueBadgeLabel}
                     onChange={(e) => setLeagueBadgeLabel(e.target.value)}
-                    className="w-full h-10 px-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                    className="w-full h-10 px-2.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                   />
                 </div>
               </div>
@@ -861,7 +862,7 @@ export default function MediaStudioPage() {
               {/* Artilheiros das Duas Equipes */}
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] font-extrabold uppercase text-[#7C5CFC] block mb-1">
+                  <label className="text-[10px] font-extrabold uppercase text-[#00E599] block mb-1">
                     Gols Mandante (Nome + Qtd)
                   </label>
                   <textarea
@@ -869,7 +870,7 @@ export default function MediaStudioPage() {
                     value={homeScorersText}
                     onChange={(e) => setHomeScorersText(e.target.value)}
                     placeholder={'JEFHE 1\nMIGUEL 1'}
-                    className="w-full p-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold uppercase"
+                    className="w-full p-2.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold uppercase"
                   />
                 </div>
                 <div>
@@ -881,7 +882,7 @@ export default function MediaStudioPage() {
                     value={awayScorersText}
                     onChange={(e) => setAwayScorersText(e.target.value)}
                     placeholder={'HAALANDINHO 5\nJOAO VINY 1\nTETEU 1'}
-                    className="w-full p-2.5 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold uppercase"
+                    className="w-full p-2.5 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-mono font-extrabold uppercase"
                   />
                 </div>
               </div>
@@ -889,15 +890,15 @@ export default function MediaStudioPage() {
               {/* Presets de Cenários de Estádio Noturno (Sem Cartas FC 26!) */}
               <div className="space-y-2.5 pt-3 border-t border-zinc-100 dark:border-white/[0.07]">
                 <div className="flex items-center justify-between flex-wrap gap-2">
-                  <span className="text-xs font-extrabold text-zinc-900 dark:text-white">
+                  <span className="text-xs font-extrabold text-white">
                     Cenários de Estádio Noturno / Gramado Iluminado
                   </span>
-                  <label className="flex items-center gap-1.5 text-[11px] font-bold text-[#7C5CFC] cursor-pointer">
+                  <label className="flex items-center gap-1.5 text-[11px] font-bold text-[#00E599] cursor-pointer">
                     <input
                       type="checkbox"
                       checked={showFeaturedPlayerOverlay}
                       onChange={(e) => setShowFeaturedPlayerOverlay(e.target.checked)}
-                      className="rounded accent-[#7C5CFC]"
+                      className="rounded accent-[#00E599]"
                     />
                     Sobrepor Craque da Partida no Centro
                   </label>
@@ -908,7 +909,7 @@ export default function MediaStudioPage() {
                     <select
                       value={featuredPlayerId}
                       onChange={(e) => setFeaturedPlayerId(e.target.value)}
-                      className="w-full h-9 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                      className="w-full h-9 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                     >
                       {players.map((p) => (
                         <option key={p.id} value={p.id}>
@@ -928,8 +929,8 @@ export default function MediaStudioPage() {
                       className={cn(
                         'p-1.5 rounded-2xl border text-center transition-all overflow-hidden',
                         backgroundUrl === tpl.url
-                          ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-sm'
-                          : 'border-zinc-200 dark:border-white/10 bg-[#F5F6FA] dark:bg-[#1c2029]/60'
+                          ? 'border-[#00E599] bg-[#00E599]/15 border border-[#00E599]/30 shadow-sm'
+                          : 'border-zinc-200 dark:border-white/10 bg-white/[0.03]/60'
                       )}
                     >
                       <img
@@ -947,13 +948,13 @@ export default function MediaStudioPage() {
             </div>
 
             {/* COLUNA DIREITA (5 COLUNAS): PREVIEW AO VIVO 4:5 + DOWNLOAD */}
-            <div className="lg:col-span-5 p-4 sm:p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl space-y-4 lg:sticky lg:top-20">
+            <div className="lg:col-span-5 p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl space-y-4 lg:sticky lg:top-20">
               <div className="flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                     Renderização em Tempo Real
                   </span>
-                  <span className="text-sm font-display font-black text-zinc-900 dark:text-white">
+                  <span className="text-sm font-display font-black text-white">
                     Preview Oficial 4:5 (1080x1350)
                   </span>
                 </div>
@@ -991,12 +992,12 @@ export default function MediaStudioPage() {
         {/* ================================================================= */}
         {activeTab === 'ai_generator' && (
           <div className="space-y-4">
-            <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#7C5CFC] block">
+                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
                   Fidelidade Total • Gemini 2.5 Flash Multimodal
                 </span>
-                <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+                <h2 className="text-base font-display font-extrabold text-white">
                   Seletor Real de Personagens (Rosto + Corpo) & Uniformes dos Clubes
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -1006,14 +1007,14 @@ export default function MediaStudioPage() {
 
               {/* PASSO 1: Selecionar Times */}
               <div className="grid sm:grid-cols-2 gap-3">
-                <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/10 space-y-2.5">
-                  <label className="text-[10px] font-extrabold uppercase text-[#7C5CFC] block">
+                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/10 space-y-2.5">
+                  <label className="text-[10px] font-extrabold uppercase text-[#00E599] block">
                     Passo 1A • Clube Principal da Cena
                   </label>
                   <select
                     value={aiHomeTeamId}
                     onChange={(e) => setAiHomeTeamId(e.target.value)}
-                    className="w-full h-9 px-2.5 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                    className="w-full h-9 px-2.5 rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                   >
                     {teams.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -1038,14 +1039,14 @@ export default function MediaStudioPage() {
                   </div>
                 </div>
 
-                <div className="p-3.5 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200/70 dark:border-white/10 space-y-2.5">
+                <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/10 space-y-2.5">
                   <label className="text-[10px] font-extrabold uppercase text-zinc-500 dark:text-zinc-400 block">
                     Passo 1B • Clube Adversário (Opcional)
                   </label>
                   <select
                     value={aiAwayTeamId}
                     onChange={(e) => setAiAwayTeamId(e.target.value)}
-                    className="w-full h-9 px-2.5 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                    className="w-full h-9 px-2.5 rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                   >
                     {teams.map((t) => (
                       <option key={t.id} value={t.id}>
@@ -1074,7 +1075,7 @@ export default function MediaStudioPage() {
               {/* PASSO 2: Multi-Seleção dos Personagens do Elenco */}
               <div className="space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-extrabold text-zinc-900 dark:text-white">
+                  <span className="text-xs font-extrabold text-white">
                     Passo 2 • Selecionar Personagens da Cena ({selectedCharacterIds.length} marcados)
                   </span>
                   <span className="text-[11px] text-zinc-500 dark:text-zinc-400">
@@ -1094,8 +1095,8 @@ export default function MediaStudioPage() {
                         className={cn(
                           'p-2.5 rounded-2xl border text-left transition-all flex items-center gap-2.5',
                           isChecked
-                            ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-xs'
-                            : 'border-transparent bg-[#F5F6FA] dark:bg-[#1c2029]/60'
+                            ? 'border-[#00E599] bg-[#00E599]/15 border border-[#00E599]/30 shadow-xs'
+                            : 'border-transparent bg-white/[0.03]/60'
                         )}
                       >
                         <div className="w-10 h-10 rounded-xl bg-[#0c0e12] overflow-hidden shrink-0 border border-white/10">
@@ -1113,11 +1114,11 @@ export default function MediaStudioPage() {
                         </div>
                         <div className="min-w-0 flex-1">
                           <div className="flex items-center justify-between gap-1">
-                            <span className="text-xs font-black text-zinc-900 dark:text-white truncate uppercase">
+                            <span className="text-xs font-black text-white truncate uppercase">
                               {player.character_name}
                             </span>
                             {isChecked && (
-                              <Check className="w-3.5 h-3.5 text-[#7C5CFC] shrink-0" />
+                              <Check className="w-3.5 h-3.5 text-[#00E599] shrink-0" />
                             )}
                           </div>
                           <span className="text-[10px] text-zinc-500 dark:text-zinc-400 block truncate">
@@ -1135,14 +1136,14 @@ export default function MediaStudioPage() {
 
               {/* PASSO 3: Descrever a Ação da Cena */}
               <div className="space-y-1.5">
-                <label className="text-xs font-extrabold text-zinc-900 dark:text-white block">
+                <label className="text-xs font-extrabold text-white block">
                   Passo 3 • Descreva a Ação da Cena Pós-Jogo
                 </label>
                 <textarea
                   rows={2}
                   value={sceneIdea}
                   onChange={(e) => setSceneIdea(e.target.value)}
-                  className="w-full p-3 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
+                  className="w-full p-3 rounded-2xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
                 />
               </div>
 
@@ -1151,7 +1152,7 @@ export default function MediaStudioPage() {
                   type="button"
                   onClick={handleGenerateMultimodalScene}
                   disabled={aiLoading}
-                  className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
+                  className="flex-1 py-3 px-4 rounded-2xl bg-gradient-to-r from-[#00E599] to-[#059669] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-md transition-all"
                 >
                   <Sparkles className="w-4 h-4" />
                   <span>
@@ -1164,7 +1165,7 @@ export default function MediaStudioPage() {
                 <button
                   type="button"
                   onClick={handleDownloadReferenceKit}
-                  className="py-3 px-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] hover:bg-zinc-200/70 text-zinc-900 dark:text-white font-extrabold text-xs flex items-center justify-center gap-1.5 border border-zinc-200 dark:border-white/10"
+                  className="py-3 px-4 rounded-2xl bg-white/[0.03] hover:bg-zinc-200/70 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 border border-zinc-200 dark:border-white/10"
                 >
                   <PackageCheck className="w-4 h-4 text-[#38C958]" />
                   <span>📦 Baixar Kit de Referência</span>
@@ -1172,9 +1173,9 @@ export default function MediaStudioPage() {
               </div>
 
               {aiPromptResult && (
-                <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-[#7C5CFC]/30 space-y-3">
+                <div className="p-4 rounded-2xl bg-white/[0.03] border border-[#00E599]/30 space-y-3">
                   <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs font-extrabold text-[#7C5CFC]">
+                    <span className="text-xs font-extrabold text-[#00E599]">
                       Prompt Mestre 8K Gerado com as Fotos do Elenco
                     </span>
                     <button
@@ -1184,14 +1185,14 @@ export default function MediaStudioPage() {
                         setCopiedPrompt(true);
                         setTimeout(() => setCopiedPrompt(false), 3000);
                       }}
-                      className="px-3 py-1 rounded-full bg-[#7C5CFC] text-white text-[11px] font-bold flex items-center gap-1"
+                      className="px-3 py-1 rounded-full bg-[#00E599] text-[#090A0F] font-black text-[11px] font-bold flex items-center gap-1"
                     >
                       <Copy className="w-3 h-3" />
                       {copiedPrompt ? 'Copiado!' : 'Copiar Prompt 8K'}
                     </button>
                   </div>
 
-                  <p className="text-[11px] text-zinc-600 dark:text-zinc-300 font-mono bg-white dark:bg-[#161920] p-3 rounded-xl border border-zinc-200 dark:border-white/10">
+                  <p className="text-[11px] text-zinc-600 dark:text-zinc-300 font-mono bg-[#0D0F17] p-3 rounded-xl border border-zinc-200 dark:border-white/10">
                     {aiPromptResult.prompt_en}
                   </p>
 
@@ -1202,7 +1203,7 @@ export default function MediaStudioPage() {
                         href={gen.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="px-3 py-1.5 rounded-xl bg-white dark:bg-[#161920] border border-zinc-200 dark:border-white/10 text-xs font-bold flex items-center gap-1.5 hover:border-[#7C5CFC]"
+                        className="px-3 py-1.5 rounded-xl bg-[#0D0F17] border border-zinc-200 dark:border-white/10 text-xs font-bold flex items-center gap-1.5 hover:border-[#00E599]"
                       >
                         <span>{gen.name}</span>
                         <span className="text-[10px] text-[#38C958] font-extrabold">
@@ -1223,15 +1224,15 @@ export default function MediaStudioPage() {
         {/* ================================================================= */}
         {activeTab === 'fc26_packs' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <div className="lg:col-span-5 p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl flex flex-col items-center space-y-4">
+            <div className="lg:col-span-5 p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-xl flex flex-col items-center space-y-4">
               <div className="w-full">
-                <label className="text-[10px] font-extrabold uppercase text-[#7C5CFC] block mb-1">
+                <label className="text-[10px] font-extrabold uppercase text-[#00E599] block mb-1">
                   Selecionar Atleta da Liga para Gerar Carta FC 26
                 </label>
                 <select
                   value={packStudioPlayerId}
                   onChange={(e) => setPackStudioPlayerId(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                 >
                   {players.map((p) => (
                     <option key={p.id} value={p.id}>
@@ -1261,12 +1262,12 @@ export default function MediaStudioPage() {
               />
             </div>
 
-            <div className="lg:col-span-7 p-5 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+            <div className="lg:col-span-7 p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
               <div>
                 <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block">
                   Catálogo Oficial EA FC 26 Ultimate Team
                 </span>
-                <h2 className="text-base font-display font-black text-zinc-900 dark:text-white">
+                <h2 className="text-base font-display font-black text-white">
                   Escolha o Design da Carta ({CARD_DESIGN_ASSETS.length} Modelos Oficiais)
                 </h2>
                 <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -1283,8 +1284,8 @@ export default function MediaStudioPage() {
                     className={cn(
                       'p-3 rounded-2xl border text-center transition-all flex flex-col items-center gap-1.5',
                       packStudioCardUrl === design.url
-                        ? 'border-[#7C5CFC] bg-[#7C5CFC]/15 shadow-md'
-                        : 'border-zinc-200/70 dark:border-white/[0.07] bg-[#F5F6FA] dark:bg-[#1c2029]/60 hover:border-[#7C5CFC]/40'
+                        ? 'border-[#00E599] bg-[#00E599]/15 border border-[#00E599]/30 shadow-md'
+                        : 'border-zinc-200/70 dark:border-white/[0.07] bg-white/[0.03]/60 hover:border-[#00E599]/40'
                     )}
                   >
                     <img
@@ -1292,7 +1293,7 @@ export default function MediaStudioPage() {
                       alt={design.name}
                       className="w-20 h-28 object-contain drop-shadow-md"
                     />
-                    <span className="text-xs font-extrabold text-zinc-900 dark:text-white truncate w-full">
+                    <span className="text-xs font-extrabold text-white truncate w-full">
                       {design.name}
                     </span>
                     <span className="text-[9px] text-zinc-400 uppercase font-bold">
@@ -1309,9 +1310,9 @@ export default function MediaStudioPage() {
         {/* ABA 4: ZONA MISTA & COMUNICADOS OFICIAIS                          */}
         {/* ================================================================= */}
         {activeTab === 'roleplay' && (
-          <section className="p-4 sm:p-6 rounded-3xl bg-white dark:bg-[#161920] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
             <div>
-              <h2 className="text-base font-display font-extrabold text-zinc-900 dark:text-white">
+              <h2 className="text-base font-display font-extrabold text-white">
                 Zona Mista & Comunicados da Diretoria
               </h2>
               <p className="text-xs text-zinc-500 dark:text-zinc-400">
@@ -1327,7 +1328,7 @@ export default function MediaStudioPage() {
                 <select
                   value={roleplayType}
                   onChange={(e) => setRoleplayType(e.target.value as RoleplayType)}
-                  className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold"
                 >
                   <option value="entrevista_pos_jogo">🎙️ Entrevista Pós-Jogo (Craque)</option>
                   <option value="nota_oficial_clube">📋 Comunicado Oficial do Clube</option>
@@ -1345,7 +1346,7 @@ export default function MediaStudioPage() {
                   type="text"
                   value={rpPlayerName}
                   onChange={(e) => setRpPlayerName(e.target.value)}
-                  className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-extrabold uppercase"
+                  className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-extrabold uppercase"
                 />
               </div>
             </div>
@@ -1358,7 +1359,7 @@ export default function MediaStudioPage() {
                 type="text"
                 value={rpContext}
                 onChange={(e) => setRpContext(e.target.value)}
-                className="w-full h-10 px-3 rounded-xl bg-[#F5F6FA] dark:bg-[#1c2029] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
+                className="w-full h-10 px-3 rounded-xl bg-white/[0.03] border border-zinc-200 dark:border-white/10 text-xs font-semibold"
               />
             </div>
 
@@ -1366,16 +1367,16 @@ export default function MediaStudioPage() {
               type="button"
               onClick={handleGenerateRoleplay}
               disabled={rpLoading}
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#7C5CFC] to-[#5b3fd9] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-[#00E599] to-[#059669] text-white font-extrabold text-xs flex items-center justify-center gap-2 shadow-sm"
             >
               <Sparkles className="w-4 h-4" />
               <span>{rpLoading ? 'Redigindo...' : 'Gerar Texto para WhatsApp & Instagram'}</span>
             </button>
 
             {rpResult && (
-              <div className="p-4 rounded-2xl bg-[#F5F6FA] dark:bg-[#1c2029] space-y-3">
+              <div className="p-4 rounded-2xl bg-white/[0.03] space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-black text-[#7C5CFC]">{rpResult.title}</span>
+                  <span className="text-xs font-black text-[#00E599]">{rpResult.title}</span>
                   <button
                     type="button"
                     onClick={() => navigator.clipboard.writeText(rpResult.whatsapp_text)}
@@ -1384,7 +1385,7 @@ export default function MediaStudioPage() {
                     <Copy className="w-3 h-3" /> Copiar WhatsApp
                   </button>
                 </div>
-                <pre className="whitespace-pre-wrap text-xs text-zinc-700 dark:text-zinc-200 font-sans bg-white dark:bg-[#161920] p-3 rounded-xl border border-zinc-200 dark:border-white/10">
+                <pre className="whitespace-pre-wrap text-xs text-zinc-700 dark:text-zinc-200 font-sans bg-[#0D0F17] p-3 rounded-xl border border-zinc-200 dark:border-white/10">
                   {rpResult.whatsapp_text}
                 </pre>
               </div>
