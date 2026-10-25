@@ -363,9 +363,9 @@ export function getMockCharacterPrompt(params: {
         badge: 'Grátis • 1 Clique',
       },
       {
-        name: 'Gerador Avançado (Midjourney / GPT)',
-        url: 'https://chatgpt.com/',
-        badge: 'Anexar Kit de Referência',
+        name: 'Gerador Avançado de Personagens',
+        url: 'https://www.bing.com/images/create',
+        badge: 'Fidelidade de Uniforme',
       },
     ],
     used_mock: true,

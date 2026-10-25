@@ -21,14 +21,6 @@ const config: Config = {
           title: "#18181B",
           subtitle: "#71717A",
         },
-        jogueiros: {
-          bg: "#F5F6FA",
-          card: "#FFFFFF",
-          purple: "#7C5CFC",
-          green: "#38C958",
-          title: "#18181B",
-          subtitle: "#71717A",
-        },
         esports: {
           dark: "#020617",
           card: "#0b1329",
