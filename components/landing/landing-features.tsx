@@ -2,7 +2,6 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ScrollReveal } from '@/components/react-bits/scroll-reveal';
 import { AnimatedContent } from '@/components/react-bits/animated-content';
 import {
   UserCheck,
@@ -18,27 +17,27 @@ export function LandingFeatures() {
   const steps = [
     {
       stepNumber: '01',
-      title: 'Cadastro & Carta FC 26',
+      title: 'Perfil & Card de Atleta Pro',
       description:
-        'Crie sua conta e escolha seu perfil: Jogador ou Dono de Time. Configure o nome do seu boneco, EA ID, plataforma (PS5, Xbox Series ou PC), posição, altura, perna boa e gere sua Carta FC 26 oficial.',
+        'Crie sua conta e escolha seu perfil: Atleta ou Gestor de Equipe. Configure seu personagem, Nick / ID no Jogo, plataforma, atributos de destaque e gere sua Carta Pro oficial.',
       icon: UserCheck,
       link: '/login?mode=signup',
       linkLabel: 'Criar meu perfil',
     },
     {
       stepNumber: '02',
-      title: 'Draft & Agenda sem confusão no WhatsApp',
+      title: 'Draft ao Vivo & Agenda Integrada',
       description:
-        'Entre diretamente em um clube usando o código de convite do seu capitão ou fique disponível no mercado como Agente Livre para a Sala de Draft. Cruze os horários disponíveis dos dois elencos sem discussões.',
+        'Entre diretamente em um time com código de convite ou fique disponível no mercado como Agente Livre para o Draft ao vivo. Calendário e confirmação de partidas sem bagunça.',
       icon: Calendar,
       link: '/login',
       linkLabel: 'Acessar times e agenda',
     },
     {
       stepNumber: '03',
-      title: 'Súmula por IA & Estúdio de Banners',
+      title: 'Súmula por IA & Estúdio de Artes',
       description:
-        'Ao final da partida no EA FC 26, envie o print de desempenho. A IA extrai placar, gols, assistências e notas para validação do capitão adversário e gera banners prontos nos formatos 9:16, 4:5 e 1:1.',
+        'Ao fim do jogo, envie a foto da tela de resultados. A inteligência artificial extrai placar, gols, assistências e estatísticas com validação rápida e gera banners prontos para redes.',
       icon: Camera,
       link: '/login',
       linkLabel: 'Conhecer o estúdio',
@@ -48,66 +47,66 @@ export function LandingFeatures() {
   const capabilities = [
     {
       icon: Shield,
-      title: 'Gestão de Elenco & Rateio',
+      title: 'Gestão de Elenco & Inscrições',
       description:
-        'Capitães acompanham a lista de atletas confirmados, código de convite da equipe, escudo, camisas e controle transparente de inscrições.',
+        'Capitães e gestores acompanham a lista de atletas confirmados, código de acesso da equipe, escudo oficial e controle financeiro das inscrições.',
     },
     {
       icon: Search,
-      title: 'Busca Social de Times & Jogadores',
+      title: 'Busca de Equipes & Atletas',
       description:
-        'Encontre rapidamente qualquer clube ou atleta cadastrado por nome do boneco, posição principal ou disponibilidade.',
+        'Encontre rapidamente qualquer clube ou jogador cadastrado por nome, Nick, posição principal ou disponibilidade para novos campeonatos.',
     },
     {
       icon: Sparkles,
-      title: 'Banners Pós-Jogo em 3 Formatos',
+      title: 'Banners Prontos em Alta Resolução',
       description:
-        'Exporte artes limpas para Story (9:16), Feed Retrato (4:5) ou Quadrado (1:1) com placar, escudos e artilheiros da rodada.',
+        'Exporte artes personalizadas para Story (9:16), Feed (4:5) ou Quadrado (1:1) com placar oficial, escudos e craque do confronto.',
     },
   ];
 
   return (
     <div className="space-y-24 py-20 lg:py-28 max-w-6xl mx-auto px-4 sm:px-6">
-      {/* SEÇÃO 2: COMO FUNCIONA EM 3 PASSOS */}
+      {/* SEÇÃO: COMO FUNCIONA EM 3 PASSOS */}
       <section id="como-funciona" className="space-y-12 scroll-mt-24">
-        <ScrollReveal className="max-w-2xl space-y-3">
-          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold tracking-tight text-white [text-wrap:balance]">
-            Do cadastro do seu boneco à súmula oficial em 3 passos.
+        <AnimatedContent distance={20} className="flex flex-col items-center text-center mx-auto max-w-3xl space-y-3">
+          <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-white leading-[1.15] text-balance text-center">
+            Do cadastro do seu atleta à súmula oficial em 3 passos
           </h2>
-          <p className="text-sm sm:text-base text-[#A1A1AA] leading-relaxed">
-            Fluxo direto pensado para jogadores e capitães de Pro Clubs entrarem em campo sem burocracia.
+          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed text-pretty text-center max-w-2xl mx-auto">
+            Fluxo simplificado pensado para jogadores e capitães entrarem em quadra e campo sem atrito.
           </p>
-        </ScrollReveal>
+        </AnimatedContent>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {steps.map((step, idx) => {
             const Icon = step.icon;
             return (
-              <AnimatedContent key={step.stepNumber} distance={24} delay={idx * 0.08}>
-                <div className="h-full p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] hover:border-white/[0.18] transition-colors flex flex-col justify-between space-y-6">
+              <AnimatedContent key={step.stepNumber} distance={24} delay={idx * 90} className="h-full">
+                <div className="h-full p-6 sm:p-8 rounded-3xl bg-[#1A1A1E] border border-white/[0.08] hover:border-white/[0.18] hover:bg-[#222227] transition-all flex flex-col justify-between space-y-6">
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
-                      <div className="w-10 h-10 rounded-2xl bg-[#141414] border border-white/[0.08] flex items-center justify-center text-white">
-                        <Icon className="w-5 h-5" />
+                      <div className="w-11 h-11 rounded-2xl bg-[#141417] border border-white/[0.08] flex items-center justify-center text-white shadow-xs">
+                        <Icon className="w-5 h-5 text-emerald-400" />
                       </div>
-                      <span className="font-mono text-xs font-semibold text-[#A1A1AA]">
+                      <span className="font-mono text-xs font-semibold text-zinc-400">
                         Passo {step.stepNumber}
                       </span>
                     </div>
 
-                    <h3 className="text-lg font-display font-bold text-white">
+                    <h3 className="text-lg font-display font-bold text-white tracking-tight">
                       {step.title}
                     </h3>
 
-                    <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed">
+                    <p className="text-sm text-zinc-400 leading-relaxed text-pretty">
                       {step.description}
                     </p>
                   </div>
 
-                  <div className="pt-4 border-t border-white/[0.06]">
+                  <div className="pt-4 border-t border-white/[0.08]">
                     <Link
                       href={step.link}
-                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-zinc-300 transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-semibold text-white hover:text-emerald-400 transition-colors"
                     >
                       <span>{step.linkLabel}</span>
                       <ArrowUpRight className="w-3.5 h-3.5" />
@@ -120,32 +119,34 @@ export function LandingFeatures() {
         </div>
       </section>
 
-      {/* RECURSOS CONCISOS */}
-      <section id="recursos" className="space-y-10 scroll-mt-24 pt-4 border-t border-white/[0.08]">
-        <ScrollReveal className="max-w-2xl space-y-2">
-          <h2 className="text-2xl sm:text-3xl font-display font-bold tracking-tight text-white [text-wrap:balance]">
-            Tudo o que sua liga precisa em um só aplicativo.
+      {/* SEÇÃO: RECURSOS DA PLATAFORMA */}
+      <section id="recursos" className="space-y-12 scroll-mt-24 pt-6 border-t border-white/[0.08]">
+        <AnimatedContent distance={20} className="flex flex-col items-center text-center mx-auto max-w-3xl space-y-3">
+          <h2 className="text-3xl sm:text-4xl font-display font-bold tracking-tight text-white leading-[1.15] text-balance text-center">
+            Tudo o que sua liga precisa em uma experiência moderna
           </h2>
-          <p className="text-sm text-[#A1A1AA]">
-            Interface limpa, rápida e focada no que importa para a sua competição.
+          <p className="text-base sm:text-lg text-zinc-400 leading-relaxed text-pretty text-center max-w-2xl mx-auto">
+            Interface rápida, escura e focada na competição e na comunidade.
           </p>
-        </ScrollReveal>
+        </AnimatedContent>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {capabilities.map((item, idx) => {
             const Icon = item.icon;
             return (
-              <AnimatedContent key={item.title} distance={20} delay={idx * 0.08}>
-                <div className="p-6 rounded-3xl bg-[#141414]/60 border border-white/[0.08] space-y-3 h-full">
-                  <div className="w-9 h-9 rounded-xl bg-white/[0.06] border border-white/[0.08] flex items-center justify-center text-white">
-                    <Icon className="w-4 h-4" />
+              <AnimatedContent key={item.title} distance={20} delay={idx * 90} className="h-full">
+                <div className="h-full p-6 sm:p-8 rounded-3xl bg-[#1A1A1E] border border-white/[0.08] hover:border-white/[0.18] hover:bg-[#222227] transition-all flex flex-col justify-between space-y-4">
+                  <div className="w-10 h-10 rounded-2xl bg-[#141417] border border-white/[0.08] flex items-center justify-center text-emerald-400">
+                    <Icon className="w-5 h-5" />
                   </div>
-                  <h3 className="text-base font-display font-bold text-white">
-                    {item.title}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-[#A1A1AA] leading-relaxed">
-                    {item.description}
-                  </p>
+                  <div className="space-y-2">
+                    <h3 className="text-base font-display font-bold text-white tracking-tight">
+                      {item.title}
+                    </h3>
+                    <p className="text-sm text-zinc-400 leading-relaxed text-pretty">
+                      {item.description}
+                    </p>
+                  </div>
                 </div>
               </AnimatedContent>
             );

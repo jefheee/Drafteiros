@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Image from 'next/image';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/components/auth/auth-context';
 import { useLeagueStore, uploadMediaToStorage } from '@/lib/data-store';
@@ -38,6 +39,15 @@ const PLATFORMS = [
   { id: 'PC', label: 'PC (EA App / Steam)' },
 ] as const;
 
+const GAME_MODALITIES = [
+  { id: 'futebol', label: 'Futebol Virtual (EA FC / eFootball)' },
+  { id: 'fps', label: 'FPS / Tiro (CS2, Valorant, R6)' },
+  { id: 'moba', label: 'MOBA (LoL, Dota 2, Wild Rift)' },
+  { id: 'basquete', label: 'Basquete (NBA 2K)' },
+  { id: 'presencial', label: 'Presencial / Fut7 / Society' },
+  { id: 'outro', label: 'Outro eSport' },
+];
+
 export default function OnboardingPage() {
   const router = useRouter();
   const { session, loading: authLoading, refreshSession } = useAuth();
@@ -46,7 +56,8 @@ export default function OnboardingPage() {
   const [step, setStep] = useState<number>(0);
   const [profileType, setProfileType] = useState<'player' | 'captain'>('player');
 
-  // Dados do Jogador / Boneco EA FC 26
+  // Dados do Jogador / Atleta
+  const [gameModality, setGameModality] = useState<string>('futebol');
   const [fullName, setFullName] = useState('');
   const [characterName, setCharacterName] = useState('');
   const [eaTag, setEaTag] = useState('');
@@ -133,7 +144,7 @@ export default function OnboardingPage() {
     setErrorMsg(null);
     if (step === 1) {
       if (!characterName.trim()) {
-        setErrorMsg('Informe o nome do seu boneco (Character Name) no EA FC 26.');
+        setErrorMsg('Informe o nome do seu atleta ou personagem.');
         return;
       }
       if (!eaTag.trim()) {
@@ -336,8 +347,8 @@ export default function OnboardingPage() {
   };
 
   const stepsMeta = [
-    { id: 'role', title: 'Perfil', description: 'Jogador ou Capitão' },
-    { id: 'character', title: 'Quem sou', description: 'Boneco EA FC 26' },
+    { id: 'role', title: 'Perfil', description: 'Atleta ou Gestor' },
+    { id: 'character', title: 'Quem sou', description: 'Atleta & Modalidade' },
     {
       id: 'details',
       title: profileType === 'captain' ? 'Meu Clube' : 'Estilo',
@@ -347,20 +358,25 @@ export default function OnboardingPage() {
   ];
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white flex flex-col justify-between px-4 py-6">
+    <div className="min-h-[100dvh] bg-[#0D0D0F] text-[#F4F4F5] flex flex-col justify-between px-4 py-6">
       <div className="max-w-xl w-full mx-auto space-y-6 my-auto">
         {/* Topo com Logo e Stepper (React Bits) */}
         <div className="space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center font-display font-black text-xs">
-                DC
-              </div>
+              <Image
+                src="/branding/logo-transparent.png"
+                alt="Drafteiros"
+                width={28}
+                height={28}
+                className="rounded-lg object-contain"
+                priority
+              />
               <span className="font-display font-bold text-sm text-white">
                 Configuração de Perfil
               </span>
             </div>
-            <span className="text-xs font-mono text-[#A1A1AA]">
+            <span className="text-xs font-mono text-zinc-400">
               Etapa {step + 1} de 4
             </span>
           </div>
@@ -375,7 +391,7 @@ export default function OnboardingPage() {
         </div>
 
         {/* Card Principal */}
-        <div className="rounded-3xl bg-[#0A0A0A] border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="rounded-3xl bg-[#1A1A1E] border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-6">
           {errorMsg && (
             <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-400 text-xs font-medium">
               {errorMsg}
@@ -389,8 +405,8 @@ export default function OnboardingPage() {
                 <h1 className="text-xl sm:text-2xl font-display font-bold text-white">
                   Qual é o seu perfil?
                 </h1>
-                <p className="text-xs sm:text-sm text-[#A1A1AA]">
-                  Escolha como você vai usar o DraftClub. Você poderá alternar ou adicionar outro perfil depois nas configurações.
+                <p className="text-xs sm:text-sm text-zinc-400">
+                  Escolha como você vai usar o Drafteiros. Você poderá alternar ou adicionar outro perfil depois nas configurações.
                 </p>
               </div>
 
@@ -401,8 +417,8 @@ export default function OnboardingPage() {
                   className={cn(
                     'p-5 rounded-3xl border text-left transition-all flex flex-col justify-between space-y-5',
                     profileType === 'player'
-                      ? 'bg-[#141414] border-white shadow-lg'
-                      : 'bg-[#0A0A0A] border-white/[0.08] hover:border-white/25'
+                      ? 'bg-[#141417] border-white shadow-lg'
+                      : 'bg-[#141417]/40 border-white/[0.08] hover:border-white/25'
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -411,7 +427,7 @@ export default function OnboardingPage() {
                         'w-11 h-11 rounded-2xl flex items-center justify-center border',
                         profileType === 'player'
                           ? 'bg-white text-black border-white'
-                          : 'bg-[#141414] text-white border-white/[0.08]'
+                          : 'bg-[#141417] text-white border-white/[0.08]'
                       )}
                     >
                       <User className="w-5 h-5" />
@@ -426,8 +442,8 @@ export default function OnboardingPage() {
                     <h2 className="text-base font-display font-bold text-white">
                       Jogador / Atleta
                     </h2>
-                    <p className="text-xs text-[#A1A1AA] leading-relaxed">
-                      Crie seu personagem, tenha sua Carta FC 26 oficial e entre em um time com código ou no Draft.
+                    <p className="text-xs text-zinc-400 leading-relaxed">
+                      Crie seu atleta, tenha seu Card Pro oficial e dispute torneios ou entre na Sala de Draft.
                     </p>
                   </div>
                 </button>
@@ -438,8 +454,8 @@ export default function OnboardingPage() {
                   className={cn(
                     'p-5 rounded-3xl border text-left transition-all flex flex-col justify-between space-y-5',
                     profileType === 'captain'
-                      ? 'bg-[#141414] border-white shadow-lg'
-                      : 'bg-[#0A0A0A] border-white/[0.08] hover:border-white/25'
+                      ? 'bg-[#141417] border-white shadow-lg'
+                      : 'bg-[#141417]/40 border-white/[0.08] hover:border-white/25'
                   )}
                 >
                   <div className="flex items-center justify-between">
@@ -448,7 +464,7 @@ export default function OnboardingPage() {
                         'w-11 h-11 rounded-2xl flex items-center justify-center border',
                         profileType === 'captain'
                           ? 'bg-white text-black border-white'
-                          : 'bg-[#141414] text-white border-white/[0.08]'
+                          : 'bg-[#141417] text-white border-white/[0.08]'
                       )}
                     >
                       <Shield className="w-5 h-5" />
@@ -463,7 +479,7 @@ export default function OnboardingPage() {
                     <h2 className="text-base font-display font-bold text-white">
                       Dono de Time / Capitão
                     </h2>
-                    <p className="text-xs text-[#A1A1AA] leading-relaxed">
+                    <p className="text-xs text-zinc-400 leading-relaxed">
                       Cadastre seu clube, suba o escudo, convide seus jogadores por código e envie súmulas.
                     </p>
                   </div>
@@ -472,42 +488,60 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* ETAPA 2: QUEM SOU (DADOS DO BONECO EA FC 26) */}
+          {/* ETAPA 2: QUEM SOU (DADOS DO ATLETA E MODALIDADE) */}
           {step === 1 && (
             <div className="space-y-5">
               <div className="space-y-1">
                 <h1 className="text-xl sm:text-2xl font-display font-bold text-white">
-                  Quem sou em campo
+                  Quem sou na competição
                 </h1>
-                <p className="text-xs sm:text-sm text-[#A1A1AA]">
-                  Informe os dados do seu personagem no EA Sports FC 26 para gerar sua Carta Pro.
+                <p className="text-xs sm:text-sm text-zinc-400">
+                  Informe os dados do seu atleta para gerar seu Card Pro oficial.
                 </p>
+              </div>
+
+              {/* Jogo / Modalidade */}
+              <div className="space-y-1.5">
+                <label className="text-xs font-medium text-zinc-300 block">
+                  Jogo / Modalidade
+                </label>
+                <select
+                  value={gameModality}
+                  onChange={(e) => setGameModality(e.target.value)}
+                  className="w-full h-11 px-3.5 rounded-2xl bg-[#141417] border border-white/[0.08] text-sm font-semibold text-white focus:outline-none"
+                >
+                  {GAME_MODALITIES.map((mod) => (
+                    <option key={mod.id} value={mod.id}>
+                      {mod.label}
+                    </option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-zinc-300 block">
-                    Nome do Boneco (Carta & Súmula) *
+                    Nome / Apelido no Card *
                   </label>
                   <input
                     type="text"
                     value={characterName}
                     onChange={(e) => setCharacterName(e.target.value.toUpperCase())}
                     placeholder="Ex: JEFHE"
-                    className="w-full h-11 px-3.5 rounded-2xl bg-[#141414] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm font-semibold text-white uppercase"
+                    className="w-full h-11 px-3.5 rounded-2xl bg-[#141417] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm font-semibold text-white uppercase"
                   />
                 </div>
 
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-zinc-300 block">
-                    EA ID / Gamertag *
+                    Nick / ID no Jogo *
                   </label>
                   <input
                     type="text"
                     value={eaTag}
                     onChange={(e) => setEaTag(e.target.value)}
                     placeholder="Ex: Jefhe_Pro"
-                    className="w-full h-11 px-3.5 rounded-2xl bg-[#141414] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white"
+                    className="w-full h-11 px-3.5 rounded-2xl bg-[#141417] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white"
                   />
                 </div>
               </div>
@@ -735,8 +769,8 @@ export default function OnboardingPage() {
                     <h1 className="text-xl sm:text-2xl font-display font-bold text-white">
                       Estilo de Jogo & Foto
                     </h1>
-                    <p className="text-xs sm:text-sm text-[#A1A1AA]">
-                      Escolha seu arquétipo principal e adicione uma foto opcional para sua Carta FC 26.
+                    <p className="text-xs sm:text-sm text-zinc-400">
+                      Escolha seu arquétipo principal e adicione uma foto opcional para sua Carta Pro.
                     </p>
                   </div>
 
@@ -784,10 +818,10 @@ export default function OnboardingPage() {
                     </div>
                     <div className="space-y-1.5">
                       <span className="text-xs font-semibold text-white block">
-                        Foto do Boneco ou Perfil (Opcional)
+                        Foto do Atleta ou Perfil (Opcional)
                       </span>
-                      <p className="text-[11px] text-[#A1A1AA]">
-                        Você poderá atualizar ou ajustar os atributos na aba da sua Carta FC 26.
+                      <p className="text-[11px] text-zinc-400">
+                        Você poderá atualizar ou ajustar os atributos na aba do seu Card Pro.
                       </p>
                       <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors">
                         <Upload className="w-3.5 h-3.5" />

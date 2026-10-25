@@ -6,6 +6,7 @@ import { LeagueDataProvider } from '@/lib/data-store';
 import { Header } from '@/components/layout/header';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { PwaRegisterAndGatekeeper } from '@/components/pwa-register';
+import { ClickSpark } from '@/components/react-bits/click-spark';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -29,7 +30,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const viewport: Viewport = {
-  themeColor: '#000000',
+  themeColor: '#0D0D0F',
   width: 'device-width',
   initialScale: 1,
   maximumScale: 1,
@@ -37,17 +38,31 @@ export const viewport: Viewport = {
 };
 
 export const metadata: Metadata = {
-  title: 'DraftClub — Ligas EA Sports FC 26, Draft & Cartas Pro',
+  metadataBase: new URL('https://drafteiros.vercel.app'),
+  title: 'Drafteiros — Campeonatos, Draft e Gestão de Equipes',
   description:
-    'Crie sua Carta FC 26, cadastre seu clube ou entre como Free Agent. Gestão de ligas, Draft estilo NBA, súmula por IA e estúdio de banners.',
+    'Plataforma oficial de campeonatos, draft, súmula por IA e gestão de elencos.',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'DraftClub',
+    title: 'Drafteiros',
+  },
+  openGraph: {
+    title: 'Drafteiros — Campeonatos, Draft e Gestão de Equipes',
+    description:
+      'Plataforma oficial de campeonatos, draft, súmula por IA e gestão de elencos.',
+    images: [
+      {
+        url: '/og-image.jpg',
+        width: 1376,
+        height: 768,
+        alt: 'Drafteiros',
+      },
+    ],
   },
   icons: {
     icon: [
-      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-192x192.png', sizes: '192x192', type: 'image/png' },
       { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
     ],
     apple: [
@@ -67,13 +82,15 @@ export default function RootLayout({
       className={`${jakarta.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}
       suppressHydrationWarning
     >
-      <body className="font-sans antialiased bg-black text-white min-h-screen flex flex-col selection:bg-white/20 selection:text-white">
+      <body className="font-sans antialiased bg-[#0D0D0F] text-[#F4F4F5] min-h-screen flex flex-col selection:bg-white/20 selection:text-white">
         <AuthProvider>
           <LeagueDataProvider>
             <PwaRegisterAndGatekeeper>
-              <Header />
-              <div className="flex-1 flex flex-col">{children}</div>
-              <BottomNav />
+              <ClickSpark sparkColor="#FFFFFF" sparkCount={8} sparkRadius={26}>
+                <Header />
+                <div className="flex-1 flex flex-col">{children}</div>
+                <BottomNav />
+              </ClickSpark>
             </PwaRegisterAndGatekeeper>
           </LeagueDataProvider>
         </AuthProvider>

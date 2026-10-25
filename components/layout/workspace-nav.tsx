@@ -7,7 +7,7 @@ import { cn } from '@/lib/utils';
 import { User, Shield, Users, Settings, Sparkles } from 'lucide-react';
 
 const WORKSPACE_TABS = [
-  { href: '/player', label: 'Minha Carta FC 26', icon: User },
+  { href: '/player', label: 'Meu Card Pro', icon: User },
   { href: '/captain', label: 'Meu Clube', icon: Shield },
   { href: '/draft-board', label: 'Sala de Draft', icon: Users },
   { href: '/studio', label: 'Estúdio de Banners', icon: Sparkles },

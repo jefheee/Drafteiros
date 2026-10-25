@@ -2,23 +2,31 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export function LandingFooter() {
   return (
-    <footer className="border-t border-white/[0.08] bg-black py-10 px-4 sm:px-6">
-      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#A1A1AA]">
+    <footer className="border-t border-white/[0.08] bg-[#0D0D0F] py-10 px-4 sm:px-6">
+      <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-zinc-400">
         <div className="flex items-center gap-2.5">
-          <div className="w-6 h-6 rounded-lg bg-white text-black flex items-center justify-center font-display font-black text-[10px]">
-            DC
-          </div>
-          <span className="font-semibold text-white">DraftClub</span>
+          <Image
+            src="/branding/logo-transparent.png"
+            alt="Drafteiros"
+            width={24}
+            height={24}
+            className="rounded-md object-contain"
+          />
+          <span className="font-semibold text-white">Drafteiros</span>
           <span>•</span>
-          <span>Plataforma para Ligas EA Sports FC 26</span>
+          <span>Plataforma Oficial de Campeonatos, Draft & Gestão de Equipes</span>
         </div>
 
         <div className="flex items-center gap-6">
           <a href="#como-funciona" className="hover:text-white transition-colors">
             Como Funciona
+          </a>
+          <a href="#recursos" className="hover:text-white transition-colors">
+            Recursos
           </a>
           <a href="#duvidas" className="hover:text-white transition-colors">
             Dúvidas

@@ -37,14 +37,14 @@ export function BottomNav() {
     { href: '/dashboard', label: 'Início', icon: Home },
     { href: '/players', label: 'Buscar', icon: Search },
     { href: '/matches', label: 'Partidas', icon: Calendar },
-    { href: '/player', label: 'Carta FC 26', icon: IdCard },
+    { href: '/player', label: 'Carta Pro', icon: IdCard },
     { href: profileHref, label: 'Perfil', icon: User },
   ];
 
   return (
     <nav
       aria-label="Navegação inferior móvel"
-      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur-xl border-t border-white/[0.08] px-2 pb-safe"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-[#0D0D0F]/95 backdrop-blur-xl border-t border-white/[0.08] px-2 pb-safe"
     >
       <div className="max-w-md mx-auto h-16 grid grid-cols-5 items-center">
         {items.map((item) => {

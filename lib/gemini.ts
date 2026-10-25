@@ -287,17 +287,17 @@ export function getMockRoleplay(params: {
         whatsapp_text: `📋 *COMUNICADO OFICIAL — ${team.toUpperCase()}*\n\nInformamos à imprensa e aos torcedores que o elenco fechou a preparação para a sequência da Liga 5x5 LPF (${score})${extra}.\n\nSob comando de *${player}*, o clube reafirma o foco total na classificação para o G4 e na premiação máxima da temporada.\n\n🎙️ *Assessoria — ${team}*`,
         instagram_caption: `Comunicado Oficial: foco 100% na classificação para as semifinais! O ${team} segue firme no projeto. 🛡️⚡`,
         comunicado_graphic_text: `A presidência do ${team} informa que o elenco concluiu a preparação tática para a rodada decisiva da Liga 5x5 LPF. Sob liderança de ${player}, buscamos a liderança isolada da temporada.`,
-        hashtags: ['#ComunicadoOficial', '#ProClubs', '#EAFC26', '#FuriaDelPlata'],
+        hashtags: ['#ComunicadoOficial', '#Drafteiros', '#Campeonato'],
         used_mock: true,
       };
 
     case 'anuncio_contratacao':
       return {
         title: `BEM-VINDO AO CLUBE — ${player.toUpperCase()}`,
-        whatsapp_text: `🚨 *HERE WE GO! CONTRATAÇÃO OFICIAL!* 🚨\n\nAcabou a novela no Draft! *${player}* é o novo reforço oficial do *${team}* para a temporada do EA FC 26${extra}!\n\nO craque já teve o registro liberado na Liga LPF 5x5 e estreia hoje mesmo!\n\n✍️ *"Vim pra fazer história e buscar esse troféu!"* — ${player}`,
-        instagram_caption: `CONTRATADO! ✍️🔥 ${player} chega para reforçar o elenco do ${team} na disputa pelo título da Liga 5x5! 🚀⚽`,
-        comunicado_graphic_text: `CONTRATAÇÃO OFICIAL! O ${team} anuncia a chegada de ${player} para a disputa da Liga 5x5 LPF no EA FC 26. Bem-vindo ao gigante!`,
-        hashtags: ['#Contratado', '#DraftProClubs', '#NovoReforco', '#EAFC26'],
+        whatsapp_text: `🚨 *HERE WE GO! CONTRATAÇÃO OFICIAL!* 🚨\n\nAcabou a novela no Draft! *${player}* é o novo reforço oficial do *${team}* para a temporada oficial${extra}!\n\nO craque já teve o registro liberado na Liga e estreia hoje mesmo!\n\n✍️ *"Vim pra fazer história e buscar esse troféu!"* — ${player}`,
+        instagram_caption: `CONTRATADO! ✍️🔥 ${player} chega para reforçar o elenco do ${team} na disputa pelo título! 🚀⚽`,
+        comunicado_graphic_text: `CONTRATAÇÃO OFICIAL! O ${team} anuncia a chegada de ${player} para a disputa do campeonato oficial. Bem-vindo ao time!`,
+        hashtags: ['#Contratado', '#DraftAoVivo', '#NovoReforco', '#Drafteiros'],
         used_mock: true,
       };
 
@@ -305,10 +305,10 @@ export function getMockRoleplay(params: {
     default:
       return {
         title: `FALA, CRAQUE! — ${player.toUpperCase()}`,
-        whatsapp_text: `🎙️ *ZONA MISTA EA FC 26 — ENTREVISTA PÓS-JOGO*\n\n⚽ *Placar Final:* ${team} ${score} ${rival}\n⭐ *Craque em Destaque:* ${player}\n\n💬 *"Sabíamos que o jogo contra o ${rival} seria decidido nos detalhes${extra}. Nossa tabela curta no 5x5 encaixou e seguimos fortes na competição!"*`,
-        instagram_caption: `Fala, Craque! 🎙️⭐ Palavras de quem deixou tudo em campo pelo ${team}! ⚽🏆`,
-        comunicado_graphic_text: `"Nossa equipe mostrou entrega do início ao fim diante do ${rival} (${score}). Seguimos focados no topo da Liga 5x5 LPF!" — ${player}.`,
-        hashtags: ['#ZonaMista', '#CraqueDoJogo', '#MOTM', '#EAFC26', '#ProClubs'],
+        whatsapp_text: `🎙️ *ZONA MISTA DRAFTEIROS — ENTREVISTA PÓS-JOGO*\n\n⚽ *Placar Final:* ${team} ${score} ${rival}\n⭐ *Craque em Destaque:* ${player}\n\n💬 *"Sabíamos que o jogo contra o ${rival} seria decidido nos detalhes${extra}. Nosso entrosamento encaixou e seguimos fortes na competição!"*`,
+        instagram_caption: `Fala, Craque! 🎙️⭐ Palavras de quem deixou tudo em campo pelo ${team}! 🏆`,
+        comunicado_graphic_text: `"Nossa equipe mostrou entrega do início ao fim diante do ${rival} (${score}). Seguimos focados no topo da competição!" — ${player}.`,
+        hashtags: ['#ZonaMista', '#CraqueDoJogo', '#MOTM', '#Drafteiros'],
         used_mock: true,
       };
   }
@@ -348,7 +348,7 @@ export function getMockCharacterPrompt(params: {
       'Gemini 2.5 Flash Multimodal',
       'Fidelidade Rosto + Corpo + Uniforme',
       'Zero Patrocinadores',
-      'EA FC 26 Frostbite 8K',
+      'Hiper Realismo de Estádio 8K',
     ],
     generated_image_url: null,
     external_generators: [

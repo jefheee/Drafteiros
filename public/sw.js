@@ -1,9 +1,10 @@
-const CACHE_NAME = 'draftclub-pro-v2';
+const CACHE_NAME = 'drafteiros-v1';
 const STATIC_ASSETS = [
   '/login',
-  '/icons/icon-192.png',
+  '/icons/icon-192x192.png',
   '/icons/icon-512.png',
   '/icons/apple-touch-icon.png',
+  '/branding/logo-transparent.png',
 ];
 
 self.addEventListener('install', (event) => {

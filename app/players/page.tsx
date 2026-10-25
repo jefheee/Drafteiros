@@ -103,7 +103,7 @@ export default function SearchPlayersAndTeamsPage() {
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={
               activeTab === 'players'
-                ? 'Buscar jogador por Nome do Boneco ou EA ID...'
+                ? 'Buscar atleta por Nome ou Nick / ID no Jogo...'
                 : 'Buscar time pelo nome ou sigla...'
             }
             className="w-full h-12 pl-11 pr-10 rounded-2xl bg-[#141414] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white placeholder:text-zinc-500 transition-colors"

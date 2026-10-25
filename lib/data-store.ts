@@ -59,7 +59,7 @@ export type TournamentFinanceEntry = TournamentFinance;
 
 const EMPTY_TOURNAMENT_PLACEHOLDER: Tournament = {
   id: '',
-  name: 'Temporada DraftClub',
+  name: 'Temporada Drafteiros',
   season_label: 'Temporada Oficial',
   format: '5v5_round_robin_playoffs',
   format_label: '5x5 • Pontos Corridos + Playoffs',
@@ -389,7 +389,7 @@ export function LeagueDataProvider({
   const createNewTournament = useCallback(
     async (data: Partial<Tournament>): Promise<Tournament | null> => {
       const payload = {
-        name: data.name || 'Nova Temporada EA FC 26',
+        name: data.name || 'Nova Temporada Drafteiros',
         season_label: data.season_label || 'Temporada 2026',
         format: data.format || '5v5_round_robin_playoffs',
         format_label: data.format_label || '5x5 • Pontos Corridos + Playoffs',

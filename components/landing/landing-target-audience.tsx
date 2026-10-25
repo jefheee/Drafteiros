@@ -50,10 +50,10 @@ export function LandingTargetAudience() {
     {
       badge: 'ATLETAS VIRTUAIS',
       status: 'online' as const,
-      statusLabel: 'Ficha FC 26',
-      title: 'Jogadores de Pro Clubs',
+      statusLabel: 'Ficha Pro',
+      title: 'Atletas Competitivos',
       description:
-        'Construa sua reputação no cenário competitivo. Receba sua própria Carta Oficial estilo EA FC 26 Ultimate Team com OVR dinâmico, notas médias por partida e PlayStyles+.',
+        'Construa sua reputação no cenário competitivo. Receba sua própria Carta Oficial com OVR dinâmico, notas médias por partida e atributos auditados.',
       benefits: [
         'Carta personalizada com OVR, foto e arquétipo',
         'Estatísticas auditadas de gols, assistências e notas de cada jogo',
@@ -92,14 +92,14 @@ export function LandingTargetAudience() {
           </div>
 
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-black tracking-tight text-white leading-tight">
-            FEITO SOB MEDIDA PARA CADA PAPEL DO{' '}
+            FEITO SOB MEDIDA PARA O{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-[#00E599]">
-              PRO CLUBS.
+              SEU CAMPEONATO.
             </span>
           </h2>
 
           <p className="text-zinc-400 text-sm sm:text-base max-w-2xl mx-auto">
-            Seja você o organizador que busca tranquilidade, o capitão que lidera o elenco ou o atleta que quer brilhar nas estatísticas, o DraftClub resolve a sua rotina.
+            Seja você o organizador que busca tranquilidade, o capitão que lidera o elenco ou o atleta que quer brilhar nas estatísticas, o Drafteiros resolve a sua rotina.
           </p>
         </div>
 

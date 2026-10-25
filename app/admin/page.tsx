@@ -79,7 +79,7 @@ export default function AdminDashboardPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           eventType: 'registration_approved',
-          recipients: ['capitao@draftclub.pro'],
+          recipients: ['capitao@drafteiros.com'],
           customMessage: `O recebimento integral de R$ ${entryFee.toFixed(
             2
           )} da equipe "${teamName}" foi confirmado pelo Admin. Sua equipe está oficialmente liberada na competição!`,
@@ -135,13 +135,14 @@ export default function AdminDashboardPage() {
       titlesToAdd: legacyTitles,
     });
     setFeedbackBanner(
-      `Histórico Antigo creditado para "${selectedLegacyPlayer.character_name}" (+${legacyGoals} gols, +${legacyAssists} assists, +${legacyTitles} títulos)! OVR da Carta FC 26 atualizado automaticamente.`
+      `Histórico Antigo creditado para "${selectedLegacyPlayer.character_name}" (+${legacyGoals} gols, +${legacyAssists} assists, +${legacyTitles} títulos)! OVR da Carta Pro atualizado automaticamente.`
     );
     setTimeout(() => setFeedbackBanner(null), 5000);
   };
 
   // ABA 3: CRIADOR DE CAMPEONATOS & CHAVEAMENTO
-  const [champName, setChampName] = useState(tournament?.name || 'DraftClub — Temporada Oficial');
+  const [champName, setChampName] = useState(tournament?.name || 'Drafteiros — Temporada Oficial');
+  const [gameCategory, setGameCategory] = useState<string>('futebol');
   const [gameMode, setGameMode] = useState(tournament?.game_mode || '5v5');
   const [startersCount, setStartersCount] = useState<number>(
     tournament?.starters_count || 5
@@ -232,7 +233,7 @@ export default function AdminDashboardPage() {
     | 'custom_broadcast'
   >('registration_approved');
   const [emailRecipientsText, setEmailRecipientsText] = useState(
-    'capitao@draftclub.pro, atleta@draftclub.pro'
+    'capitao@drafteiros.com, atleta@drafteiros.com'
   );
   const [emailCustomMessage, setEmailCustomMessage] = useState(
     'Inscrições abertas! Crie sua conta, cadastre seu personagem e entre no seu clube.'
@@ -617,7 +618,7 @@ export default function AdminDashboardPage() {
                   >
                     <Sparkles className="w-4 h-4" />
                     <span>
-                      Creditar Histórico & Atualizar Carta FC 26 de{' '}
+                      Creditar Histórico & Atualizar Card Pro de{' '}
                       {selectedLegacyPlayer?.character_name}
                     </span>
                   </button>
@@ -631,7 +632,7 @@ export default function AdminDashboardPage() {
                   <div className="w-full flex items-center justify-between">
                     <div>
                       <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                        Carta FC 26 do Atleta
+                        Card Pro do Atleta
                       </span>
                       <h3 className="text-sm font-display font-black text-white">
                         {selectedLegacyPlayer.character_name} • OVR {currentLegacyMacro?.finalOvr}
@@ -651,7 +652,7 @@ export default function AdminDashboardPage() {
                 </>
               ) : (
                 <div className="py-12 text-center text-xs text-zinc-500">
-                  Selecione um jogador para visualizar sua Carta FC 26.
+                  Selecione um jogador para visualizar seu Card Pro.
                 </div>
               )}
             </aside>
@@ -793,26 +794,46 @@ export default function AdminDashboardPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="text-[10px] font-bold uppercase text-zinc-400 block mb-1">
-                    Modalidade em Campo
-                  </label>
-                  <select
-                    value={gameMode}
-                    onChange={(e) => {
-                      const mode = e.target.value;
-                      setGameMode(mode);
-                      const num = parseInt(mode.split('v')[0], 10);
-                      if (!isNaN(num)) setStartersCount(num);
-                    }}
-                    className="w-full h-10 px-3 rounded-xl bg-[#141414] border border-white/10 text-xs font-bold text-white"
-                  >
-                    <option value="3v3">3v3 (Arena Rápida)</option>
-                    <option value="4v4">4v4 (Futebol Compacto)</option>
-                    <option value="5v5">5v5 (Rush / Clubs)</option>
-                    <option value="7v7">7v7 (Society Pro)</option>
-                    <option value="11v11">11v11 (Pro Clubs Oficial)</option>
-                  </select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-zinc-400 block mb-1">
+                      Jogo / Modalidade
+                    </label>
+                    <select
+                      value={gameCategory}
+                      onChange={(e) => setGameCategory(e.target.value)}
+                      className="w-full h-10 px-3 rounded-xl bg-[#141414] border border-white/10 text-xs font-bold text-white"
+                    >
+                      <option value="futebol">Futebol Virtual (EA FC / eFootball)</option>
+                      <option value="fps">FPS / Tiro (CS2, Valorant, R6)</option>
+                      <option value="moba">MOBA (LoL, Dota 2, Wild Rift)</option>
+                      <option value="basquete">Basquete (NBA 2K)</option>
+                      <option value="presencial">Presencial / Fut7 / Society</option>
+                      <option value="outro">Outro eSport</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="text-[10px] font-bold uppercase text-zinc-400 block mb-1">
+                      Formato de Confronto
+                    </label>
+                    <select
+                      value={gameMode}
+                      onChange={(e) => {
+                        const mode = e.target.value;
+                        setGameMode(mode);
+                        const num = parseInt(mode.split('v')[0], 10);
+                        if (!isNaN(num)) setStartersCount(num);
+                      }}
+                      className="w-full h-10 px-3 rounded-xl bg-[#141414] border border-white/10 text-xs font-bold text-white"
+                    >
+                      <option value="3v3">3v3 (Arena Rápida)</option>
+                      <option value="4v4">4v4 (Compacto)</option>
+                      <option value="5v5">5v5 (Rush / Equipes)</option>
+                      <option value="7v7">7v7 (Society Pro)</option>
+                      <option value="11v11">11v11 (Elenco Completo)</option>
+                    </select>
+                  </div>
                 </div>
               </div>
 

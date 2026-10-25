@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { fetchClubMatches, fetchClubMembers, parseEAMatchToDraftClub } from '@/lib/ea-api';
+import { fetchClubMatches, fetchClubMembers, parseEAMatchToDrafteiros } from '@/lib/ea-api';
 
 export async function POST(request: Request) {
   try {
@@ -20,7 +20,7 @@ export async function POST(request: Request) {
 
     // Formatar partidas recentes se houver contexto de torneio
     const parsedMatches = tournamentId && homeTeamId && awayTeamId && matches.length > 0
-      ? matches.slice(0, 5).map(m => parseEAMatchToDraftClub(m, tournamentId, homeTeamId, awayTeamId))
+      ? matches.slice(0, 5).map(m => parseEAMatchToDrafteiros(m, tournamentId, homeTeamId, awayTeamId))
       : [];
 
     return NextResponse.json({

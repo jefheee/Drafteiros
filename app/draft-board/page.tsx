@@ -206,7 +206,7 @@ export default function OfficialDraftBoardPage() {
                 Sala de Draft Oficial & Mercadão
               </h1>
               <p className="text-xs text-zinc-400">
-                Ordem Snake Draft entre clubes cadastrados • Inspecione a Carta FC 26 de qualquer jogador antes de convocar.
+                Ordem Snake Draft entre clubes cadastrados • Inspecione o Card Pro de qualquer atleta antes de convocar.
               </p>
             </div>
 
@@ -472,7 +472,7 @@ export default function OfficialDraftBoardPage() {
                       className="py-2 px-3 rounded-full bg-[#141414] hover:border-white/30 border border-white/10 text-[11px] font-bold text-white flex items-center gap-1 transition-all"
                     >
                       <Sparkles className="w-3 h-3" />
-                      <span>Carta FC 26</span>
+                      <span>Carta Pro</span>
                     </button>
 
                     <button
@@ -510,7 +510,7 @@ export default function OfficialDraftBoardPage() {
 
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-white text-xs font-bold uppercase">
                 <Sparkles className="w-3.5 h-3.5" />
-                Scouting Report • Carta Oficial EA FC 26
+                Scouting Report • Card Oficial de Atleta Pro
               </div>
 
               <FC26PlayerCard

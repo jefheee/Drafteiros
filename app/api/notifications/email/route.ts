@@ -19,33 +19,33 @@ const DEFAULT_TEMPLATES: Record<
   { subject: string; preview: string }
 > = {
   account_registered: {
-    subject: '✅ Bem-vindo ao DraftClub Pro Clubs — Conta Multi-Perfil Ativada!',
+    subject: '✅ Bem-vindo ao Drafteiros — Conta Multi-Perfil Ativada!',
     preview:
-      'Sua conta única de Atleta / Capitão foi criada com sucesso. Configure sua Build e AcceleRATE 2.0!',
+      'Sua conta de Atleta / Capitão foi criada com sucesso. Configure sua Carta Pro e participe do campeonato!',
   },
   registration_approved: {
-    subject: '🏆 Inscrição Integral Confirmada — Equipe Liberada no Campeonato!',
+    subject: '🏆 Inscrição Confirmada — Equipe Liberada no Campeonato!',
     preview:
-      'O responsável da liga confirmou o recebimento integral da inscrição da sua equipe. Bom campeonato!',
+      'A coordenação da liga confirmou a inscrição da sua equipe. Bom campeonato!',
   },
   match_scheduled: {
-    subject: '📅 Match de Horário Confirmado — Partida Agendada!',
+    subject: '📅 Horário Confirmado — Partida Agendada!',
     preview:
-      'Os dois capitães fecharam a janela de horário da rodada pelo Tinder de Horários.',
+      'Os dois capitães fecharam a janela de horário da rodada na agenda do Drafteiros.',
   },
   sumula_pending: {
     subject: '📸 Súmula Lançada por IA — Aguardando Dupla Validação',
     preview:
-      'O print de desempenho pós-jogo foi processado pelo Gemini Vision. Acesse Jogos para aprovar.',
+      'O print de desempenho pós-jogo foi processado por inteligência artificial. Acesse Partidas para aprovar.',
   },
   draft_order_drawn: {
-    subject: '🎲 Sorteio Oficial da Ordem do Draft Concluído (Snake Draft)',
+    subject: '🎲 Sorteio Oficial da Ordem do Draft Concluído',
     preview:
-      'A ordem de escolha dos capitães para os +40 atletas foi sorteada. Entre na Sala de Draft!',
+      'A ordem de escolha das equipes foi sorteada. Acesse a Sala de Draft!',
   },
   custom_broadcast: {
-    subject: '📢 Comunicado Oficial da Organização da Liga',
-    preview: 'Mensagem oficial enviada pelo Administrador do Campeonato.',
+    subject: '📢 Comunicado Oficial da Organização',
+    preview: 'Mensagem oficial enviada pela coordenação do campeonato.',
   },
 };
 
@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     const eventType = body.eventType || 'custom_broadcast';
     const recipients = Array.isArray(body.recipients) && body.recipients.length > 0
       ? body.recipients
-      : ['capitao@draftclub.pro', 'atleta@draftclub.pro', 'admin@draftclub.pro'];
+      : ['contato@drafteiros.com'];
 
     const template = DEFAULT_TEMPLATES[eventType] || DEFAULT_TEMPLATES.custom_broadcast;
     const finalSubject = body.subject || template.subject;
@@ -73,14 +73,14 @@ export async function POST(request: Request) {
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            from: 'DraftClub Pro <notificacoes@draftclub.pro>',
+            from: 'Drafteiros <notificacoes@drafteiros.com>',
             to: recipients,
             subject: finalSubject,
-            html: `<div style="font-family:Inter,sans-serif;padding:24px;background:#F5F6FA;border-radius:16px;">
-              <h2 style="color:#7C5CFC;margin:0 0 12px 0;">${finalSubject}</h2>
-              <p style="color:#18181B;font-size:14px;line-height:1.6;">${finalMessage}</p>
-              <hr style="border:none;border-top:1px solid #E4E4E7;margin:16px 0;" />
-              <small style="color:#71717A;">DraftClub EA FC 26 Pro Clubs • 100% Premiação</small>
+            html: `<div style="font-family:Inter,sans-serif;padding:24px;background:#0D0D0F;color:#F4F4F5;border-radius:16px;">
+              <h2 style="color:#FFFFFF;margin:0 0 12px 0;">${finalSubject}</h2>
+              <p style="color:#A1A1AA;font-size:14px;line-height:1.6;">${finalMessage}</p>
+              <hr style="border:none;border-top:1px solid rgba(255,255,255,0.1);margin:16px 0;" />
+              <small style="color:#71717A;">Drafteiros • Plataforma Oficial de Campeonatos e Draft</small>
             </div>`,
           }),
         });

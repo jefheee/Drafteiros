@@ -421,7 +421,7 @@ export default function PlayerProfilePage() {
     }
     setSaveSuccess(
       type === 'face'
-        ? 'Foto do Rosto salva e aplicada na sua Carta FC 26!'
+        ? 'Foto do Rosto salva e aplicada na sua Carta Pro!'
         : 'Foto de Corpo Inteiro salva!'
     );
     setTimeout(() => setSaveSuccess(null), 4000);
@@ -445,7 +445,7 @@ export default function PlayerProfilePage() {
       const json = await res.json();
       if (json.ok && json.data?.generatedImageUrl) {
         setAvatarFaceUrl(json.data.generatedImageUrl);
-        setSaveSuccess('Retrato otimizado com IA aplicado na sua Carta FC 26!');
+        setSaveSuccess('Retrato otimizado com IA aplicado na sua Carta Pro!');
       } else {
         setSaveSuccess('Recorte de busto FC 26 calibrado na sua foto atual!');
       }
@@ -536,7 +536,7 @@ export default function PlayerProfilePage() {
     }
 
     setSaveSuccess(
-      `Carta FC 26 (${fc26Macro.finalOvr} OVR) e ficha de "${characterName}" salvas no banco!`
+      `Carta Pro (${fc26Macro.finalOvr} OVR) e ficha de "${characterName}" salvas no banco!`
     );
     setTimeout(() => setSaveSuccess(null), 4000);
   };
@@ -923,7 +923,7 @@ export default function PlayerProfilePage() {
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span className="text-[11px] font-mono uppercase tracking-wider text-[#A1A1AA]">
-                          Calculadora EA FC 26 Clubs
+                          Calculadora de Índices do Atleta
                         </span>
                         <span className="px-2.5 py-0.5 rounded-full bg-white text-black text-[11px] font-bold">
                           AcceleRATE: {accelerateAnalysis.primaryType}
@@ -1162,7 +1162,7 @@ export default function PlayerProfilePage() {
                       Qualidades do Atleta (31 Atributos)
                     </h2>
                     <p className="text-xs text-[#A1A1AA]">
-                      Ajuste os atributos do seu boneco para recalcular os 6 índices da sua Carta FC 26
+                      Ajuste os atributos do seu atleta para recalcular os 6 índices da sua Carta Pro
                     </p>
                   </div>
 
@@ -1225,7 +1225,7 @@ export default function PlayerProfilePage() {
               <section className="p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
                 <div>
                   <h2 className="text-base font-display font-bold text-white">
-                    Coleção Oficial de Cartas EA FC 26 ({CARD_DESIGN_ASSETS.length} Designs)
+                    Coleção Oficial de Cartas Pro ({CARD_DESIGN_ASSETS.length} Designs)
                   </h2>
                   <p className="text-xs text-[#A1A1AA]">
                     Clique em qualquer carta abaixo para equipar na sua ficha.
@@ -1303,7 +1303,7 @@ export default function PlayerProfilePage() {
                     Fotos do Personagem
                   </h2>
                   <p className="text-xs text-[#A1A1AA]">
-                    Suba a foto do rosto do seu boneco para a Carta FC 26 e a foto de corpo inteiro para o Estúdio de Banners.
+                    Suba a foto do rosto do seu atleta para a Carta Pro e a foto de corpo inteiro para o Estúdio de Banners.
                   </p>
                 </div>
 
@@ -1311,10 +1311,10 @@ export default function PlayerProfilePage() {
                   <div className="p-4 rounded-3xl bg-[#141414] border border-white/[0.08] space-y-3 flex flex-col justify-between">
                     <div className="space-y-1">
                       <h3 className="text-sm font-bold text-white">
-                        Foto do Rosto / Busto (Carta FC 26)
+                        Foto do Rosto / Busto (Carta Pro)
                       </h3>
                       <p className="text-xs text-[#A1A1AA]">
-                        Exibida no centro superior da sua Carta FC 26.
+                        Exibida no centro superior da sua Carta Pro.
                       </p>
                     </div>
 

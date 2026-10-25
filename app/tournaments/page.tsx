@@ -88,7 +88,7 @@ export default function TournamentsPage() {
             <div className="p-4 rounded-2xl bg-[#141414] border border-white/[0.06] space-y-1">
               <span className="font-semibold text-white block">4. Dupla Validação</span>
               <p className="text-[#A1A1AA]">
-                Súmula lida por IA a partir do print pós-jogo do EA FC 26 e confirmada pelos capitães.
+                Súmula lida por IA a partir do print pós-jogo e confirmada pelos capitães.
               </p>
             </div>
           </div>

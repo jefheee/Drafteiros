@@ -128,7 +128,7 @@ export function LandingComparison() {
           </div>
         </div>
 
-        {/* Hoje no DraftClub */}
+        {/* Hoje no Drafteiros */}
         <div className="rounded-3xl bg-gradient-to-b from-[#14171f] to-[#161a24] border border-[#00E599]/30 p-6 sm:p-8 space-y-6 relative overflow-hidden shadow-2xl shadow-emerald-500/10 backdrop-blur-md flex flex-col justify-between">
           <div className="space-y-6">
             <div className="flex items-center justify-between pb-4 border-b border-emerald-500/20">
@@ -141,7 +141,7 @@ export function LandingComparison() {
                     A NOVA ERA
                   </span>
                   <h3 className="text-lg font-display font-black text-white">
-                    Com a Plataforma DraftClub
+                    Com a Plataforma Drafteiros
                   </h3>
                 </div>
               </div>

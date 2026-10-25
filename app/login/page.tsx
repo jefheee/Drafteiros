@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useAuth } from '@/components/auth/auth-context';
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Loader2 } from 'lucide-react';
@@ -79,10 +80,10 @@ function LoginContent() {
   };
 
   return (
-    <div className="min-h-[100dvh] bg-black text-white flex flex-col justify-between px-4 py-6 relative overflow-hidden">
+    <div className="min-h-[100dvh] bg-[#0D0D0F] text-[#F4F4F5] flex flex-col justify-between px-4 py-6 relative overflow-hidden">
       {/* Gradiente estático sutil no topo */}
       <div
-        className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-800/35 via-black/80 to-black"
+        className="pointer-events-none absolute inset-x-0 top-0 h-80 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-zinc-700/20 via-[#0D0D0F]/80 to-[#0D0D0F]"
         aria-hidden="true"
       />
 
@@ -90,38 +91,43 @@ function LoginContent() {
       <header className="relative z-10 max-w-md w-full mx-auto flex items-center justify-between">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-[#A1A1AA] hover:text-white transition-colors"
+          className="inline-flex items-center gap-2 text-xs font-medium text-zinc-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Voltar</span>
         </Link>
 
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-white text-black flex items-center justify-center font-display font-black text-xs">
-            DC
-          </div>
+          <Image
+            src="/branding/logo-transparent.png"
+            alt="Drafteiros"
+            width={28}
+            height={28}
+            className="rounded-lg object-contain"
+            priority
+          />
           <span className="font-display font-bold text-sm text-white">
-            DraftClub
+            Drafteiros
           </span>
         </div>
       </header>
 
       {/* Card Central / Modal de Autenticação */}
       <main className="relative z-10 w-full max-w-md mx-auto my-auto py-6">
-        <div className="rounded-3xl bg-[#0A0A0A] border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-6">
+        <div className="rounded-3xl bg-[#1A1A1E] border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="space-y-2 text-center">
             <h1 className="text-2xl font-display font-bold tracking-tight text-white">
-              {mode === 'signin' ? 'Entrar no DraftClub' : 'Criar sua conta'}
+              {mode === 'signin' ? 'Entrar no Drafteiros' : 'Criar sua conta'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#A1A1AA]">
+            <p className="text-xs sm:text-sm text-zinc-400">
               {mode === 'signin'
-                ? 'Acesse sua Carta FC 26, seu clube e a agenda da liga.'
-                : 'Cadastre-se para criar seu personagem ou registrar seu time.'}
+                ? 'Acesse sua Carta Pro, seu clube e a agenda da liga.'
+                : 'Cadastre-se para criar seu atleta ou registrar sua equipe.'}
             </p>
           </div>
 
           {/* Segmented Toggle: Entrar vs Criar Conta */}
-          <div className="grid grid-cols-2 p-1 rounded-2xl bg-[#141414] border border-white/[0.08]">
+          <div className="grid grid-cols-2 p-1 rounded-2xl bg-[#141417] border border-white/[0.08]">
             <button
               type="button"
               onClick={() => {
@@ -132,7 +138,7 @@ function LoginContent() {
                 'py-2.5 rounded-xl text-xs font-semibold transition-all',
                 mode === 'signin'
                   ? 'bg-white text-black shadow-xs'
-                  : 'text-[#A1A1AA] hover:text-white'
+                  : 'text-zinc-400 hover:text-white'
               )}
             >
               Entrar
@@ -147,7 +153,7 @@ function LoginContent() {
                 'py-2.5 rounded-xl text-xs font-semibold transition-all',
                 mode === 'signup'
                   ? 'bg-white text-black shadow-xs'
-                  : 'text-[#A1A1AA] hover:text-white'
+                  : 'text-zinc-400 hover:text-white'
               )}
             >
               Criar Conta
@@ -164,15 +170,15 @@ function LoginContent() {
             {mode === 'signup' && (
               <div className="space-y-1.5">
                 <label className="text-xs font-medium text-zinc-300 block">
-                  Seu nome ou apelido
+                  Seu Nome ou Apelido
                 </label>
                 <input
                   type="text"
                   required
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  placeholder="Ex: Jefherson"
-                  className="w-full h-11 px-4 rounded-2xl bg-[#141414] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white placeholder:text-zinc-600 transition-colors"
+                  placeholder="Ex: Jefherson Silva"
+                  className="w-full h-11 px-4 rounded-2xl bg-[#141417] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white placeholder:text-zinc-600 transition-colors"
                 />
               </div>
             )}
@@ -187,8 +193,8 @@ function LoginContent() {
                 autoComplete="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="voce@exemplo.com"
-                className="w-full h-11 px-4 rounded-2xl bg-[#141414] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white placeholder:text-zinc-600 transition-colors"
+                placeholder="seu@email.com"
+                className="w-full h-11 px-4 rounded-2xl bg-[#141417] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white placeholder:text-zinc-600 transition-colors"
               />
             </div>
 
@@ -206,12 +212,12 @@ function LoginContent() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="Mínimo de 6 caracteres"
-                  className="w-full h-11 pl-4 pr-11 rounded-2xl bg-[#141414] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white placeholder:text-zinc-600 transition-colors"
+                  className="w-full h-11 pl-4 pr-11 rounded-2xl bg-[#141417] border border-white/[0.08] focus:border-white/30 focus:outline-none text-sm text-white placeholder:text-zinc-600 transition-colors"
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A1A1AA] hover:text-white"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
                   tabIndex={-1}
                 >
                   {showPassword ? (
@@ -248,8 +254,8 @@ function LoginContent() {
         </div>
       </main>
 
-      <footer className="relative z-10 text-center text-[11px] text-[#A1A1AA]">
-        EA Sports FC 26 Pro Clubs • DraftClub
+      <footer className="relative z-10 text-center text-[11px] text-zinc-500">
+        Drafteiros • Plataforma Oficial de Campeonatos e Draft
       </footer>
     </div>
   );
@@ -259,7 +265,7 @@ export default function LoginPage() {
   return (
     <Suspense
       fallback={
-        <div className="min-h-screen bg-black text-white flex items-center justify-center text-xs text-[#A1A1AA]">
+        <div className="min-h-screen bg-[#0D0D0F] text-white flex items-center justify-center text-xs text-zinc-400">
           Carregando...
         </div>
       }

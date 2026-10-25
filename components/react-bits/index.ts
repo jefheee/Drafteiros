@@ -1,4 +1,5 @@
-export * from './grid-motion';
+export * from './particles';
+export * from './stroke-text';
 export * from './count-up';
 export * from './rotating-text';
 export * from './blur-text';

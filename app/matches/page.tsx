@@ -472,7 +472,7 @@ export default function MatchesPage() {
                       {awayTeam?.name || 'Visitante'}
                     </h2>
                     <p className="text-xs text-zinc-400">
-                      Envie o print de Desempenho de Jogadores do EA FC 26. O Gemini Vision extrai placar, gols e notas.
+                      Envie o print de resultado ou estatísticas da partida. A inteligência artificial extrai placar, gols e notas.
                     </p>
                   </div>
 

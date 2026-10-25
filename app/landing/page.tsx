@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/auth-context';
 import { LandingNavbar } from '@/components/landing/landing-navbar';
 import { LandingHero } from '@/components/landing/landing-hero';
+import { LandingManifesto } from '@/components/landing/landing-manifesto';
 import { LandingFeatures } from '@/components/landing/landing-features';
 import { LandingFaq } from '@/components/landing/landing-faq';
 import { LandingCta } from '@/components/landing/landing-cta';
@@ -48,10 +49,11 @@ export default function LandingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-black text-white flex flex-col">
+    <div className="min-h-screen bg-[#0D0D0F] text-[#F4F4F5] flex flex-col selection:bg-white/20 selection:text-white">
       <LandingNavbar />
       <main className="flex-1">
         <LandingHero />
+        <LandingManifesto />
         <LandingFeatures />
         <LandingFaq />
         <LandingCta />

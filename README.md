@@ -1,19 +1,19 @@
-# DraftClub
+# Drafteiros
 
-Plataforma para organização de ligas e campeonatos de **EA Sports FC Pro Clubs** (5x5 e 11v11).
+Plataforma oficial para organização de campeonatos, **Draft ao vivo**, **Súmula por IA** e **Gestão de Elencos**.
 
-Resolve os principais problemas de quem joga e organiza campeonatos: marcar horário de jogo sem discussão no WhatsApp, lançar súmula lendo o print da partida por IA, gerar artes para redes sociais e gerenciar a tabela e o dinheiro da premiação.
+Resolve os principais problemas de quem joga e organiza campeonatos: marcar horário de jogo sem discussão no WhatsApp, lançar súmula lendo o print da partida por inteligência artificial, gerar artes oficiais para redes sociais e gerenciar a tabela e o rateio de premiações.
 
 ---
 
 ## O que o sistema faz
 
-- **Combinação de Horários:** Cada jogador marca seus dias e horários livres. O sistema cruza os horários dos dois times e mostra na hora quando dá jogo.
-- **Súmula por Foto:** O capitão envia o print da tela final do jogo. A IA lê placar, gols e assistências. O capitão adversário confirma o resultado e a tabela atualiza na hora.
-- **Estúdio de Banners:** Criação rápida de artes para Instagram (formato 4:5) com placar, autores dos gols, fotos dos personagens e escudos dos clubes.
-- **Draft e Mercado:** Montagem de elenco com escolha de jogadores (estilo draft da NBA) e contratações.
-- **Perfis de Atleta e Clube:** Ficha completa do jogador (atributos, playstyles, fotos e posição) e personalização do time (escudo, cores e uniformes).
-- **Controle Financeiro:** O organizador acompanha quem já pagou a taxa de inscrição e a divisão das premiações em dinheiro.
+- **Combinação Inteligente de Horários:** Cada jogador marca seus dias e horários livres. O sistema cruza os horários dos dois times e mostra na hora quando dá jogo.
+- **Súmula por Foto (IA):** O capitão envia o print da tela final do jogo. A IA lê placar, gols e assistências em segundos. O capitão adversário confirma o resultado e a tabela atualiza instantaneamente.
+- **Estúdio de Banners:** Criação rápida de artes para Instagram (formatos 9:16, 4:5 e 1:1) com placar, autores dos gols, fotos dos atletas, marca d'água oficial e escudos das equipes.
+- **Draft e Mercado de Transferências:** Montagem de elenco com escolha de jogadores estilo draft da NBA, relógio ao vivo e contratação de agentes livres.
+- **Card de Atleta Pro e Perfil de Clube:** Ficha completa do jogador (atributos, arquétipos, fotos e posição) e personalização da equipe (escudo, cores e uniformes).
+- **Controle Financeiro & Tesouraria:** O organizador acompanha quem já pagou a taxa de inscrição e a divisão das premiações em dinheiro com transparência.
 
 ---
 
@@ -25,7 +25,7 @@ Resolve os principais problemas de quem joga e organiza campeonatos: marcar hor�
 ### 2. Instalação
 ```bash
 # Clone o repositório e acesse a pasta
-cd draftclub
+cd drafteiros
 
 # Instale os pacotes
 npm install
@@ -40,8 +40,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anon_supabase
 GEMINI_API_KEYS=sua_chave_gemini
 ```
 
-> **Dica:** Se você não tiver chaves no momento, o projeto possui dados de demonstração prontos para testes locais.
-
 ### 4. Executar
 ```bash
 npm run dev
@@ -52,7 +50,8 @@ Abra [http://localhost:3000](http://localhost:3000) no seu navegador ou celular.
 
 ## Tecnologias Usadas
 
-- **Next.js** (React e TypeScript)
-- **Tailwind CSS** (Interface limpa, moderna e adaptada para celular)
-- **Supabase** (Banco de dados e armazenamento de imagens)
-- **Google Gemini** (Leitura dos prints de partidas e atributos)
+- **Next.js** (App Router, React e TypeScript)
+- **Tailwind CSS** (Tema Dark Charcoal sofisticado)
+- **Supabase** (Banco de dados PostgreSQL, Auth e Storage)
+- **Google Gemini Vision** (Leitura dos prints de partidas e atributos)
+- **React Bits** (Particles, StrokeText, ScrollReveal, ClickSpark e AnimatedContent)

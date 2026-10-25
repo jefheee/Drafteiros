@@ -2,24 +2,30 @@
 
 import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useAuth } from '@/components/auth/auth-context';
 
 export function LandingNavbar() {
   const { session } = useAuth();
 
   return (
-    <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.08] bg-black/80 backdrop-blur-xl">
+    <header className="fixed top-0 inset-x-0 z-50 border-b border-white/[0.08] bg-[#0D0D0F]/85 backdrop-blur-xl">
       <nav
         aria-label="Navegação principal"
         className="max-w-6xl mx-auto h-16 px-4 sm:px-6 flex items-center justify-between gap-4"
       >
-        {/* Esquerda: Logo */}
+        {/* Esquerda: Logo Oficial Drafteiros */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center font-display font-black text-xs tracking-tight transition-transform group-hover:scale-105">
-            DC
-          </div>
+          <Image
+            src="/branding/logo-transparent.png"
+            alt="Drafteiros Logo"
+            width={28}
+            height={28}
+            className="rounded-lg object-contain transition-transform group-hover:scale-105"
+            priority
+          />
           <span className="font-display font-bold text-base tracking-tight text-white whitespace-nowrap">
-            DraftClub
+            Drafteiros
           </span>
         </Link>
 
@@ -45,7 +51,7 @@ export function LandingNavbar() {
           </a>
         </div>
 
-        {/* Direita: 2 Botões Proporcionais (h-10 whitespace-nowrap) */}
+        {/* Direita: 2 Botões Proporcionais */}
         <div className="flex items-center gap-2.5 shrink-0">
           {session ? (
             <Link
@@ -58,7 +64,7 @@ export function LandingNavbar() {
             <>
               <Link
                 href="/login"
-                className="h-10 px-4 rounded-full bg-[#141414] hover:bg-zinc-800 border border-white/[0.08] text-white text-xs font-semibold inline-flex items-center justify-center whitespace-nowrap transition-colors"
+                className="h-10 px-4 rounded-full bg-[#1A1A1E] hover:bg-[#222227] border border-white/[0.08] text-white text-xs font-semibold inline-flex items-center justify-center whitespace-nowrap transition-colors"
               >
                 Entrar
               </Link>

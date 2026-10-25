@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname, useRouter } from 'next/navigation';
 import { useAuth } from '@/components/auth/auth-context';
 import { cn } from '@/lib/utils';
@@ -50,22 +51,26 @@ export function Header() {
 
   return (
     <>
-      <header className="sticky top-0 z-40 w-full bg-black/85 backdrop-blur-xl border-b border-white/[0.08]">
+      <header className="sticky top-0 z-40 w-full bg-[#0D0D0F]/85 backdrop-blur-xl border-b border-white/[0.08]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
           {/* Esquerda: Logo */}
-          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0">
-            <div className="w-8 h-8 rounded-xl bg-white text-black flex items-center justify-center font-display font-black text-xs tracking-tight">
-              DC
-            </div>
+          <Link href="/dashboard" className="flex items-center gap-2.5 shrink-0 group">
+            <Image
+              src="/branding/logo-transparent.png"
+              alt="Drafteiros"
+              width={28}
+              height={28}
+              className="rounded-lg object-contain transition-transform group-hover:scale-105"
+            />
             <span className="font-display font-bold text-base tracking-tight text-white whitespace-nowrap">
-              DraftClub
+              Drafteiros
             </span>
           </Link>
 
           {/* Centro: Navegação Concisa Desktop */}
           <nav
             aria-label="Navegação do aplicativo"
-            className="hidden md:flex items-center gap-1 p-1 rounded-full bg-[#0A0A0A] border border-white/[0.08]"
+            className="hidden md:flex items-center gap-1 p-1 rounded-full bg-[#141417] border border-white/[0.08]"
           >
             {NAV_ITEMS.map((item) => {
               const Icon = item.icon;
@@ -177,7 +182,7 @@ export function Header() {
                     {
                       id: 'player',
                       label: 'Jogador / Atleta',
-                      desc: 'Minha Carta FC 26, atributos e disponibilidade',
+                      desc: 'Meu Card de Atleta Pro, atributos e estatísticas',
                       href: '/player',
                       icon: User,
                     },

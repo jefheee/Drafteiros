@@ -84,10 +84,10 @@ export default function DashboardPage() {
       },
       {
         id: 'photo',
-        title: 'Foto na Carta FC 26',
+        title: 'Foto no Card Pro',
         desc: hasPhoto
-          ? 'Foto configurada na carta'
-          : 'Suba a foto do seu boneco na carta',
+          ? 'Foto configurada no card'
+          : 'Suba a foto do seu atleta no card',
         done: hasPhoto,
         href: '/player',
       },
@@ -108,15 +108,15 @@ export default function DashboardPage() {
   const handleCopyInviteUrl = () => {
     if (typeof window === 'undefined') return;
     const text = myTeam?.invite_code
-      ? `Entre no nosso time "${myTeam.name}" no DraftClub! Acesse ${window.location.origin} e use o código: ${myTeam.invite_code}`
-      : `Crie sua conta e sua Carta FC 26 no DraftClub: ${window.location.origin}`;
+      ? `Entre no nosso time "${myTeam.name}" no Drafteiros! Acesse ${window.location.origin} e use o código: ${myTeam.invite_code}`
+      : `Crie sua conta e seu Card Pro no Drafteiros: ${window.location.origin}`;
     navigator.clipboard.writeText(text);
     setCopiedLink(true);
     setTimeout(() => setCopiedLink(false), 2500);
   };
 
   return (
-    <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-6 pb-28">
+    <div className="min-h-screen bg-[#0D0D0F] text-[#F4F4F5] px-4 sm:px-6 py-6 pb-28">
       <main className="max-w-6xl mx-auto space-y-6">
         {/* TOPO SOCIAL */}
         <section className="p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-5">
@@ -143,7 +143,7 @@ export default function DashboardPage() {
                   {myPlayer?.character_name ||
                     session?.characterName ||
                     session?.fullName ||
-                    'Bem-vindo ao DraftClub'}
+                    'Bem-vindo ao Drafteiros'}
                 </h1>
                 {myPlayer?.primary_position && (
                   <span className="px-2.5 py-0.5 rounded-full bg-white text-black text-[11px] font-bold">
@@ -196,7 +196,7 @@ export default function DashboardPage() {
               href="/player"
               className="h-10 px-5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-semibold inline-flex items-center gap-2 transition-colors whitespace-nowrap"
             >
-              <span>Editar Carta FC 26</span>
+              <span>Editar Card Pro</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -278,15 +278,15 @@ export default function DashboardPage() {
           ))}
         </section>
 
-        {/* GRID PRINCIPAL: CARTA FC 26 INTERATIVA + RESUMO DA COMUNIDADE */}
+        {/* GRID PRINCIPAL: CARD PRO INTERATIVO + RESUMO DA COMUNIDADE */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* Coluna Esquerda (4 cols): Carta FC 26 com HoloCard + FlipCard */}
-          <div className="lg:col-span-4 p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] flex flex-col items-center space-y-4">
+          {/* Coluna Esquerda (4 cols): Card Pro com HoloCard + FlipCard */}
+          <div className="lg:col-span-4 p-5 rounded-3xl bg-[#1A1A1E] border border-white/[0.08] flex flex-col items-center space-y-4">
             <div className="w-full flex items-center justify-between">
               <span className="text-xs font-semibold text-white">
-                Minha Carta FC 26
+                Meu Card Pro
               </span>
-              <span className="text-[11px] text-[#A1A1AA]">
+              <span className="text-[11px] text-zinc-400">
                 Clique para virar
               </span>
             </div>
@@ -295,7 +295,7 @@ export default function DashboardPage() {
               <FlipCard
                 className="w-full flex justify-center min-h-[380px]"
                 front={
-                  <HoloCard className="p-2 bg-black border-white/[0.08]">
+                  <HoloCard className="p-2 bg-[#0D0D0F] border-white/[0.08]">
                     <FC26PlayerCard
                       player={myPlayer}
                       team={myTeam || undefined}
@@ -304,15 +304,15 @@ export default function DashboardPage() {
                   </HoloCard>
                 }
                 back={
-                  <div className="w-[260px] h-[370px] rounded-3xl bg-[#141414] border border-white/[0.12] p-5 flex flex-col justify-between text-left">
+                  <div className="w-[260px] h-[370px] rounded-3xl bg-[#141417] border border-white/[0.12] p-5 flex flex-col justify-between text-left">
                     <div className="space-y-3">
-                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#A1A1AA] block">
-                        Passaporte Pro Clubs
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block">
+                        Passaporte do Atleta
                       </span>
                       <h3 className="text-lg font-display font-bold text-white uppercase">
                         {myPlayer.character_name}
                       </h3>
-                      <div className="space-y-1.5 text-xs text-[#A1A1AA]">
+                      <div className="space-y-1.5 text-xs text-zinc-400">
                         <p>
                           Posição: <strong className="text-white">{myPlayer.primary_position}</strong>
                         </p>
@@ -347,15 +347,15 @@ export default function DashboardPage() {
               />
             ) : (
               <div className="py-12 px-4 text-center space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-[#141414] border border-white/[0.08] flex items-center justify-center mx-auto text-white">
+                <div className="w-12 h-12 rounded-2xl bg-[#141417] border border-white/[0.08] flex items-center justify-center mx-auto text-white">
                   <User className="w-5 h-5" />
                 </div>
                 <div className="space-y-1">
                   <h3 className="text-sm font-bold text-white">
-                    Você ainda não cadastrou seu boneco
+                    Você ainda não cadastrou seu atleta
                   </h3>
-                  <p className="text-xs text-[#A1A1AA]">
-                    Crie seu personagem do EA FC 26 para liberar sua Carta Pro.
+                  <p className="text-xs text-zinc-400">
+                    Crie seu perfil para liberar seu Card de Atleta Pro.
                   </p>
                 </div>
                 <Link
@@ -363,7 +363,7 @@ export default function DashboardPage() {
                   className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-white text-black text-xs font-semibold"
                 >
                   <Plus className="w-4 h-4" />
-                  Cadastrar Personagem
+                  <span>Cadastrar Agora</span>
                 </Link>
               </div>
             )}
@@ -453,8 +453,8 @@ export default function DashboardPage() {
                     <h3 className="text-sm font-bold text-white">
                       O banco está limpo e pronto para os jogadores
                     </h3>
-                    <p className="text-xs text-[#A1A1AA] max-w-md mx-auto">
-                      Compartilhe o link do DraftClub com os atletas da liga para eles criarem a conta e cadastrarem seus personagens.
+                    <p className="text-xs text-zinc-400 max-w-md mx-auto">
+                      Compartilhe o link do Drafteiros com os atletas da liga para eles criarem a conta e cadastrarem seus atletas.
                     </p>
                   </div>
                   <div className="flex items-center justify-center gap-2 pt-1">

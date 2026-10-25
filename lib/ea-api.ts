@@ -140,9 +140,9 @@ export async function fetchClubMembers(
 }
 
 /**
- * Parser para converter a estrutura bruta de partidas da EA em formato compatível com o DraftClub
+ * Parser para converter a estrutura bruta de partidas em formato compatível com o Drafteiros
  */
-export function parseEAMatchToDraftClub(
+export function parseEAMatchToDrafteiros(
   eaMatch: EAMatchRecord,
   tournamentId: string,
   homeTeamId: string,
@@ -194,3 +194,5 @@ export function parseEAMatchToDraftClub(
     events,
   };
 }
+
+export const parseEAMatchToDraftClub = parseEAMatchToDrafteiros;

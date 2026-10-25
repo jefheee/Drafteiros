@@ -53,7 +53,7 @@ export default function MediaStudioPage() {
   const [awayTeamId, setAwayTeamId] = useState<string>(teams[1]?.id || '');
   const [homeScore, setHomeScore] = useState<number>(0);
   const [awayScore, setAwayScore] = useState<number>(0);
-  const [leagueBadgeLabel, setLeagueBadgeLabel] = useState<string>('DRAFTCLUB • EA FC 26');
+  const [leagueBadgeLabel, setLeagueBadgeLabel] = useState<string>('DRAFTEIROS • PRO');
 
   const [homeScorersText, setHomeScorersText] = useState<string>('');
   const [awayScorersText, setAwayScorersText] = useState<string>('');
@@ -237,9 +237,10 @@ export default function MediaStudioPage() {
       ctx!.fillStyle = bottomGrad;
       ctx!.fillRect(0, bottomGradStart, W, H - bottomGradStart);
 
-      const [homeLogoImg, awayLogoImg] = await Promise.all([
+      const [homeLogoImg, awayLogoImg, brandLogoImg] = await Promise.all([
         loadImage(homeTeam?.logo_url || TEMPLATE_ASSETS.crestPlaceholder),
         loadImage(awayTeam?.logo_url || TEMPLATE_ASSETS.crestPlaceholder),
+        loadImage('/branding/logo-transparent.png'),
       ]);
       if (isCancelled) return;
 
@@ -406,6 +407,21 @@ export default function MediaStudioPage() {
         ctx!.fillText(`${item.goals}  ${item.characterName}`, centerX + 36, yPos);
       });
       ctx!.restore();
+
+      // Watermark oficial Drafteiros no rodapé do banner
+      if (brandLogoImg) {
+        ctx!.save();
+        const watermarkLogoSize = 34;
+        const watermarkX = centerX - 80;
+        const watermarkY = H - 48;
+        ctx!.drawImage(brandLogoImg, watermarkX, watermarkY - watermarkLogoSize / 2, watermarkLogoSize, watermarkLogoSize);
+        ctx!.fillStyle = '#FFFFFF';
+        ctx!.font = '900 20px "Plus Jakarta Sans", sans-serif';
+        ctx!.textAlign = 'left';
+        ctx!.textBaseline = 'middle';
+        ctx!.fillText('DRAFTEIROS', watermarkX + watermarkLogoSize + 8, watermarkY);
+        ctx!.restore();
+      }
     }
 
     renderBanner();
@@ -459,7 +475,7 @@ export default function MediaStudioPage() {
   const [aiAwayTeamId, setAiAwayTeamId] = useState<string>(teams[1]?.id || '');
   const [selectedCharacterIds, setSelectedCharacterIds] = useState<string[]>([]);
   const [sceneIdea, setSceneIdea] = useState<string>(
-    'Jogadores comemorando gol decisivo sob refletores de estádio noturno no EA FC 26'
+    'Jogadores comemorando vitória decisiva sob refletores de estádio'
   );
   const [aiLoading, setAiLoading] = useState(false);
   const [aiPromptResult, setAiPromptResult] = useState<CharacterPromptResult | null>(null);
@@ -1154,7 +1170,7 @@ export default function MediaStudioPage() {
                     Nenhum atleta cadastrado ainda
                   </p>
                   <p className="text-xs text-zinc-400">
-                    Crie sua conta e cadastre seu personagem para personalizar sua Carta FC 26.
+                    Crie sua conta e cadastre seu atleta para personalizar seu Card Pro.
                   </p>
                 </div>
               ) : (
@@ -1203,10 +1219,10 @@ export default function MediaStudioPage() {
             <div className="lg:col-span-7 p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                  Catálogo Oficial EA FC 26 Ultimate Team
+                  Catálogo Oficial de Cards de Atleta Pro
                 </span>
                 <h2 className="text-base font-display font-black text-white">
-                  Escolha o Design da Carta ({CARD_DESIGN_ASSETS.length} Modelos Oficiais)
+                  Escolha o Design da Carta Pro ({CARD_DESIGN_ASSETS.length} Modelos Oficiais)
                 </h2>
               </div>
 

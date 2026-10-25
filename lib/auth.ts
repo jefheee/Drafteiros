@@ -15,16 +15,16 @@ export interface AppSession {
   avatarUrl?: string;
 }
 
-const SESSION_KEY = 'draftclub_auth_session_v2';
+const SESSION_KEY = 'drafteiros_auth_session_v1';
 
 export function setAuthCookie(role: AppUserRole) {
   if (typeof document === 'undefined') return;
-  document.cookie = `draftclub_role=${role}; path=/; max-age=2592000; SameSite=Lax`;
+  document.cookie = `drafteiros_role=${role}; path=/; max-age=2592000; SameSite=Lax`;
 }
 
 export function clearAuthCookie() {
   if (typeof document === 'undefined') return;
-  document.cookie = 'draftclub_role=; path=/; max-age=0; SameSite=Lax';
+  document.cookie = 'drafteiros_role=; path=/; max-age=0; SameSite=Lax';
 }
 
 export function getStoredSession(): AppSession | null {

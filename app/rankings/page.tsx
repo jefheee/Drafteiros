@@ -155,7 +155,7 @@ export default function RankingsAndBracketPage() {
                 </span>
               </div>
               <h1 className="text-xl sm:text-3xl font-display font-black tracking-tight text-white">
-                {tournament?.name || 'DraftClub — Liga Oficial EA FC 26'}
+                {tournament?.name || 'Drafteiros — Liga Oficial'}
               </h1>
               <p className="text-xs text-zinc-400">
                 Classificação real atualizada por súmula, chaveamento G4 e líderes de estatísticas.
@@ -519,7 +519,7 @@ export default function RankingsAndBracketPage() {
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
               <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
-                Rankings Individuais • Toque em qualquer atleta para inspecionar a Carta FC 26
+                Rankings Individuais • Toque em qualquer atleta para inspecionar a Carta Pro
               </span>
               <h2 className="text-lg sm:text-xl font-display font-black text-white">
                 Líderes da Temporada (Artilharia, Assistências & MVPs)
@@ -529,7 +529,7 @@ export default function RankingsAndBracketPage() {
               href="/player"
               className="text-xs font-bold text-white hover:underline flex items-center gap-1"
             >
-              Ver Minha Carta FC 26 <ChevronRight className="w-4 h-4" />
+              Ver Minha Carta Pro <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
@@ -755,7 +755,7 @@ export default function RankingsAndBracketPage() {
 
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-white text-xs font-bold uppercase">
                 <Sparkles className="w-3.5 h-3.5" />
-                Carta Oficial EA FC 26
+                Carta Oficial de Atleta Pro
               </div>
 
               <FC26PlayerCard

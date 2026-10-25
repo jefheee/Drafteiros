@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { GlideSelect } from '@/components/react-bits/glide-select';
 import { HoloCard } from '@/components/react-bits/holo-card';
 import { PeekRating } from '@/components/react-bits/peek-rating';
@@ -70,7 +71,7 @@ export function LandingBannerStudioPreview() {
             <div className="flex items-center justify-between relative z-10">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 border border-white/15 text-[10px] sm:text-xs font-mono font-black uppercase text-zinc-200">
                 <span className="w-2 h-2 rounded-full bg-[#00E599]" />
-                <span>COPA PRO CLUBS • RODADA 4</span>
+                <span>LIGA COMPETITIVA • RODADA 4</span>
               </div>
               <StatusMark status="online" label="1080x1350" />
             </div>
@@ -185,9 +186,18 @@ export function LandingBannerStudioPreview() {
 
             {/* Rodapé do Banner */}
             <div className="pt-4 border-t border-white/10 flex items-center justify-between text-xs text-zinc-400 relative z-10">
-              <span className="font-display font-black text-white tracking-wide">
-                DRAFTCLUB.PRO
-              </span>
+              <div className="flex items-center gap-2">
+                <Image
+                  src="/branding/logo-transparent.png"
+                  alt="Drafteiros"
+                  width={20}
+                  height={20}
+                  className="object-contain"
+                />
+                <span className="font-display font-black text-white tracking-wider text-xs">
+                  DRAFTEIROS
+                </span>
+              </div>
               <span className="text-[11px] text-[#00E599] font-bold">
                 Exportação Automática HD
               </span>

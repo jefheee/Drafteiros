@@ -369,7 +369,7 @@ export default function EvaluatePage() {
 
         {/* Footer info */}
         <p className="text-center text-[11px] text-zinc-600 mt-6">
-          DraftClub EA FC Pro Clubs • As notas individuais não são reveladas aos capitães nem aos jogadores.
+          Drafteiros • As notas individuais não são reveladas aos capitães nem aos jogadores.
         </p>
       </main>
     </div>
