@@ -1,57 +1,57 @@
 # Drafteiros
 
-Plataforma oficial para organização de campeonatos, **Draft ao vivo**, **Súmula por IA** e **Gestão de Elencos**.
+Official platform for championship organization, **Live Draft**, **AI Match Reporting**, and **Squad Management**.
 
-Resolve os principais problemas de quem joga e organiza campeonatos: marcar horário de jogo sem discussão no WhatsApp, lançar súmula lendo o print da partida por inteligência artificial, gerar artes oficiais para redes sociais e gerenciar a tabela e o rateio de premiações.
-
----
-
-## O que o sistema faz
-
-- **Combinação Inteligente de Horários:** Cada jogador marca seus dias e horários livres. O sistema cruza os horários dos dois times e mostra na hora quando dá jogo.
-- **Súmula por Foto (IA):** O capitão envia o print da tela final do jogo. A IA lê placar, gols e assistências em segundos. O capitão adversário confirma o resultado e a tabela atualiza instantaneamente.
-- **Estúdio de Banners:** Criação rápida de artes para Instagram (formatos 9:16, 4:5 e 1:1) com placar, autores dos gols, fotos dos atletas, marca d'água oficial e escudos das equipes.
-- **Draft e Mercado de Transferências:** Montagem de elenco com escolha de jogadores estilo draft da NBA, relógio ao vivo e contratação de agentes livres.
-- **Card de Atleta Pro e Perfil de Clube:** Ficha completa do jogador (atributos, arquétipos, fotos e posição) e personalização da equipe (escudo, cores e uniformes).
-- **Controle Financeiro & Tesouraria:** O organizador acompanha quem já pagou a taxa de inscrição e a divisão das premiações em dinheiro com transparência.
+It solves the main problems of those who play and organize championships: scheduling match times without arguments on WhatsApp, submitting match reports by reading the match screenshot via artificial intelligence, generating official artwork for social media, and managing the standings and prize distribution.
 
 ---
 
-## Como rodar o projeto
+## What the system does
 
-### 1. Pré-requisitos
-- Node.js 18 ou superior instalado.
+- **Smart Schedule Matching:** Each player marks their free days and times. The system cross-references the schedules of both teams and instantly shows when a game is possible.
+- **Match Report by Photo (AI):** The captain uploads a screenshot of the final game screen. The AI reads the score, goals, and assists in seconds. The opposing captain confirms the result, and the standings update instantly.
+- **Banner Studio:** Quick creation of artwork for Instagram (9:16, 4:5, and 1:1 formats) with the score, goal scorers, athlete photos, official watermark, and team crests.
+- **Draft and Transfer Market:** Squad building with NBA-style player picks, a live clock, and free agent signings.
+- **Pro Athlete Card and Club Profile:** Complete player profile (attributes, archetypes, photos, and position) and team customization (crest, colors, and kits).
+- **Financial Control & Treasury:** The organizer tracks who has already paid the registration fee and the division of cash prizes with transparency.
 
-### 2. Instalação
+---
+
+## How to run the project
+
+### 1. Prerequisites
+- Node.js 18 or higher installed.
+
+### 2. Installation
 ```bash
-# Clone o repositório e acesse a pasta
+# Clone the repository and access the folder
 cd drafteiros
 
-# Instale os pacotes
+# Install packages
 npm install
 ```
 
-### 3. Configuração (.env.local)
-Crie o arquivo `.env.local` na raiz com as chaves:
+### 3. Configuration (.env.local)
+Create the `.env.local` file in the root with the following keys:
 
 ```env
-NEXT_PUBLIC_SUPABASE_URL=sua_url_supabase
-NEXT_PUBLIC_SUPABASE_ANON_KEY=sua_chave_anon_supabase
-GEMINI_API_KEYS=sua_chave_gemini
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+GEMINI_API_KEYS=your_gemini_key
 ```
 
-### 4. Executar
+### 4. Run
 ```bash
 npm run dev
 ```
-Abra [http://localhost:3000](http://localhost:3000) no seu navegador ou celular.
+Open [http://localhost:3000](http://localhost:3000) in your browser or mobile phone.
 
 ---
 
-## Tecnologias Usadas
+## Technologies Used
 
-- **Next.js** (App Router, React e TypeScript)
-- **Tailwind CSS** (Tema Dark Charcoal sofisticado)
-- **Supabase** (Banco de dados PostgreSQL, Auth e Storage)
-- **Google Gemini Vision** (Leitura dos prints de partidas e atributos)
-- **React Bits** (Particles, StrokeText, ScrollReveal, ClickSpark e AnimatedContent)
+- **Next.js** (App Router, React, and TypeScript)
+- **Tailwind CSS** (Sophisticated Dark Charcoal Theme)
+- **Supabase** (PostgreSQL Database, Auth, and Storage)
+- **Google Gemini Vision** (Reading match screenshots and attributes)
+- **React Bits** (Particles, StrokeText, ScrollReveal, ClickSpark, and AnimatedContent)
