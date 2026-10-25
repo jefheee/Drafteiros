@@ -106,7 +106,7 @@ function LoginContent() {
         </div>
       </header>
 
-      {/* Card Central / Bottom-Sheet Estilo ChatGPT × Untitled UI */}
+      {/* Card Central / Modal de Autenticação */}
       <main className="relative z-10 w-full max-w-md mx-auto my-auto py-6">
         <div className="rounded-3xl bg-[#0A0A0A] border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-6">
           <div className="space-y-2 text-center">

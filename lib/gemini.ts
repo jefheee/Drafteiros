@@ -363,7 +363,7 @@ export function getMockCharacterPrompt(params: {
         badge: 'Grátis • 1 Clique',
       },
       {
-        name: 'ChatGPT / Midjourney',
+        name: 'Gerador Avançado (Midjourney / GPT)',
         url: 'https://chatgpt.com/',
         badge: 'Anexar Kit de Referência',
       },

@@ -63,7 +63,7 @@ export default function DashboardPage() {
     );
   }, [teams, myPlayer, session]);
 
-  // Barra de Progresso Estilo Jogueiros ("Complete seu perfil")
+  // Barra de Progresso ("Complete seu perfil")
   const completionSteps = useMemo(() => {
     const hasCharacter = Boolean(myPlayer?.character_name);
     const hasPhoto = Boolean(
@@ -118,7 +118,7 @@ export default function DashboardPage() {
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-6 pb-28">
       <main className="max-w-6xl mx-auto space-y-6">
-        {/* TOPO SOCIAL ESTILO THREADS × JOGUEIROS */}
+        {/* TOPO SOCIAL */}
         <section className="p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-5">
           <div className="flex items-center gap-4">
             <div className="w-16 h-16 rounded-full bg-[#141414] border border-white/[0.12] flex items-center justify-center overflow-hidden shrink-0">
@@ -202,7 +202,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* BARRA DE COMPLETUDE DO PERFIL (ESTILO JOGUEIROS "COMPLETE SEU PERFIL") */}
+        {/* BARRA DE COMPLETUDE DO PERFIL */}
         <section className="p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
           <div className="flex items-center justify-between gap-2">
             <div>
@@ -246,7 +246,7 @@ export default function DashboardPage() {
           </div>
         </section>
 
-        {/* ESTATÍSTICAS RÁPIDAS DO ATLETA (ESTILO JOGUEIROS: COMEÇA EM ZERO REAL) */}
+        {/* ESTATÍSTICAS RÁPIDAS DO ATLETA (BASE ZERO INICIAL) */}
         <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
           {[
             {
@@ -371,7 +371,7 @@ export default function DashboardPage() {
 
           {/* Coluna Direita (8 cols): Atalhos Rápidos + Jogadores & Times Reais */}
           <div className="lg:col-span-8 space-y-6">
-            {/* Atalhos Rápidos Estilo Jogueiros */}
+            {/* Atalhos Rápidos */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
                 {

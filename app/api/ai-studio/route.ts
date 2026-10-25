@@ -249,7 +249,7 @@ Contexto Adicional: ${customContext || 'Jogo decisivo pela Liga 5x5 LPF'}`;
       return NextResponse.json({
         ok: true,
         data: baseMock,
-        meta: { model: 'jogueiros-roleplay-engine', keyIndex: 0 },
+        meta: { model: 'draftclub-roleplay-engine', keyIndex: 0 },
       });
     }
 

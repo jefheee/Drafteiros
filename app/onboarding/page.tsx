@@ -374,7 +374,7 @@ export default function OnboardingPage() {
           />
         </div>
 
-        {/* Card Principal Estilo Jogueiros × Threads × ChatGPT */}
+        {/* Card Principal */}
         <div className="rounded-3xl bg-[#0A0A0A] border border-white/[0.08] p-6 sm:p-8 shadow-2xl space-y-6">
           {errorMsg && (
             <div className="p-3.5 rounded-2xl bg-red-500/10 border border-red-500/25 text-red-400 text-xs font-medium">
@@ -806,7 +806,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* ETAPA 4: VÍNCULO COM TIME (JOGUEIROS STYLE) */}
+          {/* ETAPA 4: VÍNCULO COM TIME */}
           {step === 3 && (
             <div className="space-y-6">
               {profileType === 'captain' ? (

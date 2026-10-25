@@ -130,7 +130,7 @@ export default function MediaStudioPage() {
       });
   };
 
-  // Renderização Canvas Dinâmica (4:5, 9:16 ou 1:1 estilo Jogueiros)
+  // Renderização Canvas Dinâmica (4:5, 9:16 ou 1:1)
   useEffect(() => {
     if (activeTab !== 'post_match_canvas') return;
     const canvas = canvasRef.current;
@@ -627,7 +627,7 @@ export default function MediaStudioPage() {
         <section className="p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="space-y-1">
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-zinc-300 text-[10px] font-bold uppercase tracking-wider">
-              Estúdio Criativo • Formatos Jogueiros & Cartas FC 26
+              Estúdio Criativo • Formatos Oficiais & Cartas FC 26
             </span>
             <h1 className="text-xl sm:text-2xl font-display font-black text-white">
               Banners Pós-Jogo (4:5, 9:16, 1:1), Cenas IA & Cartas FC 26
@@ -667,14 +667,14 @@ export default function MediaStudioPage() {
           })}
         </div>
 
-        {/* ABA 1: CANVAS PÓS-JOGO COM SELETOR DE FORMATOS JOGUEIROS */}
+        {/* ABA 1: CANVAS PÓS-JOGO COM SELETOR DE FORMATOS */}
         {activeTab === 'post_match_canvas' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
             <div className="lg:col-span-7 p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-5">
-              {/* PÍLULAS DE FORMATO ESTILO JOGUEIROS */}
+              {/* PÍLULAS DE FORMATO */}
               <div className="space-y-2">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 block">
-                  Formato do Banner (Padrão Jogueiros)
+                  Formato do Banner (Proporção)
                 </span>
                 <div className="grid grid-cols-3 gap-2">
                   {BANNER_FORMATS.map((fmt) => {

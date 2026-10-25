@@ -319,7 +319,7 @@ export default function CaptainDashboardPage() {
           </section>
         ) : (
           <>
-            {/* CABEÇALHO DO CAPITÃO (JOGUEIROS STYLE COM CÓDIGO DE CONVITE) */}
+            {/* CABEÇALHO DO CAPITÃO COM CÓDIGO DE CONVITE */}
             <section className="p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">

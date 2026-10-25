@@ -20,7 +20,7 @@ const FAQ_ITEMS = [
   },
   {
     q: 'Posso usar tanto perfil de Dono de Time quanto de Jogador?',
-    a: 'Sim. Assim como no Jogueiros, se você for Capitão/Dono de Time, você cadastra o escudo e nome do seu clube e também possui sua própria Carta FC 26 de jogador, podendo alternar a visão a qualquer momento no seu perfil.',
+    a: 'Sim. Se você for Capitão/Dono de Time, você cadastra o escudo e nome do seu clube e também possui sua própria Carta FC 26 de jogador, podendo alternar a visão a qualquer momento no seu perfil.',
   },
   {
     q: 'Quais formatos de arte estão disponíveis no Estúdio de Banners?',

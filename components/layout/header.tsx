@@ -62,7 +62,7 @@ export function Header() {
             </span>
           </Link>
 
-          {/* Centro: Navegação Concisa Desktop (Threads/Untitled UI) */}
+          {/* Centro: Navegação Concisa Desktop */}
           <nav
             aria-label="Navegação do aplicativo"
             className="hidden md:flex items-center gap-1 p-1 rounded-full bg-[#0A0A0A] border border-white/[0.08]"
@@ -140,7 +140,7 @@ export function Header() {
         </div>
       </header>
 
-      {/* Modal de Configurações & Troca de Perfil Estilo ChatGPT / Jogueiros */}
+      {/* Modal de Configurações & Troca de Perfil */}
       {settingsOpen && session && (
         <div
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
@@ -166,7 +166,7 @@ export function Header() {
               </button>
             </div>
 
-            {/* Alternar Perfil Ativo (estilo Jogueiros "Mudar de conta") */}
+            {/* Alternar Perfil Ativo */}
             <div className="space-y-2">
               <span className="text-xs font-medium text-[#A1A1AA] block">
                 Modo de uso ativo

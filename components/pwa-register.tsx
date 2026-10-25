@@ -122,7 +122,7 @@ export function MobilePwaInstallScreen() {
           </p>
         </div>
 
-        {/* Card Principal Estilo ChatGPT / Jogueiros */}
+        {/* Card de Ação Principal */}
         <div className="p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4 shadow-2xl">
           <button
             type="button"
@@ -146,7 +146,7 @@ export function MobilePwaInstallScreen() {
               )}
             </div>
 
-            {/* Abas Estilo Threads / Jogueiros */}
+            {/* Seletor de Plataforma */}
             <div className="grid grid-cols-2 p-1 rounded-xl bg-[#141414] border border-white/[0.08]">
               <button
                 type="button"

@@ -75,7 +75,7 @@ export default function SearchPlayersAndTeamsPage() {
   return (
     <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-6 pb-28">
       <main className="max-w-3xl mx-auto space-y-5">
-        {/* Cabeçalho Minimalista Estilo Threads / Jogueiros */}
+        {/* Cabeçalho Minimalista */}
         <div className="flex items-center justify-between gap-3">
           <div>
             <h1 className="text-2xl font-display font-bold tracking-tight text-white">
@@ -94,7 +94,7 @@ export default function SearchPlayersAndTeamsPage() {
           </Link>
         </div>
 
-        {/* Barra de Pesquisa Estilo Threads (pesquisando.png) */}
+        {/* Barra de Pesquisa */}
         <div className="relative">
           <Search className="w-4 h-4 text-[#A1A1AA] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
