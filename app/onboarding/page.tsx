@@ -75,6 +75,7 @@ export default function OnboardingPage() {
   const [clubShortName, setClubShortName] = useState('');
   const [clubLogoUrl, setClubLogoUrl] = useState('');
   const [clubPrimaryColor, setClubPrimaryColor] = useState('#FFFFFF');
+  const [clubSecondaryColor, setClubSecondaryColor] = useState('#10B981');
   const [generatedInviteCode, setGeneratedInviteCode] = useState('');
 
   // Vínculo com Time (Caso Jogador)
@@ -137,6 +138,33 @@ export default function OnboardingPage() {
       setClubLogoUrl(url);
     } finally {
       setUploadingImage(false);
+    }
+  };
+
+  const [generatingCrest, setGeneratingCrest] = useState(false);
+
+  const handleGenerateAICrest = async () => {
+    setGeneratingCrest(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch('/api/ai-studio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'club-crest',
+          clubName: clubName || 'Meu Clube',
+          primaryColor: clubPrimaryColor || '#7C5CFC',
+          secondaryColor: clubSecondaryColor || '#10B981',
+        }),
+      });
+      const json = await res.json();
+      if (json.ok && json.data?.imageUrl) {
+        setClubLogoUrl(json.data.imageUrl);
+      }
+    } catch {
+      setErrorMsg('Não foi possível gerar o escudo por IA agora.');
+    } finally {
+      setGeneratingCrest(false);
     }
   };
 
@@ -204,7 +232,7 @@ export default function OnboardingPage() {
             captain_id: session.userId,
             logo_url: clubLogoUrl || null,
             primary_color: clubPrimaryColor || '#FFFFFF',
-            secondary_color: '#141414',
+            secondary_color: clubSecondaryColor || '#10B981',
             invite_code: finalInviteCode,
             is_approved: false,
           })
@@ -732,16 +760,27 @@ export default function OnboardingPage() {
                         <span className="text-xs font-semibold text-white block">
                           Escudo do Time (Opcional)
                         </span>
-                        <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors">
-                          <Upload className="w-3.5 h-3.5" />
-                          <span>{uploadingImage ? 'Enviando...' : 'Subir Escudo'}</span>
-                          <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleUploadClubLogo}
-                            className="hidden"
-                          />
-                        </label>
+                        <div className="flex flex-wrap items-center gap-2">
+                          <label className="cursor-pointer inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white text-black text-xs font-semibold hover:bg-zinc-200 transition-colors">
+                            <Upload className="w-3.5 h-3.5" />
+                            <span>{uploadingImage ? 'Enviando...' : 'Subir Escudo'}</span>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={handleUploadClubLogo}
+                              className="hidden"
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={handleGenerateAICrest}
+                            disabled={generatingCrest}
+                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#7C5CFC]/20 hover:bg-[#7C5CFC]/30 text-[#A78BFA] border border-[#7C5CFC]/30 text-xs font-semibold transition-all disabled:opacity-50"
+                          >
+                            <Sparkles className="w-3.5 h-3.5" />
+                            <span>{generatingCrest ? 'Gerando...' : 'Gerar com IA'}</span>
+                          </button>
+                        </div>
                       </div>
                     </div>
 

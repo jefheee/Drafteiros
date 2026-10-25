@@ -7,6 +7,7 @@ import { ARCHETYPE_ASSETS, TEMPLATE_ASSETS } from '@/lib/assets-catalog';
 import { DraftOrderSlot } from '@/types/database';
 import { WorkspaceNav } from '@/components/layout/workspace-nav';
 import { FC26PlayerCard } from '@/components/players/fc26-player-card';
+import { sendDraftPickEmbed } from '@/lib/discord-webhook';
 import { cn } from '@/lib/utils';
 import {
   Dices,
@@ -139,6 +140,22 @@ export default function OfficialDraftBoardPage() {
     setDraftFeedback(
       `"${characterName}" foi convocado oficialmente para o elenco do ${targetTeam.name}!`
     );
+
+    // Dispara webhook do Discord se configurado
+    if (tournament?.discord_webhook_url) {
+      const pObj = players.find((p) => p.id === playerId);
+      sendDraftPickEmbed(tournament.discord_webhook_url, {
+        teamName: targetTeam.name,
+        playerName: characterName,
+        position: pObj?.primary_position,
+        overall: pObj?.overall,
+        round: activePickSlot?.round,
+        pickNumber: (activePickSlot?.pick_number ?? currentPickIndex) + 1,
+        tournamentName: tournament.name,
+        teamLogo: targetTeam.logo_url,
+        avatarUrl: pObj?.avatar_face_url || pObj?.avatar_url,
+      });
+    }
 
     if (currentPickIndex + 1 < draftOrder.length) {
       const nextIdx = currentPickIndex + 1;

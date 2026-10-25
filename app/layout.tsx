@@ -7,6 +7,8 @@ import { Header } from '@/components/layout/header';
 import { BottomNav } from '@/components/layout/bottom-nav';
 import { PwaRegisterAndGatekeeper } from '@/components/pwa-register';
 import { ClickSpark } from '@/components/react-bits/click-spark';
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -94,6 +96,8 @@ export default function RootLayout({
             </PwaRegisterAndGatekeeper>
           </LeagueDataProvider>
         </AuthProvider>
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

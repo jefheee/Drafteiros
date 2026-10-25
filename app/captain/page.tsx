@@ -19,6 +19,7 @@ import {
   Copy,
   Check,
   Plus,
+  Sparkles,
 } from 'lucide-react';
 
 export default function CaptainDashboardPage() {
@@ -166,6 +167,41 @@ export default function CaptainDashboardPage() {
 
     setStatusMessage('Imagem salva e sincronizada com o clube!');
     setTimeout(() => setStatusMessage(null), 4000);
+  };
+
+  const [generatingCrest, setGeneratingCrest] = useState(false);
+
+  const handleGenerateAICrest = async () => {
+    if (!currentTeam) return;
+    setGeneratingCrest(true);
+    setStatusMessage(
+      'Gerando escudo original de eSports via IA (gemini-nano-banana-2.1)...'
+    );
+    try {
+      const res = await fetch('/api/ai-studio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'club-crest',
+          clubName: teamName || currentTeam.name,
+          primaryColor: primaryColor || currentTeam.primary_color,
+          secondaryColor: secondaryColor || currentTeam.secondary_color,
+        }),
+      });
+      const json = await res.json();
+      if (json.ok && json.data?.imageUrl) {
+        setLogoUrl(json.data.imageUrl);
+        await updateTeamInStore(currentTeam.id, { logo_url: json.data.imageUrl });
+        setStatusMessage('Escudo de eSports gerado pela IA e salvo com sucesso!');
+      } else {
+        setStatusMessage('Não foi possível gerar o escudo. Tente novamente.');
+      }
+    } catch {
+      setStatusMessage('Erro ao comunicar com o gerador de escudos.');
+    } finally {
+      setGeneratingCrest(false);
+      setTimeout(() => setStatusMessage(null), 4000);
+    }
   };
 
   const handleSaveTeamIdentity = async () => {
@@ -531,16 +567,27 @@ export default function CaptainDashboardPage() {
                         className="w-20 h-20 object-contain"
                       />
                     </div>
-                    <label className="cursor-pointer w-full h-9 px-3 rounded-xl bg-white text-black text-xs font-semibold flex items-center justify-center gap-1.5">
-                      <Upload className="w-3.5 h-3.5" />
-                      <span>Subir Escudo</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        onChange={(e) => handleUploadTeamAsset('crest', e)}
-                        className="hidden"
-                      />
-                    </label>
+                    <div className="flex flex-col gap-1.5">
+                      <label className="cursor-pointer w-full h-8 px-2.5 rounded-xl bg-white hover:bg-zinc-200 text-black text-[11px] font-semibold flex items-center justify-center gap-1.5 transition-all">
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Subir Arquivo</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          onChange={(e) => handleUploadTeamAsset('crest', e)}
+                          className="hidden"
+                        />
+                      </label>
+                      <button
+                        type="button"
+                        onClick={handleGenerateAICrest}
+                        disabled={generatingCrest}
+                        className="w-full h-8 px-2.5 rounded-xl bg-[#7C5CFC]/20 hover:bg-[#7C5CFC]/30 text-[#A78BFA] border border-[#7C5CFC]/30 text-[11px] font-bold flex items-center justify-center gap-1.5 transition-all disabled:opacity-50"
+                      >
+                        <Sparkles className="w-3.5 h-3.5" />
+                        <span>{generatingCrest ? 'Gerando...' : 'Gerar com IA'}</span>
+                      </button>
+                    </div>
                   </div>
 
                   <div className="p-4 rounded-2xl bg-[#141414] border border-white/[0.08] space-y-3 text-center">

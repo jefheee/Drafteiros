@@ -17,6 +17,7 @@ import {
   PackageCheck,
   Gift,
   Camera,
+  Share2,
 } from 'lucide-react';
 
 interface ScorerLine {
@@ -467,6 +468,53 @@ export default function MediaStudioPage() {
       link.click();
     } finally {
       setIsExporting(false);
+    }
+  };
+
+  const [isSharing, setIsSharing] = useState(false);
+
+  const handleShareNative = async () => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    setIsSharing(true);
+    try {
+      const blob = await new Promise<Blob | null>((resolve) =>
+        canvas.toBlob((b) => resolve(b), 'image/png', 1.0)
+      );
+      if (!blob) {
+        handleDownloadBannerPng();
+        return;
+      }
+
+      const fileName = `banner-${bannerFormat.replace(':', 'x')}-drafteiros.png`;
+      const file = new File([blob], fileName, { type: 'image/png' });
+
+      if (
+        typeof navigator !== 'undefined' &&
+        navigator.share &&
+        navigator.canShare &&
+        navigator.canShare({ files: [file] })
+      ) {
+        await navigator.share({
+          files: [file],
+          title: 'Drafteiros',
+          text: `Confira o placar oficial: ${homeTeam?.name || 'Mandante'} x ${awayTeam?.name || 'Visitante'} na Drafteiros!`,
+        });
+      } else if (typeof navigator !== 'undefined' && navigator.share) {
+        await navigator.share({
+          title: 'Drafteiros',
+          text: `Confira o placar na Drafteiros!`,
+          url: window.location.href,
+        });
+      } else {
+        handleDownloadBannerPng();
+      }
+    } catch (err: any) {
+      if (err?.name !== 'AbortError') {
+        handleDownloadBannerPng();
+      }
+    } finally {
+      setIsSharing(false);
     }
   };
 
@@ -963,19 +1011,35 @@ export default function MediaStudioPage() {
                 />
               </div>
 
-              <button
-                type="button"
-                onClick={handleDownloadBannerPng}
-                disabled={isExporting}
-                className="w-full py-3.5 rounded-full bg-white hover:bg-zinc-200 text-black font-bold text-xs flex items-center justify-center gap-2 transition-all"
-              >
-                <Download className="w-4 h-4" />
-                <span>
-                  {isExporting
-                    ? `Exportando PNG ${currentFormatConfig.sublabel}...`
-                    : `Baixar Arte (${currentFormatConfig.label} PNG)`}
-                </span>
-              </button>
+              <div className="space-y-2">
+                <button
+                  type="button"
+                  onClick={handleShareNative}
+                  disabled={isSharing || isExporting}
+                  className="w-full py-3.5 rounded-full bg-gradient-to-r from-emerald-500 to-green-600 hover:from-emerald-400 hover:to-green-500 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-lg shadow-emerald-500/20 active:scale-[0.98]"
+                >
+                  <Share2 className="w-4 h-4" />
+                  <span>
+                    {isSharing
+                      ? 'Preparando compartilhamento...'
+                      : 'Compartilhar nos Stories / WhatsApp'}
+                  </span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleDownloadBannerPng}
+                  disabled={isExporting}
+                  className="w-full py-3 rounded-full bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all"
+                >
+                  <Download className="w-4 h-4" />
+                  <span>
+                    {isExporting
+                      ? `Exportando PNG ${currentFormatConfig.sublabel}...`
+                      : `Baixar Imagem (${currentFormatConfig.label} PNG)`}
+                  </span>
+                </button>
+              </div>
             </div>
           </div>
         )}
@@ -1337,6 +1401,43 @@ export default function MediaStudioPage() {
                 <pre className="whitespace-pre-wrap text-xs text-zinc-200 font-sans bg-black p-3 rounded-xl border border-white/10">
                   {rpResult.whatsapp_text}
                 </pre>
+              </div>
+            )}
+
+            {/* CRÔNICAS AUTOMÁTICAS DAS PARTIDAS RECENTES */}
+            {matches.filter((m) => m.match_chronicle).length > 0 && (
+              <div className="pt-4 border-t border-white/[0.08] space-y-3">
+                <span className="text-xs font-bold uppercase tracking-wider text-emerald-400 block">
+                  📰 Crônicas Oficiais das Partidas (Geradas por IA)
+                </span>
+                <div className="space-y-3">
+                  {matches
+                    .filter((m) => m.match_chronicle)
+                    .slice(0, 3)
+                    .map((m) => {
+                      const hTeam = teams.find((t) => t.id === m.home_team_id);
+                      const aTeam = teams.find((t) => t.id === m.away_team_id);
+                      return (
+                        <div
+                          key={m.id}
+                          className="p-4 rounded-2xl bg-[#141414] border border-white/10 space-y-2"
+                        >
+                          <div className="flex items-center justify-between text-xs font-bold text-white">
+                            <span>
+                              {hTeam?.name || 'Mandante'} {m.home_score} x {m.away_score}{' '}
+                              {aTeam?.name || 'Visitante'}
+                            </span>
+                            <span className="text-[10px] text-zinc-500 font-mono">
+                              Rodada {m.round_number}
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-300 leading-relaxed whitespace-pre-line">
+                            {m.match_chronicle}
+                          </p>
+                        </div>
+                      );
+                    })}
+                </div>
               </div>
             )}
           </section>

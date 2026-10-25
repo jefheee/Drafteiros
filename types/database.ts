@@ -298,6 +298,7 @@ export interface Tournament {
   top_scorer_name?: string;
   season_label?: string;
   rules?: TournamentRules;
+  discord_webhook_url?: string;
   created_at: string;
 }
 
@@ -587,6 +588,7 @@ export interface Match {
   home_score: number;
   away_score: number;
   proof_image_url?: string | null;
+  match_chronicle?: string | null;
   ocr_extracted_data?: MatchOcrExtractedData | null;
   submitted_by_team_id?: string | null;
   validated_by_team_id?: string | null;

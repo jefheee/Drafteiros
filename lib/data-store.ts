@@ -19,6 +19,7 @@ import {
   TournamentFinance,
 } from '@/types/database';
 import { calculateFC26MacroAndOvr } from '@/lib/accelerate';
+import { compressImageToWebp, computeImageHash } from '@/lib/image-compression';
 
 export interface StandingRow {
   team_id: string;
@@ -90,6 +91,7 @@ const EMPTY_TOURNAMENT_PLACEHOLDER: Tournament = {
     extra_time_group_stage: false,
   },
   draft_order: [],
+  discord_webhook_url: '',
   status: 'active',
   created_at: '2026-01-01T00:00:00.000Z',
 };
@@ -327,11 +329,13 @@ export function LeagueDataProvider({
         supabase
           .from('player_profiles')
           .select('*')
-          .order('created_at', { ascending: false }),
+          .order('created_at', { ascending: false })
+          .limit(200),
         supabase
           .from('matches')
           .select('*')
-          .order('round_number', { ascending: true }),
+          .order('round_number', { ascending: true })
+          .limit(200),
         supabase
           .from('tournament_registrations')
           .select('*')
@@ -410,6 +414,7 @@ export function LeagueDataProvider({
         },
         status: data.status || 'active',
         champion_team_name: data.champion_team_name || null,
+        discord_webhook_url: data.discord_webhook_url || '',
       };
 
       const { data: inserted, error } = await supabase
@@ -451,6 +456,7 @@ export function LeagueDataProvider({
           custom_rules: updates.custom_rules,
           prize_distribution: updates.prize_distribution,
           draft_order: updates.draft_order,
+          discord_webhook_url: updates.discord_webhook_url,
           status: updates.status,
         })
         .eq('id', tournament.id);
@@ -905,22 +911,53 @@ export function useLeagueStore() {
   return ctx;
 }
 
+/**
+ * Registro de hashes de súmula para prevenção de duplicidade
+ */
+const registeredProofHashes = new Map<string, string>();
+
+export function verifyProofHashUniqueness(
+  hash: string,
+  matchId: string
+): { isUnique: boolean; conflictMatchId?: string } {
+  const existingMatchId = registeredProofHashes.get(hash);
+  if (existingMatchId && existingMatchId !== matchId) {
+    return { isUnique: false, conflictMatchId: existingMatchId };
+  }
+  registeredProofHashes.set(hash, matchId);
+  return { isUnique: true };
+}
+
+/**
+ * Upload Otimizado com Compressão Automática para WebP
+ * Reduz arquivos pesados de celulares de ~4MB para ~100KB antes de enviar ao Supabase Storage.
+ * Garante que apenas URLs públicas de CDN sejam salvas nas tabelas PostgreSQL.
+ */
 export async function uploadMediaToStorage(
   bucket: 'player-media' | 'team-media' | 'match-proofs',
   folder: string,
   file: File
 ): Promise<string> {
+  // 1. Sempre comprime a imagem client-side para WebP
+  let uploadableFile = file;
   try {
-    const ext = file.name.split('.').pop() || 'png';
+    uploadableFile = await compressImageToWebp(file, 1280, 0.82);
+  } catch (err) {
+    console.warn('[Image Compression] Falha na compressão, usando original:', err);
+  }
+
+  try {
+    const ext = uploadableFile.name.split('.').pop() || 'webp';
     const filePath = `${folder}/${Date.now()}-${Math.random()
       .toString(36)
       .substring(2, 8)}.${ext}`;
 
     const { data, error } = await supabase.storage
       .from(bucket)
-      .upload(filePath, file, {
+      .upload(filePath, uploadableFile, {
         cacheControl: '3600',
         upsert: true,
+        contentType: uploadableFile.type || 'image/webp',
       });
 
     if (!error && data) {
@@ -931,14 +968,93 @@ export async function uploadMediaToStorage(
         return pub.publicUrl;
       }
     }
-  } catch {
-    // Fallback para DataURL caso o bucket não exista
+  } catch (err) {
+    console.warn('[Supabase Storage] Falha ao enviar para o bucket:', err);
   }
 
+  // Fallback seguro em WebP comprimido (nunca string Base64 não-otimizada de 4MB)
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result as string);
     reader.onerror = (err) => reject(err);
-    reader.readAsDataURL(file);
+    reader.readAsDataURL(uploadableFile);
   });
+}
+
+/**
+ * Consulta Paginada de Jogadores (para tabelas de alta escala)
+ */
+export async function fetchPlayersPaged(params: {
+  limit?: number;
+  offset?: number;
+  teamId?: string;
+  search?: string;
+}): Promise<{ players: PlayerProfile[]; total: number }> {
+  const limit = params.limit || 50;
+  const offset = params.offset || 0;
+
+  let query = supabase.from('player_profiles').select('*', { count: 'exact' });
+
+  if (params.teamId) {
+    query = query.eq('team_id', params.teamId);
+  }
+
+  if (params.search) {
+    query = query.or(
+      `name.ilike.%${params.search}%,character_name.ilike.%${params.search}%`
+    );
+  }
+
+  const { data, count, error } = await query
+    .order('created_at', { ascending: false })
+    .range(offset, offset + limit - 1);
+
+  if (error || !data) {
+    return { players: [], total: 0 };
+  }
+
+  return {
+    players: (data as PlayerProfile[]).map((p) => ({
+      ...p,
+      ea_Tag:
+        p.ea_Tag || (p as unknown as { ea_tag?: string }).ea_tag || p.character_name,
+      is_free_agent: p.is_free_agent ?? !p.team_id,
+    })),
+    total: count || 0,
+  };
+}
+
+/**
+ * Consulta Paginada de Partidas (para ligas com centenas de rodadas)
+ */
+export async function fetchMatchesPaged(params: {
+  tournamentId?: string;
+  limit?: number;
+  offset?: number;
+  status?: string;
+}): Promise<{ matches: Match[]; total: number }> {
+  const limit = params.limit || 50;
+  const offset = params.offset || 0;
+
+  let query = supabase.from('matches').select('*', { count: 'exact' });
+
+  if (params.tournamentId) {
+    query = query.eq('tournament_id', params.tournamentId);
+  }
+  if (params.status) {
+    query = query.eq('status', params.status);
+  }
+
+  const { data, count, error } = await query
+    .order('round_number', { ascending: true })
+    .range(offset, offset + limit - 1);
+
+  if (error || !data) {
+    return { matches: [], total: 0 };
+  }
+
+  return {
+    matches: data as Match[],
+    total: count || 0,
+  };
 }

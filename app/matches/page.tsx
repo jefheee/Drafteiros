@@ -2,7 +2,9 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
-import { useLeagueStore, uploadMediaToStorage } from '@/lib/data-store';
+import { useLeagueStore, uploadMediaToStorage, verifyProofHashUniqueness } from '@/lib/data-store';
+import { computeImageHash } from '@/lib/image-compression';
+import { sendMatchValidatedEmbed } from '@/lib/discord-webhook';
 import { AvailabilitySlotRange } from '@/types/database';
 import { cn } from '@/lib/utils';
 import {
@@ -128,8 +130,18 @@ export default function MatchesPage() {
     const file = e.target.files?.[0];
     if (!file || !selectedMatch) return;
 
+    // Verificação de hash para impedir envio duplicado do mesmo print
+    const imageHash = await computeImageHash(file);
+    const hashCheck = verifyProofHashUniqueness(imageHash, selectedMatch.id);
+    if (!hashCheck.isUnique) {
+      setFeedbackMsg(
+        '⚠️ Este mesmo print de súmula já foi enviado para outra partida! O reenvio duplicado foi bloqueado para integridade da liga.'
+      );
+      return;
+    }
+
     setOcrLoading(true);
-    setFeedbackMsg('Enviando print de desempenho e lendo placar/artilheiros via IA...');
+    setFeedbackMsg('Otimizando imagem WebP e processando súmula com Gemini 3.8 Flash...');
 
     try {
       const storageUrl = await uploadMediaToStorage(
@@ -152,6 +164,7 @@ export default function MatchesPage() {
               mimeType: file.type || 'image/jpeg',
               homeTeamName: homeTeam?.name || 'Mandante',
               awayTeamName: awayTeam?.name || 'Visitante',
+              gameMode: tournament?.name ? 'soccer' : 'generic',
             }),
           });
           const json = await res.json();
@@ -190,7 +203,55 @@ export default function MatchesPage() {
       validated_by: awayTeam?.captain_id || 'captain',
     });
     setFeedbackMsg(
-      'Súmula validada! Classificação e Artilharia atualizadas em tempo real.'
+      'Súmula validada! Classificação e Artilharia atualizadas. Gerando crônica jornalística...'
+    );
+
+    // Gera crônica da partida via IA (gemini-3.5-flash-lite)
+    let chronicleText = '';
+    try {
+      const res = await fetch('/api/ai-studio', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'generate_match_chronicle',
+          homeTeamName: homeTeam?.name || 'Mandante',
+          awayTeamName: awayTeam?.name || 'Visitante',
+          homeScore: selectedMatch.home_score,
+          awayScore: selectedMatch.away_score,
+          motmName: selectedMatch.ocr_extracted_data?.motm_name,
+          gameMode: tournament?.name || 'Campeonato Oficial',
+        }),
+      });
+      const json = await res.json();
+      if (json.ok && json.data?.chronicle) {
+        chronicleText = json.data.chronicle;
+        await updateMatchInStore(selectedMatch.id, {
+          match_chronicle: chronicleText,
+        });
+      }
+    } catch (err) {
+      console.warn('Erro ao gerar crônica:', err);
+    }
+
+    // Se houver Webhook do Discord configurado, dispara notificação
+    if (tournament?.discord_webhook_url) {
+      sendMatchValidatedEmbed(tournament.discord_webhook_url, {
+        homeTeamName: homeTeam?.name || 'Mandante',
+        awayTeamName: awayTeam?.name || 'Visitante',
+        homeScore: selectedMatch.home_score,
+        awayScore: selectedMatch.away_score,
+        homeLogo: homeTeam?.logo_url,
+        awayLogo: awayTeam?.logo_url,
+        motmName: selectedMatch.ocr_extracted_data?.motm_name,
+        chronicle: chronicleText,
+        tournamentName: tournament.name,
+        roundNumber: selectedMatch.round_number,
+        proofImageUrl: selectedMatch.proof_image_url,
+      });
+    }
+
+    setFeedbackMsg(
+      'Súmula oficial validada! Crônica esportiva publicada na Zona Mista.'
     );
   };
 
@@ -552,6 +613,19 @@ export default function MatchesPage() {
                     </div>
                   )}
                 </div>
+
+                {selectedMatch.match_chronicle && (
+                  <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-emerald-400">
+                        📰 Crônica da Partida • Zona Mista
+                      </span>
+                    </div>
+                    <p className="text-xs text-zinc-300 leading-relaxed whitespace-pre-line">
+                      {selectedMatch.match_chronicle}
+                    </p>
+                  </div>
+                )}
 
                 <div className="pt-3 border-t border-white/[0.08] space-y-3">
                   <div className="flex items-center justify-between">

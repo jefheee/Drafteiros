@@ -22,7 +22,10 @@ import {
   Sparkles,
   ShieldCheck,
   History,
+  Radio,
+  Send,
 } from 'lucide-react';
+import { sendTestDiscordWebhook } from '@/lib/discord-webhook';
 
 export default function AdminDashboardPage() {
   const {
@@ -162,6 +165,17 @@ export default function AdminDashboardPage() {
     ]
   );
   const [newRuleText, setNewRuleText] = useState('');
+  const [discordWebhookUrl, setDiscordWebhookUrl] = useState<string>(
+    tournament?.discord_webhook_url || ''
+  );
+  const [testingWebhook, setTestingWebhook] = useState(false);
+
+  // Sincroniza com alterações de torneio selecionado
+  React.useEffect(() => {
+    if (tournament?.discord_webhook_url !== undefined) {
+      setDiscordWebhookUrl(tournament.discord_webhook_url || '');
+    }
+  }, [tournament?.id, tournament?.discord_webhook_url]);
 
   const [newTourneyName, setNewTourneyName] = useState('');
   const [newTourneySeason, setNewTourneySeason] = useState('Temporada 2026 • 5x5');
@@ -193,6 +207,7 @@ export default function AdminDashboardPage() {
       entry_fee: entryFee,
       bracket_type: selectedBracketType,
       custom_rules: customRules,
+      discord_webhook_url: discordWebhookUrl.trim(),
       prize_distribution: {
         first: prizeFirst,
         second: prizeSecond,
@@ -207,6 +222,31 @@ export default function AdminDashboardPage() {
     setTimeout(() => setFeedbackBanner(null), 4000);
   };
 
+  const handleTestWebhook = async () => {
+    if (!discordWebhookUrl.trim()) {
+      setFeedbackBanner('Insira a URL do Webhook do Discord para realizar o teste.');
+      setTimeout(() => setFeedbackBanner(null), 3500);
+      return;
+    }
+    setTestingWebhook(true);
+    try {
+      const ok = await sendTestDiscordWebhook(
+        discordWebhookUrl.trim(),
+        champName || tournament?.name
+      );
+      if (ok) {
+        setFeedbackBanner('✅ Embed de teste enviado com sucesso para o canal do Discord!');
+      } else {
+        setFeedbackBanner('❌ Falha ao enviar para o Discord. Verifique a URL do Webhook.');
+      }
+    } catch {
+      setFeedbackBanner('❌ Erro de conexão ao testar Webhook.');
+    } finally {
+      setTestingWebhook(false);
+      setTimeout(() => setFeedbackBanner(null), 4500);
+    }
+  };
+
   const handleCreateNewTournament = async () => {
     if (!newTourneyName.trim()) return;
     await createNewTournament({
@@ -216,6 +256,7 @@ export default function AdminDashboardPage() {
       status: newTourneyFinished ? 'finished' : 'active',
       champion_team_name: newTourneyFinished ? newTourneyChampion : undefined,
       entry_fee: entryFee,
+      discord_webhook_url: discordWebhookUrl.trim(),
     });
     setNewTourneyName('');
     setFeedbackBanner(
@@ -957,6 +998,42 @@ export default function AdminDashboardPage() {
                       </button>
                     </div>
                   ))}
+                </div>
+              </div>
+
+              {/* INTEGRAÇÃO DISCORD WEBHOOK */}
+              <div className="p-4 rounded-2xl bg-[#141414] border border-white/10 space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Radio className="w-4 h-4 text-[#7C5CFC]" />
+                    <span className="text-xs font-bold text-white">
+                      Webhook do Discord da Comunidade (Opcional)
+                    </span>
+                  </div>
+                  <span className="px-2 py-0.5 rounded-full bg-white/[0.06] text-[10px] font-mono text-zinc-400">
+                    Súmulas & Draft Ao Vivo
+                  </span>
+                </div>
+                <p className="text-[11px] text-zinc-400">
+                  Quando preenchido, a Drafteiros dispara automaticamente Embeds limpos para o canal do seu Discord quando uma súmula for validada ou um atleta for convocado no Draft.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <input
+                    type="url"
+                    value={discordWebhookUrl}
+                    onChange={(e) => setDiscordWebhookUrl(e.target.value)}
+                    placeholder="https://discord.com/api/webhooks/1234567890/..."
+                    className="flex-1 h-9 px-3 rounded-xl bg-black border border-white/10 text-xs font-mono text-white placeholder:text-zinc-600 focus:outline-none focus:border-[#7C5CFC]"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleTestWebhook}
+                    disabled={testingWebhook || !discordWebhookUrl.trim()}
+                    className="px-4 h-9 rounded-xl bg-white/10 hover:bg-white/20 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-all disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                  >
+                    <Send className="w-3.5 h-3.5" />
+                    <span>{testingWebhook ? 'Testando...' : 'Testar Webhook'}</span>
+                  </button>
                 </div>
               </div>
 
