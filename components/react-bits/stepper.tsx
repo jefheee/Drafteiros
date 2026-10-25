@@ -28,9 +28,9 @@ export function Stepper({
       <div className="absolute top-4 left-6 right-6 h-0.5 bg-white/10 z-0" />
       {/* Active connector progress */}
       <div
-        className="absolute top-4 left-6 h-0.5 bg-[#00E599] transition-all duration-500 z-0"
+        className="absolute top-4 left-6 h-0.5 bg-white transition-all duration-500 z-0"
         style={{
-          width: `calc(${(currentStep / (steps.length - 1)) * 100}% - 48px)`,
+          width: `calc(${(currentStep / Math.max(1, steps.length - 1)) * 100}% - 48px)`,
         }}
       />
 
@@ -47,12 +47,12 @@ export function Stepper({
             }`}
           >
             <div
-              className={`w-9 h-9 rounded-xl flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 ${
+              className={`w-9 h-9 rounded-full flex items-center justify-center font-mono font-bold text-xs transition-all duration-300 ${
                 isDone
-                  ? 'bg-[#00E599] text-zinc-950 shadow-md shadow-emerald-500/20'
+                  ? 'bg-white text-black shadow-md'
                   : isCurrent
-                  ? 'bg-[#14171f] border-2 border-[#00E599] text-[#00E599] ring-4 ring-emerald-500/15'
-                  : 'bg-[#14171f] border border-white/10 text-zinc-500'
+                  ? 'bg-[#141414] border-2 border-white text-white ring-4 ring-white/10'
+                  : 'bg-[#0A0A0A] border border-white/10 text-zinc-500'
               }`}
             >
               {isDone ? <Check className="w-4 h-4 stroke-[3]" /> : idx + 1}
@@ -60,7 +60,7 @@ export function Stepper({
 
             <span
               className={`mt-2 text-xs font-bold transition-colors ${
-                isCurrent ? 'text-white' : isDone ? 'text-emerald-400' : 'text-zinc-500'
+                isCurrent ? 'text-white' : isDone ? 'text-zinc-300' : 'text-zinc-500'
               }`}
             >
               {step.title}

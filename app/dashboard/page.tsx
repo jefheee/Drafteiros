@@ -1,614 +1,601 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import Link from 'next/link';
+import { useAuth } from '@/components/auth/auth-context';
 import { useLeagueStore } from '@/lib/data-store';
 import { TEMPLATE_ASSETS } from '@/lib/assets-catalog';
+import { FC26PlayerCard } from '@/components/players/fc26-player-card';
+import { HoloCard } from '@/components/react-bits/holo-card';
+import { FlipCard } from '@/components/react-bits/flip-card';
 import { cn } from '@/lib/utils';
 import {
-  Trophy,
-  Calendar,
-  Sparkles,
-  Camera,
-  Flame,
-  Clock,
-  ChevronRight,
+  User,
   Shield,
+  Calendar,
+  Trophy,
+  Sparkles,
+  Search,
+  CheckCircle2,
+  Circle,
+  ArrowRight,
+  Copy,
+  Check,
   Users,
   Plus,
-  TrendingUp,
-  Activity,
-  ArrowUpRight,
 } from 'lucide-react';
-import {
-  GlideSelect,
-  CountUp,
-  StatusMark,
-  ClickSpark,
-  RefineFrame,
-  RubberSegment,
-} from '@/components/react-bits';
 
 export default function DashboardPage() {
-  const [activeSegment, setActiveSegment] = useState<'matches' | 'standings' | 'rankings'>(
-    'matches'
-  );
+  const { session } = useAuth();
   const {
     tournament,
-    tournaments,
-    selectTournament,
-    standings,
-    scorers,
-    assists,
-    matches,
     teams,
     players,
+    matches,
+    standings,
+    scorers,
+    loading,
   } = useLeagueStore();
 
-  const totalPrizePool =
-    (tournament.prize_distribution?.first || 0) +
-    (tournament.prize_distribution?.second || 0) +
-    (tournament.prize_distribution?.third || 0) +
-    (tournament.prize_distribution?.top_scorer || 0) +
-    (tournament.prize_distribution?.top_assister || 0);
+  const [copiedLink, setCopiedLink] = useState(false);
 
-  // Totais analíticos para os KPI cards
-  const totalGoals = matches
-    .filter((m) => m.status === 'completed' || m.status === 'approved')
-    .reduce((acc, m) => acc + (m.home_score || 0) + (m.away_score || 0), 0);
+  const myPlayer = useMemo(() => {
+    if (!session) return players[0] || null;
+    return (
+      players.find(
+        (p) =>
+          p.user_id === session.userId ||
+          p.character_name?.toLowerCase() ===
+            (session.characterName || '').toLowerCase()
+      ) || null
+    );
+  }, [players, session]);
 
-  const completedMatchesCount = matches.filter(
-    (m) => m.status === 'completed' || m.status === 'approved'
-  ).length;
+  const myTeam = useMemo(() => {
+    if (!session && !myPlayer) return null;
+    return (
+      teams.find(
+        (t) =>
+          t.id === myPlayer?.team_id ||
+          t.id === session?.teamId ||
+          t.captain_id === session?.userId
+      ) || null
+    );
+  }, [teams, myPlayer, session]);
 
-  const segmentOptions = [
-    {
-      id: 'matches',
-      label: 'Jogos da Rodada',
-      icon: <Calendar className="w-3.5 h-3.5" />,
-    },
-    {
-      id: 'standings',
-      label: 'Tabela G4',
-      icon: <Trophy className="w-3.5 h-3.5" />,
-    },
-    {
-      id: 'rankings',
-      label: 'Artilheiros & Garçons',
-      icon: <Flame className="w-3.5 h-3.5" />,
-    },
-  ];
+  // Barra de Progresso Estilo Jogueiros ("Complete seu perfil")
+  const completionSteps = useMemo(() => {
+    const hasCharacter = Boolean(myPlayer?.character_name);
+    const hasPhoto = Boolean(
+      myPlayer?.avatar_face_url &&
+        myPlayer.avatar_face_url !== TEMPLATE_ASSETS.avatarPlaceholder
+    );
+    const hasTeamOrClub = Boolean(myTeam || myPlayer?.team_id);
+
+    return [
+      {
+        id: 'character',
+        title: 'Ficha do Boneco',
+        desc: hasCharacter
+          ? `${myPlayer?.character_name} (${myPlayer?.primary_position})`
+          : 'Cadastre posição, altura e perna boa',
+        done: hasCharacter,
+        href: hasCharacter ? '/player' : '/onboarding',
+      },
+      {
+        id: 'photo',
+        title: 'Foto na Carta FC 26',
+        desc: hasPhoto
+          ? 'Foto configurada na carta'
+          : 'Suba a foto do seu boneco na carta',
+        done: hasPhoto,
+        href: '/player',
+      },
+      {
+        id: 'team',
+        title: 'Vínculo com Clube',
+        desc: hasTeamOrClub
+          ? `Vinculado ao ${myTeam?.name || 'Clube'}`
+          : 'Entre com código ou crie um time',
+        done: hasTeamOrClub,
+        href: hasTeamOrClub ? '/captain' : '/onboarding',
+      },
+    ];
+  }, [myPlayer, myTeam]);
+
+  const completedCount = completionSteps.filter((s) => s.done).length;
+
+  const handleCopyInviteUrl = () => {
+    if (typeof window === 'undefined') return;
+    const text = myTeam?.invite_code
+      ? `Entre no nosso time "${myTeam.name}" no DraftClub! Acesse ${window.location.origin} e use o código: ${myTeam.invite_code}`
+      : `Crie sua conta e sua Carta FC 26 no DraftClub: ${window.location.origin}`;
+    navigator.clipboard.writeText(text);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2500);
+  };
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-5 pb-28 overflow-x-hidden selection:bg-[#00E599]/30 selection:text-[#00E599]">
-      <main className="max-w-7xl mx-auto space-y-5">
-        {/* 1. TOURNAMENT HERO BANNER COM REFINE FRAME */}
-        <RefineFrame badge="CAMPEONATO ATIVO" className="bg-[#0D0F17]/90 border-white/[0.08]">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5">
-            <div className="flex items-start gap-4">
-              <div className="relative w-16 h-16 rounded-2xl bg-gradient-to-br from-[#00E599]/20 to-emerald-950/40 border border-[#00E599]/30 flex items-center justify-center shrink-0 shadow-lg shadow-black/60">
+    <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-6 pb-28">
+      <main className="max-w-6xl mx-auto space-y-6">
+        {/* TOPO SOCIAL ESTILO THREADS × JOGUEIROS */}
+        <section className="p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] flex flex-col md:flex-row md:items-center justify-between gap-5">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-full bg-[#141414] border border-white/[0.12] flex items-center justify-center overflow-hidden shrink-0">
+              {myPlayer?.avatar_face_url ? (
                 <img
-                  src="/assets/awards/1st-place.png"
-                  alt="Troféu Oficial"
-                  className="w-12 h-12 object-contain drop-shadow-md"
+                  src={myPlayer.avatar_face_url}
+                  alt={myPlayer.character_name}
+                  className="w-full h-full object-cover"
                 />
-              </div>
+              ) : (
+                <span className="font-display font-bold text-xl text-white">
+                  {(session?.characterName || session?.fullName || 'DC')
+                    .substring(0, 2)
+                    .toUpperCase()}
+                </span>
+              )}
+            </div>
 
-              <div className="space-y-1.5 min-w-0">
-                <div className="flex items-center gap-2 flex-wrap">
-                  <StatusMark
-                    status={tournament.status === 'finished' ? 'pending' : 'success'}
-                    label={
-                      tournament.status === 'finished'
-                        ? 'Temporada Encerrada'
-                        : `Temporada Oficial ${tournament.game_mode || '5v5'} • EA FC 26`
-                    }
-                  />
-
-                  {/* Seletor Rápido de Temporada Ativa / Histórico */}
-                  {tournaments.length > 1 && (
-                    <div className="flex items-center gap-1">
-                      {tournaments.map((t) => (
-                        <button
-                          key={t.id}
-                          type="button"
-                          onClick={() => selectTournament(t.id)}
-                          className={cn(
-                            'px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold transition-all border',
-                            tournament.id === t.id
-                              ? 'bg-[#00E599] text-[#090A0F] border-[#00E599]'
-                              : 'bg-white/5 text-zinc-400 border-white/10 hover:text-white'
-                          )}
-                        >
-                          {t.season_label || t.name}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <h1 className="text-xl sm:text-2xl font-display font-black tracking-tight text-white leading-tight">
-                  {tournament.name}
+            <div className="space-y-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h1 className="text-xl sm:text-2xl font-display font-bold text-white">
+                  {myPlayer?.character_name ||
+                    session?.characterName ||
+                    session?.fullName ||
+                    'Bem-vindo ao DraftClub'}
                 </h1>
-                <p className="text-xs text-zinc-400">
-                  Taxa R$ {Number(tournament.entry_fee || 70).toFixed(2)} • Formato{' '}
-                  <span className="text-zinc-200 font-bold">{tournament.starters_count || 5}x{tournament.starters_count || 5}</span> (+{tournament.reserves_count ?? 1} Reserva) • Regras Oficiais LPF
-                </p>
+                {myPlayer?.primary_position && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-white text-black text-[11px] font-bold">
+                    {myPlayer.primary_position} • OVR {myPlayer.overall || 82}
+                  </span>
+                )}
               </div>
-            </div>
 
-            {/* Card de Premiação 100% */}
-            <Link
-              href="/rankings"
-              className="group flex items-center justify-between sm:justify-start gap-4 px-5 py-3.5 rounded-2xl bg-gradient-to-r from-[#141722] to-[#12141c] border border-white/10 hover:border-[#00E599]/40 transition-all shrink-0 shadow-lg shadow-black/40"
-            >
-              <div>
-                <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-[#00E599] block">
-                  Premiação Total (100% Repassada)
-                </span>
-                <div className="text-xl sm:text-2xl font-mono font-black text-white flex items-baseline gap-1">
-                  <span>R$</span>
-                  <CountUp to={totalPrizePool} duration={1.5} decimals={2} separator="." />
-                </div>
-                <span className="text-[11px] text-zinc-400 group-hover:text-[#00E599] font-medium transition-colors flex items-center gap-1">
-                  Chaveamento & Mata-Mata G4
-                  <ArrowUpRight className="w-3.5 h-3.5 text-[#00E599]" />
-                </span>
-              </div>
-            </Link>
-          </div>
-
-          {/* KPI METRICS ROW */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-4 mt-4 border-t border-white/[0.06]">
-            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Times Na Disputa</span>
-              <div className="text-lg font-mono font-black text-white mt-0.5 flex items-center gap-1.5">
-                <Users className="w-4 h-4 text-[#00E599]" />
-                <CountUp to={teams.length} duration={1} /> Clubes
-              </div>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Atletas Inscritos</span>
-              <div className="text-lg font-mono font-black text-white mt-0.5 flex items-center gap-1.5">
-                <Shield className="w-4 h-4 text-emerald-400" />
-                <CountUp to={players.length} duration={1} /> Jogadores
-              </div>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Gols Marcados</span>
-              <div className="text-lg font-mono font-black text-white mt-0.5 flex items-center gap-1.5">
-                <TrendingUp className="w-4 h-4 text-amber-400" />
-                <CountUp to={totalGoals > 0 ? totalGoals : 28} duration={1.2} /> Gols
-              </div>
-            </div>
-
-            <div className="p-3 rounded-2xl bg-white/[0.03] border border-white/5">
-              <span className="text-[10px] font-mono text-zinc-400 uppercase block">Partidas Oficiais</span>
-              <div className="text-lg font-mono font-black text-white mt-0.5 flex items-center gap-1.5">
-                <Activity className="w-4 h-4 text-cyan-400" />
-                <CountUp to={matches.length} duration={1} /> Jogos
-              </div>
+              <p className="text-xs sm:text-sm text-[#A1A1AA]">
+                {myTeam ? (
+                  <>
+                    Clube atual: <strong className="text-white">{myTeam.name}</strong>
+                    {myTeam.invite_code && (
+                      <>
+                        {' '}
+                        • Código:{' '}
+                        <span className="font-mono text-white">
+                          {myTeam.invite_code}
+                        </span>
+                      </>
+                    )}
+                  </>
+                ) : (
+                  'Agente Livre • Disponível para convites e Sala de Draft'
+                )}
+              </p>
             </div>
           </div>
 
-          {/* ATALHOS RÁPIDOS DOS 5 PILARES */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3">
-            <ClickSpark sparkColor="#00E599">
-              <Link
-                href="/matches"
-                className="w-full py-2.5 px-3.5 rounded-xl bg-[#00E599] hover:bg-[#00c985] text-[#090A0F] font-display font-black text-xs flex items-center justify-between shadow-md shadow-[#00E599]/20 transition-all"
-              >
-                <span className="flex items-center gap-1.5 truncate">
-                  <Camera className="w-4 h-4 shrink-0" />
-                  Súmula IA & Jogos
-                </span>
-                <ChevronRight className="w-3.5 h-3.5 shrink-0" />
-              </Link>
-            </ClickSpark>
-
-            <Link
-              href="/rankings"
-              className="py-2.5 px-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-display font-bold text-xs flex items-center justify-between transition-all"
+          <div className="flex flex-wrap items-center gap-2.5">
+            <button
+              type="button"
+              onClick={handleCopyInviteUrl}
+              className="h-10 px-4 rounded-full bg-[#141414] hover:bg-zinc-800 border border-white/[0.08] text-white text-xs font-semibold inline-flex items-center gap-2 transition-colors whitespace-nowrap"
             >
-              <span className="flex items-center gap-1.5 truncate">
-                <Trophy className="w-4 h-4 text-amber-400 shrink-0" />
-                Tabela & Mata-Mata
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-            </Link>
-
-            <Link
-              href="/studio"
-              className="py-2.5 px-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-display font-bold text-xs flex items-center justify-between transition-all"
-            >
-              <span className="flex items-center gap-1.5 truncate">
-                <Sparkles className="w-4 h-4 text-cyan-400 shrink-0" />
-                Estúdio 4:5 & Packs
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
-            </Link>
+              {copiedLink ? (
+                <>
+                  <Check className="w-3.5 h-3.5 text-[#10B981]" />
+                  <span>Convite Copiado!</span>
+                </>
+              ) : (
+                <>
+                  <Copy className="w-3.5 h-3.5" />
+                  <span>Convidar Jogadores</span>
+                </>
+              )}
+            </button>
 
             <Link
               href="/player"
-              className="py-2.5 px-3.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-display font-bold text-xs flex items-center justify-between transition-all"
+              className="h-10 px-5 rounded-full bg-white hover:bg-zinc-200 text-black text-xs font-semibold inline-flex items-center gap-2 transition-colors whitespace-nowrap"
             >
-              <span className="flex items-center gap-1.5 truncate">
-                <Shield className="w-4 h-4 text-[#00E599] shrink-0" />
-                Minha Carta FC 26
-              </span>
-              <ChevronRight className="w-3.5 h-3.5 text-zinc-500 shrink-0" />
+              <span>Editar Carta FC 26</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
-        </RefineFrame>
+        </section>
 
-        {/* 2. GLIDE SELECTOR (SEGMENT SWITCHER) */}
-        <GlideSelect
-          options={segmentOptions}
-          activeId={activeSegment}
-          onChange={(id) => setActiveSegment(id as 'matches' | 'standings' | 'rankings')}
-          className="bg-[#0D0F17] border-white/10"
-        />
+        {/* BARRA DE COMPLETUDE DO PERFIL (ESTILO JOGUEIROS "COMPLETE SEU PERFIL") */}
+        <section className="p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
+          <div className="flex items-center justify-between gap-2">
+            <div>
+              <h2 className="text-sm sm:text-base font-display font-bold text-white">
+                Complete seu perfil ({completedCount}/3)
+              </h2>
+              <p className="text-xs text-[#A1A1AA]">
+                Deixe sua ficha pronta para as partidas oficiais e convocação.
+              </p>
+            </div>
+            <div className="w-28 h-2 rounded-full bg-[#141414] overflow-hidden border border-white/[0.06]">
+              <div
+                className="h-full bg-white transition-all duration-300"
+                style={{ width: `${(completedCount / 3) * 100}%` }}
+              />
+            </div>
+          </div>
 
-        {/* ABA 1: JOGOS DA RODADA */}
-        {activeSegment === 'matches' && (
-          <section className="space-y-3.5">
-            <div className="flex items-center justify-between px-1">
-              <div>
-                <h2 className="text-base font-display font-extrabold text-white">
-                  Confrontos da Rodada
-                </h2>
-                <p className="text-xs text-zinc-400">
-                  Agende horário de partida ou envie print de desempenho para leitura OCR automática
-                </p>
-              </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            {completionSteps.map((item) => (
+              <Link
+                key={item.id}
+                href={item.href}
+                className="p-4 rounded-2xl bg-[#141414] border border-white/[0.08] hover:border-white/20 transition-all flex items-start justify-between gap-3"
+              >
+                <div className="space-y-1">
+                  <span className="text-xs font-bold text-white block">
+                    {item.title}
+                  </span>
+                  <span className="text-[11px] text-[#A1A1AA] block">
+                    {item.desc}
+                  </span>
+                </div>
+                {item.done ? (
+                  <CheckCircle2 className="w-4 h-4 text-[#10B981] shrink-0 mt-0.5" />
+                ) : (
+                  <Circle className="w-4 h-4 text-zinc-600 shrink-0 mt-0.5" />
+                )}
+              </Link>
+            ))}
+          </div>
+        </section>
 
-              <ClickSpark sparkColor="#00E599">
-                <Link
-                  href="/matches"
-                  className="px-3.5 py-1.5 rounded-full bg-[#00E599] text-[#090A0F] text-xs font-black flex items-center gap-1.5 shadow-sm shadow-[#00E599]/30 shrink-0"
-                >
-                  <Plus className="w-3.5 h-3.5" />
-                  Súmula / Jogo
-                </Link>
-              </ClickSpark>
+        {/* ESTATÍSTICAS RÁPIDAS DO ATLETA (ESTILO JOGUEIROS: COMEÇA EM ZERO REAL) */}
+        <section className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          {[
+            {
+              label: 'Jogos Oficiais',
+              value: myPlayer?.career_stats?.matches_played ?? 0,
+            },
+            {
+              label: 'Gols Marcados',
+              value: myPlayer?.career_stats?.goals ?? 0,
+            },
+            {
+              label: 'Assistências',
+              value: myPlayer?.career_stats?.assists ?? 0,
+            },
+            {
+              label: 'MVPs (Craque)',
+              value: myPlayer?.career_stats?.mvps ?? 0,
+            },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="p-4 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] text-center space-y-1"
+            >
+              <span className="text-2xl font-mono font-bold text-white block tabular-nums">
+                {stat.value}
+              </span>
+              <span className="text-xs text-[#A1A1AA] block">{stat.label}</span>
+            </div>
+          ))}
+        </section>
+
+        {/* GRID PRINCIPAL: CARTA FC 26 INTERATIVA + RESUMO DA COMUNIDADE */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Coluna Esquerda (4 cols): Carta FC 26 com HoloCard + FlipCard */}
+          <div className="lg:col-span-4 p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] flex flex-col items-center space-y-4">
+            <div className="w-full flex items-center justify-between">
+              <span className="text-xs font-semibold text-white">
+                Minha Carta FC 26
+              </span>
+              <span className="text-[11px] text-[#A1A1AA]">
+                Clique para virar
+              </span>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-              {matches.map((m) => {
-                const isCompleted = m.status === 'completed' || m.status === 'approved';
-                const isPendingVal = m.status === 'pending_validation';
-                const homeTeam = m.home_team || teams.find((t) => t.id === m.home_team_id);
-                const awayTeam = m.away_team || teams.find((t) => t.id === m.away_team_id);
+            {myPlayer ? (
+              <FlipCard
+                className="w-full flex justify-center min-h-[380px]"
+                front={
+                  <HoloCard className="p-2 bg-black border-white/[0.08]">
+                    <FC26PlayerCard
+                      player={myPlayer}
+                      team={myTeam || undefined}
+                      size="md"
+                    />
+                  </HoloCard>
+                }
+                back={
+                  <div className="w-[260px] h-[370px] rounded-3xl bg-[#141414] border border-white/[0.12] p-5 flex flex-col justify-between text-left">
+                    <div className="space-y-3">
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#A1A1AA] block">
+                        Passaporte Pro Clubs
+                      </span>
+                      <h3 className="text-lg font-display font-bold text-white uppercase">
+                        {myPlayer.character_name}
+                      </h3>
+                      <div className="space-y-1.5 text-xs text-[#A1A1AA]">
+                        <p>
+                          Posição: <strong className="text-white">{myPlayer.primary_position}</strong>
+                        </p>
+                        <p>
+                          Físico:{' '}
+                          <strong className="text-white">
+                            {myPlayer.height_cm || 178}cm / {myPlayer.weight_kg || 72}kg
+                          </strong>
+                        </p>
+                        <p>
+                          AcceleRATE:{' '}
+                          <strong className="text-white">
+                            {myPlayer.accelerate_type || 'Controlada'}
+                          </strong>
+                        </p>
+                        <p>
+                          Arquétipo:{' '}
+                          <strong className="text-white">
+                            {myPlayer.archetype || 'Finalizador'}
+                          </strong>
+                        </p>
+                      </div>
+                    </div>
+                    <Link
+                      href="/player"
+                      className="w-full h-10 rounded-xl bg-white text-black text-xs font-semibold flex items-center justify-center"
+                    >
+                      Customizar Atributos
+                    </Link>
+                  </div>
+                }
+              />
+            ) : (
+              <div className="py-12 px-4 text-center space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-[#141414] border border-white/[0.08] flex items-center justify-center mx-auto text-white">
+                  <User className="w-5 h-5" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-white">
+                    Você ainda não cadastrou seu boneco
+                  </h3>
+                  <p className="text-xs text-[#A1A1AA]">
+                    Crie seu personagem do EA FC 26 para liberar sua Carta Pro.
+                  </p>
+                </div>
+                <Link
+                  href="/onboarding"
+                  className="inline-flex items-center gap-2 h-10 px-5 rounded-full bg-white text-black text-xs font-semibold"
+                >
+                  <Plus className="w-4 h-4" />
+                  Cadastrar Personagem
+                </Link>
+              </div>
+            )}
+          </div>
 
+          {/* Coluna Direita (8 cols): Atalhos Rápidos + Jogadores & Times Reais */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Atalhos Rápidos Estilo Jogueiros */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              {[
+                {
+                  href: '/players',
+                  label: 'Buscar',
+                  desc: `${players.length} atletas • ${teams.length} times`,
+                  icon: Search,
+                },
+                {
+                  href: '/matches',
+                  label: 'Partidas & IA',
+                  desc: `${matches.length} jogos na agenda`,
+                  icon: Calendar,
+                },
+                {
+                  href: '/rankings',
+                  label: 'Classificação',
+                  desc: tournament?.name || 'Tabela & Artilharia',
+                  icon: Trophy,
+                },
+                {
+                  href: '/studio',
+                  label: 'Banners',
+                  desc: 'Story 9:16, 4:5 e 1:1',
+                  icon: Sparkles,
+                },
+              ].map((card) => {
+                const Icon = card.icon;
                 return (
                   <Link
-                    key={m.id}
-                    href="/matches"
-                    className="group block p-4 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/40 hover:border-[#00E599]/40 transition-all space-y-3"
+                    key={card.href}
+                    href={card.href}
+                    className="p-4 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] hover:border-white/25 transition-all space-y-3"
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <span className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5">
-                        <Clock className="w-3.5 h-3.5 text-[#00E599] shrink-0" />
-                        {m.scheduled_at
-                          ? new Date(m.scheduled_at).toLocaleString('pt-BR', {
-                              weekday: 'short',
-                              day: '2-digit',
-                              month: '2-digit',
-                              hour: '2-digit',
-                              minute: '2-digit',
-                            })
-                          : `Rodada #${m.round_number || 1}`}
-                      </span>
-
-                      {isCompleted ? (
-                        <StatusMark status="success" label="Súmula Validada" />
-                      ) : isPendingVal ? (
-                        <StatusMark status="warning" label="Aguardando Validação" />
-                      ) : m.schedule_status === 'confirmed' ? (
-                        <StatusMark status="online" label="Horário Marcado" />
-                      ) : (
-                        <StatusMark status="pending" label="Agendar Jogo" />
-                      )}
+                    <div className="w-9 h-9 rounded-2xl bg-[#141414] border border-white/[0.08] flex items-center justify-center text-white">
+                      <Icon className="w-4 h-4" />
                     </div>
-
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 py-2">
-                      {/* Mandante */}
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <img
-                          src={homeTeam?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                          alt={homeTeam?.name || 'Mandante'}
-                          className="w-11 h-11 object-contain drop-shadow-md shrink-0"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src =
-                              TEMPLATE_ASSETS.crestPlaceholder;
-                          }}
-                        />
-                        <div className="min-w-0">
-                          <span className="text-xs sm:text-sm font-display font-extrabold text-white leading-tight line-clamp-2">
-                            {homeTeam?.name || 'Mandante'}
-                          </span>
-                          <span className="text-[10px] text-zinc-500 block uppercase font-mono">Mandante</span>
-                        </div>
-                      </div>
-
-                      {/* Placar / VS */}
-                      <div className="px-3.5 py-1.5 rounded-xl bg-white/5 border border-white/10 text-sm sm:text-base font-mono font-black text-white shrink-0 text-center min-w-[72px]">
-                        {isCompleted || isPendingVal
-                          ? `${m.home_score} - ${m.away_score}`
-                          : 'VS'}
-                      </div>
-
-                      {/* Visitante */}
-                      <div className="flex items-center justify-end gap-2.5 min-w-0 text-right">
-                        <div className="min-w-0">
-                          <span className="text-xs sm:text-sm font-display font-extrabold text-white leading-tight line-clamp-2">
-                            {awayTeam?.name || 'Visitante'}
-                          </span>
-                          <span className="text-[10px] text-zinc-500 block uppercase font-mono">Visitante</span>
-                        </div>
-                        <img
-                          src={awayTeam?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                          alt={awayTeam?.name || 'Visitante'}
-                          className="w-11 h-11 object-contain drop-shadow-md shrink-0"
-                          onError={(e) => {
-                            (e.currentTarget as HTMLImageElement).src =
-                              TEMPLATE_ASSETS.crestPlaceholder;
-                          }}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="pt-2.5 border-t border-white/[0.06] flex items-center justify-between text-[11px]">
-                      <span className="text-zinc-400 font-mono">
-                        Rodada #{m.round_number || 1} • {tournament.game_mode || '5v5'}
+                    <div>
+                      <span className="text-xs font-bold text-white block">
+                        {card.label}
                       </span>
-                      <span className="font-bold text-[#00E599] flex items-center gap-1 group-hover:translate-x-0.5 transition-transform">
-                        {isPendingVal ? 'Validar Placar' : 'Abrir Súmula / Banner'}
-                        <ChevronRight className="w-3.5 h-3.5" />
+                      <span className="text-[11px] text-[#A1A1AA] block truncate">
+                        {card.desc}
                       </span>
                     </div>
                   </Link>
                 );
               })}
             </div>
-          </section>
-        )}
 
-        {/* ABA 2: RESUMO TABELA DE CLASSIFICAÇÃO */}
-        {activeSegment === 'standings' && (
-          <section className="p-4 sm:p-6 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/40 space-y-4">
-            <div className="flex items-center justify-between gap-2 flex-wrap">
-              <div>
-                <h2 className="text-base font-display font-extrabold text-white">
-                  Classificação Oficial
-                </h2>
-                <p className="text-xs text-zinc-400">
-                  Os 4 primeiros colocados (<span className="text-[#00E599] font-bold">G4</span>) avançam para as Semifinais
-                </p>
+            {/* Últimos Atletas Cadastrados no Banco Real */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h2 className="text-base font-display font-bold text-white">
+                    Atletas Cadastrados ({players.length})
+                  </h2>
+                  <p className="text-xs text-[#A1A1AA]">
+                    Jogadores reais registrados na comunidade
+                  </p>
+                </div>
+                <Link
+                  href="/players"
+                  className="text-xs font-semibold text-white hover:underline inline-flex items-center gap-1"
+                >
+                  <span>Ver todos</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
               </div>
 
-              <Link
-                href="/rankings"
-                className="px-3.5 py-1.5 rounded-full bg-white/5 hover:bg-white/10 border border-white/10 text-white text-xs font-bold flex items-center gap-1.5 shrink-0 transition-colors"
-              >
-                <span>Tabela Completa & Mata-Mata</span>
-                <ChevronRight className="w-3.5 h-3.5 text-[#00E599]" />
-              </Link>
-            </div>
-
-            <div className="overflow-x-auto">
-              <table className="w-full text-xs text-left">
-                <thead className="text-[10px] font-mono text-zinc-400 uppercase border-b border-white/[0.08]">
-                  <tr>
-                    <th className="py-2.5 px-3">#</th>
-                    <th className="py-2.5 px-3">Clube</th>
-                    <th className="py-2.5 px-3 text-center">J</th>
-                    <th className="py-2.5 px-3 text-center text-[#00E599]">V</th>
-                    <th className="py-2.5 px-3 text-center text-amber-400">E</th>
-                    <th className="py-2.5 px-3 text-center text-rose-400">D</th>
-                    <th className="py-2.5 px-3 text-center">SG</th>
-                    <th className="py-2.5 px-3 text-right font-black text-[#00E599]">PTS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-white/[0.04]">
-                  {standings.map((team, idx) => {
-                    const isG4 = idx < 4;
-                    const teamObj = teams.find((t) => t.id === team.team_id);
-                    return (
-                      <tr
-                        key={team.team_id}
-                        className={cn(
-                          'transition-colors',
-                          isG4
-                            ? 'bg-[#00E599]/[0.03] hover:bg-[#00E599]/[0.06]'
-                            : 'hover:bg-white/[0.02]'
-                        )}
+              {loading ? (
+                <div className="py-8 text-center text-xs text-[#A1A1AA]">
+                  Sincronizando jogadores...
+                </div>
+              ) : players.length === 0 ? (
+                <div className="p-8 rounded-2xl bg-[#141414]/60 border border-white/[0.06] text-center space-y-3">
+                  <Users className="w-6 h-6 text-[#A1A1AA] mx-auto" />
+                  <div className="space-y-1">
+                    <h3 className="text-sm font-bold text-white">
+                      O banco está limpo e pronto para os jogadores
+                    </h3>
+                    <p className="text-xs text-[#A1A1AA] max-w-md mx-auto">
+                      Compartilhe o link do DraftClub com os atletas da liga para eles criarem a conta e cadastrarem seus personagens.
+                    </p>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 pt-1">
+                    <button
+                      type="button"
+                      onClick={handleCopyInviteUrl}
+                      className="h-9 px-4 rounded-full bg-white text-black text-xs font-semibold inline-flex items-center gap-1.5"
+                    >
+                      <Copy className="w-3.5 h-3.5" />
+                      <span>Copiar Link de Convite</span>
+                    </button>
+                    {!myPlayer && (
+                      <Link
+                        href="/onboarding"
+                        className="h-9 px-4 rounded-full bg-[#141414] border border-white/[0.08] text-white text-xs font-semibold inline-flex items-center"
                       >
-                        <td className="py-3 px-3">
-                          <span
-                            className={cn(
-                              'inline-flex items-center justify-center w-5 h-5 rounded-full font-mono text-[10px] font-black',
-                              isG4
-                                ? 'bg-[#00E599] text-[#090A0F]'
-                                : 'bg-white/5 text-zinc-400 border border-white/10'
+                        Cadastrar Meu Boneco
+                      </Link>
+                    )}
+                  </div>
+                </div>
+              ) : (
+                <div className="divide-y divide-white/[0.06]">
+                  {players.slice(0, 6).map((p) => {
+                    const pTeam = teams.find((t) => t.id === p.team_id);
+                    return (
+                      <div
+                        key={p.id}
+                        className="py-3 flex items-center justify-between gap-3"
+                      >
+                        <div className="flex items-center gap-3 min-w-0">
+                          <div className="w-10 h-10 rounded-full bg-[#141414] border border-white/[0.08] overflow-hidden flex items-center justify-center shrink-0">
+                            {p.avatar_face_url ? (
+                              <img
+                                src={p.avatar_face_url}
+                                alt={p.character_name}
+                                className="w-full h-full object-cover"
+                              />
+                            ) : (
+                              <span className="text-xs font-bold text-white">
+                                {(p.character_name || 'DC')
+                                  .substring(0, 2)
+                                  .toUpperCase()}
+                              </span>
                             )}
-                          >
-                            {team.position}
-                          </span>
-                        </td>
-                        <td className="py-3 px-3 font-display font-extrabold text-white">
-                          <div className="flex items-center gap-2.5">
-                            <img
-                              src={
-                                team.logo_url ||
-                                teamObj?.logo_url ||
-                                TEMPLATE_ASSETS.crestPlaceholder
-                              }
-                              alt={team.team_name}
-                              className="w-6 h-6 object-contain drop-shadow-sm shrink-0"
-                              onError={(e) => {
-                                (e.currentTarget as HTMLImageElement).src =
-                                  TEMPLATE_ASSETS.crestPlaceholder;
-                              }}
-                            />
-                            <span className="leading-tight">{team.team_name}</span>
                           </div>
-                        </td>
-                        <td className="py-3 px-3 text-center font-mono text-zinc-400">
-                          {team.played}
-                        </td>
-                        <td className="py-3 px-3 text-center font-mono font-bold text-[#00E599]">
-                          {team.won}
-                        </td>
-                        <td className="py-3 px-3 text-center font-mono text-zinc-400">
-                          {team.drawn}
-                        </td>
-                        <td className="py-3 px-3 text-center font-mono text-rose-400">
-                          {team.lost}
-                        </td>
-                        <td className="py-3 px-3 text-center font-mono text-zinc-300 font-semibold">
-                          {team.goal_difference > 0
-                            ? `+${team.goal_difference}`
-                            : team.goal_difference}
-                        </td>
-                        <td className="py-3 px-3 text-right font-mono font-black text-sm text-[#00E599]">
-                          {team.points}
-                        </td>
-                      </tr>
+                          <div className="min-w-0">
+                            <div className="flex items-center gap-2">
+                              <span className="text-xs font-bold text-white uppercase truncate">
+                                {p.character_name}
+                              </span>
+                              <span className="px-2 py-0.5 rounded-full bg-[#141414] border border-white/[0.08] text-[10px] font-mono font-bold text-zinc-300">
+                                {p.primary_position} • {p.overall || 82}
+                              </span>
+                            </div>
+                            <span className="text-[11px] text-[#A1A1AA] block truncate">
+                              {pTeam ? pTeam.name : 'Agente Livre'} •{' '}
+                              {p.platform || 'PS5'}
+                            </span>
+                          </div>
+                        </div>
+
+                        <Link
+                          href="/players"
+                          className="h-8 px-3.5 rounded-xl bg-[#141414] hover:bg-zinc-800 border border-white/[0.08] text-white text-xs font-semibold inline-flex items-center shrink-0"
+                        >
+                          Ver Perfil
+                        </Link>
+                      </div>
                     );
                   })}
-                </tbody>
-              </table>
+                </div>
+              )}
             </div>
-          </section>
-        )}
 
-        {/* ABA 3: TOP ARTILHEIROS E GARÇONS */}
-        {activeSegment === 'rankings' && (
-          <section className="grid sm:grid-cols-2 gap-4">
-            {/* Artilheiros */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/40 space-y-3.5">
+            {/* Clubes Registrados */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <img
-                    src="/assets/awards/golden-boot.png"
-                    alt="Chuteira de Ouro"
-                    className="w-10 h-10 object-contain drop-shadow-md"
-                  />
-                  <div>
-                    <h3 className="text-sm font-display font-extrabold text-white">
-                      Artilheiros (Chuteira de Ouro)
-                    </h3>
-                    <p className="text-[11px] text-zinc-400 font-mono">
-                      Prêmio: R$ {tournament.prize_distribution?.top_scorer || 30},00
-                    </p>
-                  </div>
+                <div>
+                  <h2 className="text-base font-display font-bold text-white">
+                    Times Registrados ({teams.length})
+                  </h2>
+                  <p className="text-xs text-[#A1A1AA]">
+                    Clubes criados pelos capitães da liga
+                  </p>
                 </div>
                 <Link
-                  href="/rankings"
-                  className="px-2.5 py-1 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-mono font-bold"
+                  href="/captain"
+                  className="text-xs font-semibold text-white hover:underline inline-flex items-center gap-1"
                 >
-                  Ver Todos →
+                  <span>Painel do Clube</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
                 </Link>
               </div>
 
-              <div className="space-y-2">
-                {scorers.map((sc, i) => (
-                  <div
-                    key={sc.player_id}
-                    className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between gap-2"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span
-                        className={cn(
-                          'w-6 h-6 rounded-full font-mono flex items-center justify-center text-xs font-black shrink-0',
-                          i === 0
-                            ? 'bg-[#00E599] text-[#090A0F]'
-                            : 'bg-white/5 text-zinc-400'
-                        )}
-                      >
-                        {i + 1}
-                      </span>
-                      <div className="min-w-0">
-                        <span className="text-xs font-display font-black text-white block truncate uppercase">
-                          {sc.character_name || sc.player_name}
-                        </span>
-                        <span className="text-[10px] text-zinc-400 block truncate">
-                          {sc.team_name} {sc.full_name ? `• ${sc.full_name}` : ''}
-                        </span>
-                      </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-[#00E599]/15 text-[#00E599] border border-[#00E599]/30 font-mono font-black text-xs shrink-0">
-                      {sc.goals_count} ⚽
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Garçons */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#0D0F17] border border-white/[0.08] shadow-lg shadow-black/40 space-y-3.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5">
-                  <img
-                    src="/assets/awards/playmaker.png"
-                    alt="Garçom da Liga"
-                    className="w-10 h-10 object-contain drop-shadow-md"
-                  />
-                  <div>
-                    <h3 className="text-sm font-display font-extrabold text-white">
-                      Líderes de Assistência
-                    </h3>
-                    <p className="text-[11px] text-zinc-400 font-mono">
-                      Prêmio: R$ {tournament.prize_distribution?.top_assister || 30},00
-                    </p>
-                  </div>
+              {teams.length === 0 ? (
+                <div className="p-6 rounded-2xl bg-[#141414]/60 border border-white/[0.06] text-center space-y-3">
+                  <Shield className="w-6 h-6 text-[#A1A1AA] mx-auto" />
+                  <p className="text-xs text-[#A1A1AA]">
+                    Nenhum clube registrado ainda. Capitães podem criar seu time pelo Onboarding ou Painel do Clube.
+                  </p>
                 </div>
-                <Link
-                  href="/rankings"
-                  className="px-2.5 py-1 rounded-full bg-cyan-500/15 border border-cyan-500/30 text-cyan-400 text-[10px] font-mono font-bold"
-                >
-                  Ver Todos →
-                </Link>
-              </div>
-
-              <div className="space-y-2">
-                {assists.map((asst, i) => (
-                  <div
-                    key={asst.player_id}
-                    className="p-3 rounded-2xl bg-white/[0.03] border border-white/5 flex items-center justify-between gap-2"
-                  >
-                    <div className="flex items-center gap-2.5 min-w-0">
-                      <span
-                        className={cn(
-                          'w-6 h-6 rounded-full font-mono flex items-center justify-center text-xs font-black shrink-0',
-                          i === 0
-                            ? 'bg-cyan-400 text-[#090A0F]'
-                            : 'bg-white/5 text-zinc-400'
-                        )}
-                      >
-                        {i + 1}
-                      </span>
-                      <div className="min-w-0">
-                        <span className="text-xs font-display font-black text-white block truncate uppercase">
-                          {asst.character_name || asst.player_name}
-                        </span>
-                        <span className="text-[10px] text-zinc-400 block truncate">
-                          {asst.team_name} {asst.full_name ? `• ${asst.full_name}` : ''}
-                        </span>
+              ) : (
+                <div className="grid sm:grid-cols-2 gap-3">
+                  {standings.slice(0, 6).map((team) => (
+                    <Link
+                      key={team.team_id}
+                      href="/captain"
+                      className="p-3.5 rounded-2xl bg-[#141414] border border-white/[0.08] hover:border-white/20 flex items-center justify-between gap-3 transition-colors"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <div className="w-10 h-10 rounded-xl bg-black border border-white/[0.08] flex items-center justify-center shrink-0 overflow-hidden">
+                          {team.logo_url ? (
+                            <img
+                              src={team.logo_url}
+                              alt={team.team_name}
+                              className="w-full h-full object-contain p-1"
+                            />
+                          ) : (
+                            <span className="text-xs font-mono font-bold text-white">
+                              {team.short_name}
+                            </span>
+                          )}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="text-xs font-bold text-white block truncate">
+                            {team.team_name}
+                          </span>
+                          <span className="text-[11px] text-[#A1A1AA] block">
+                            {team.points} pts • {team.won}V {team.drawn}E {team.lost}D
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-full bg-cyan-500/15 text-cyan-400 border border-cyan-500/30 font-mono font-black text-xs shrink-0">
-                      {asst.assists_count} 👟
-                    </span>
-                  </div>
-                ))}
-              </div>
+                      <ArrowRight className="w-4 h-4 text-[#A1A1AA] shrink-0" />
+                    </Link>
+                  ))}
+                </div>
+              )}
             </div>
-          </section>
-        )}
+          </div>
+        </div>
       </main>
     </div>
   );

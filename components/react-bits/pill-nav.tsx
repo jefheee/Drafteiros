@@ -15,6 +15,7 @@ export interface PillNavProps {
   items: PillNavItem[];
   activeId: string;
   onSelect?: (id: string) => void;
+  onChange?: (id: string) => void;
   className?: string;
 }
 
@@ -22,19 +23,25 @@ export function PillNav({
   items,
   activeId,
   onSelect,
+  onChange,
   className = '',
 }: PillNavProps) {
+  const handleSelect = (id: string) => {
+    onSelect?.(id);
+    onChange?.(id);
+  };
+
   return (
     <nav
-      className={`inline-flex items-center gap-1 p-1.5 rounded-full bg-[#14171f]/80 backdrop-blur-xl border border-white/10 shadow-2xl shadow-black/50 ${className}`}
+      className={`inline-flex items-center gap-1 p-1.5 rounded-full bg-[#0A0A0A] border border-white/[0.08] ${className}`}
     >
       {items.map((item) => {
         const isActive = item.id === activeId;
         const content = (
           <div
-            className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-extrabold transition-all duration-200 select-none ${
+            className={`flex items-center gap-2 px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-200 select-none ${
               isActive
-                ? 'bg-gradient-to-r from-emerald-500 to-[#00E599] text-zinc-950 shadow-md shadow-emerald-500/20'
+                ? 'bg-white text-black shadow-sm'
                 : 'text-zinc-400 hover:text-white hover:bg-white/5'
             }`}
           >
@@ -42,8 +49,8 @@ export function PillNav({
             <span>{item.label}</span>
             {item.badge && (
               <span
-                className={`px-1.5 py-0.2 rounded-full text-[9px] font-mono ${
-                  isActive ? 'bg-zinc-950 text-[#00E599]' : 'bg-white/10 text-zinc-300'
+                className={`px-1.5 py-0.5 rounded-full text-[9px] font-mono ${
+                  isActive ? 'bg-black text-white' : 'bg-white/10 text-zinc-300'
                 }`}
               >
                 {item.badge}
@@ -54,7 +61,7 @@ export function PillNav({
 
         if (item.href) {
           return (
-            <Link key={item.id} href={item.href} onClick={() => onSelect?.(item.id)}>
+            <Link key={item.id} href={item.href} onClick={() => handleSelect(item.id)}>
               {content}
             </Link>
           );
@@ -64,7 +71,7 @@ export function PillNav({
           <button
             key={item.id}
             type="button"
-            onClick={() => onSelect?.(item.id)}
+            onClick={() => handleSelect(item.id)}
             className="focus:outline-none"
           >
             {content}

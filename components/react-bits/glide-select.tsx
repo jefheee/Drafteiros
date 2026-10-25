@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 
 export interface GlideOption {
   id: string;
@@ -21,18 +21,21 @@ export function GlideSelect({
   onChange,
   className = '',
 }: GlideSelectProps) {
-  const activeIndex = options.findIndex((o) => o.id === activeId);
+  const activeIndex = Math.max(
+    0,
+    options.findIndex((o) => o.id === activeId)
+  );
 
   return (
     <div
-      className={`relative flex items-center p-1 bg-[#14171f] border border-white/10 rounded-2xl ${className}`}
+      className={`relative flex items-center p-1 bg-[#0A0A0A] border border-white/[0.08] rounded-2xl ${className}`}
     >
       {/* Gliding background pill */}
       <div
-        className="absolute top-1 bottom-1 bg-gradient-to-r from-emerald-500/20 to-[#00E599]/20 border border-[#00E599]/40 rounded-xl transition-all duration-300 ease-out shadow-sm"
+        className="absolute top-1 bottom-1 bg-[#141414] border border-white/20 rounded-xl transition-all duration-300 ease-out"
         style={{
-          width: `calc(${100 / options.length}% - 8px)`,
-          left: `calc(${(activeIndex * 100) / options.length}% + 4px)`,
+          width: `calc(${100 / Math.max(1, options.length)}% - 8px)`,
+          left: `calc(${(activeIndex * 100) / Math.max(1, options.length)}% + 4px)`,
         }}
       />
 
@@ -44,7 +47,7 @@ export function GlideSelect({
             type="button"
             onClick={() => onChange(opt.id)}
             className={`relative z-10 flex-1 py-2 px-3 flex items-center justify-center gap-1.5 text-xs font-bold transition-colors ${
-              isActive ? 'text-[#00E599]' : 'text-zinc-400 hover:text-white'
+              isActive ? 'text-white' : 'text-zinc-400 hover:text-white'
             }`}
           >
             {opt.icon && <span className="shrink-0">{opt.icon}</span>}

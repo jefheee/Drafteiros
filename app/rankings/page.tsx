@@ -6,7 +6,6 @@ import { useLeagueStore } from '@/lib/data-store';
 import { TEMPLATE_ASSETS } from '@/lib/assets-catalog';
 import { FC26PlayerCard } from '@/components/players/fc26-player-card';
 import { cn } from '@/lib/utils';
-import { HoloCard, CountUp, StatusMark } from '@/components/react-bits';
 import {
   Trophy,
   Calendar,
@@ -16,6 +15,8 @@ import {
   ChevronRight,
   Sparkles,
   X,
+  Shield,
+  Users,
 } from 'lucide-react';
 
 export default function RankingsAndBracketPage() {
@@ -28,20 +29,21 @@ export default function RankingsAndBracketPage() {
 
   const isPastTournament = tournament?.status === 'finished';
 
-  // Ordenação oficial da Tabela de Classificação
+  // Ordenação oficial 100% real da Tabela de Classificação (começa zerada)
   const sortedStandings = useMemo(() => {
-    const normalized = teams.map((t, i) => ({
+    const normalized = teams.map((t) => ({
       ...t,
-      points: t.points ?? t.standings?.points ?? Math.max(0, 21 - i * 3),
-      matches_played: t.matches_played ?? t.standings?.played ?? 7,
-      wins: t.wins ?? t.standings?.wins ?? Math.max(0, 7 - i),
-      draws: t.draws ?? t.standings?.draws ?? (i % 3 === 0 ? 0 : 1),
-      losses: t.losses ?? t.standings?.losses ?? Math.min(7, i),
-      goals_for: t.goals_for ?? t.standings?.gf ?? Math.max(5, 26 - i * 3),
-      goals_against: t.goals_against ?? t.standings?.ga ?? 7 + i * 2,
+      points: t.points ?? t.standings?.points ?? 0,
+      matches_played: t.matches_played ?? t.standings?.played ?? 0,
+      wins: t.wins ?? t.standings?.wins ?? 0,
+      draws: t.draws ?? t.standings?.draws ?? 0,
+      losses: t.losses ?? t.standings?.losses ?? 0,
+      goals_for: t.goals_for ?? t.standings?.gf ?? 0,
+      goals_against: t.goals_against ?? t.standings?.ga ?? 0,
+      form: [] as ('V' | 'E' | 'D')[],
     }));
 
-    const base = [...normalized].sort((a, b) => {
+    return [...normalized].sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points;
       if (b.wins !== a.wins) return b.wins - a.wins;
       const sgA = a.goals_for - a.goals_against;
@@ -49,74 +51,46 @@ export default function RankingsAndBracketPage() {
       if (sgB !== sgA) return sgB - sgA;
       return b.goals_for - a.goals_for;
     });
+  }, [teams]);
 
-    // Se estiver visualizando o campeonato encerrado (1ª Copa Palhoça), ajusta topo para o campeão Furia del Plata
-    if (isPastTournament) {
-      return base
-        .map((team, idx) => {
-          if (team.name.toLowerCase().includes('furia')) {
-            return {
-              ...team,
-              points: 34,
-              matches_played: 14,
-              wins: 11,
-              draws: 1,
-              losses: 2,
-              goals_for: 46,
-              goals_against: 18,
-              form: ['V', 'V', 'V', 'E', 'V'],
-            };
-          }
-          return {
-            ...team,
-            points: Math.max(10, 31 - idx * 3),
-            matches_played: 14,
-            wins: Math.max(3, 10 - idx),
-            draws: 1,
-            losses: Math.min(10, 3 + idx),
-            form: idx % 2 === 0 ? ['V', 'D', 'V', 'V', 'E'] : ['D', 'V', 'E', 'D', 'V'],
-          };
-        })
-        .sort((a, b) => b.points - a.points);
-    }
+  const g1 = sortedStandings[0] || null;
+  const g2 = sortedStandings[1] || null;
+  const g3 = sortedStandings[2] || null;
+  const g4 = sortedStandings[3] || null;
 
-    return base.map((team, idx) => ({
-      ...team,
-      form:
-        idx === 0
-          ? ['V', 'V', 'V', 'E', 'V']
-          : idx === 1
-          ? ['V', 'V', 'D', 'V', 'V']
-          : idx === 2
-          ? ['V', 'E', 'V', 'D', 'V']
-          : idx === 3
-          ? ['D', 'V', 'V', 'E', 'D']
-          : ['D', 'E', 'D', 'V', 'D'],
-    }));
-  }, [teams, isPastTournament]);
-
-  // Classificados G4 para o Chaveamento Mata-Mata Dinâmico
-  const g1 = sortedStandings[0] || teams[0];
-  const g2 = sortedStandings[1] || teams[1] || teams[0];
-  const g3 = sortedStandings[2] || teams[2] || teams[0];
-  const g4 = sortedStandings[3] || teams[3] || teams[0];
-
-  // Estatísticas Gerais da Temporada
   const totalGoals = useMemo(() => {
-    const sum = sortedStandings.reduce((acc, t) => acc + (t.goals_for || 0), 0);
-    return sum > 0 ? sum : 84;
+    return sortedStandings.reduce((acc, t) => acc + (t.goals_for || 0), 0);
   }, [sortedStandings]);
 
   const totalMatchesPlayed = useMemo(() => {
-    const sum = Math.round(
+    const completed = matches.filter(
+      (m) => m.status === 'approved' || m.status === 'completed'
+    ).length;
+    if (completed > 0) return completed;
+    return Math.round(
       sortedStandings.reduce((acc, t) => acc + (t.matches_played || 0), 0) / 2
     );
-    return sum > 0 ? sum : Math.max(matches.length, 12);
-  }, [sortedStandings, matches.length]);
+  }, [sortedStandings, matches]);
 
-  const avgGoalsPerMatch = (totalGoals / Math.max(1, totalMatchesPlayed)).toFixed(1);
+  const avgGoalsPerMatch =
+    totalMatchesPlayed > 0
+      ? (totalGoals / totalMatchesPlayed).toFixed(1)
+      : '0.0';
 
-  // Líderes de Estatísticas (Artilheiro, Garçom, MVP)
+  const prizePoolTotal = useMemo(() => {
+    const pd = tournament?.prize_distribution;
+    if (pd) {
+      return (
+        (pd.first || 0) +
+        (pd.second || 0) +
+        (pd.third || 0) +
+        (pd.top_scorer || 0) +
+        (pd.top_assister || 0)
+      );
+    }
+    return teams.length * Number(tournament?.entry_fee || 0);
+  }, [tournament, teams.length]);
+
   const topScorers = useMemo(() => {
     return [...players]
       .sort(
@@ -152,735 +126,644 @@ export default function RankingsAndBracketPage() {
     [players, selectedPlayerForCardId]
   );
 
-  const getCaptainTag = (teamId: string, index: number) => {
+  const getCaptainTag = (teamId: string) => {
     const cap = players.find((p) => p.team_id === teamId);
     if (cap?.character_name) return `@${cap.character_name.toLowerCase()}`;
-    const fallbacks = ['@haalandinho', '@jefhe', '@deivy10', '@andrei', '@buzz', '@teteu'];
-    return fallbacks[index % fallbacks.length];
+    return 'Capitão';
   };
 
   return (
-    <div className="min-h-screen bg-[#090A0F] text-[#F3F4F6] px-3 sm:px-6 py-5 pb-28 overflow-x-hidden">
+    <div className="min-h-screen bg-black text-white px-4 sm:px-6 py-6 pb-28 overflow-x-hidden">
       <main className="max-w-7xl mx-auto space-y-6">
-        {/* ================================================================= */}
-        {/* 1. TOPO: SELETOR DE CAMPEONATO ATIVO & HISTÓRICO PASSADO          */}
-        {/* ================================================================= */}
-        <section className="p-5 sm:p-6 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+        {/* 1. TOPO: SELETOR DE CAMPEONATO ATIVO & RESUMO */}
+        <section className="p-5 sm:p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
           <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="px-2.5 py-0.5 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-[10px] font-extrabold uppercase tracking-wider">
-                  Pilar 2 • Tabela & Rankings E-sports Pro
+                <span className="px-2.5 py-0.5 rounded-full bg-white/[0.06] border border-white/10 text-zinc-300 text-[10px] font-bold uppercase tracking-wider">
+                  Tabela & Rankings Oficiais
                 </span>
                 <span
                   className={cn(
-                    'px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase',
+                    'px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase border',
                     isPastTournament
-                      ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
-                      : 'bg-[#38C958]/15 text-[#38C958] border border-[#38C958]/30'
+                      ? 'bg-white/[0.06] text-zinc-300 border-white/15'
+                      : 'bg-[#10B981]/10 text-[#10B981] border-[#10B981]/30'
                   )}
                 >
-                  {isPastTournament ? '🏆 Temporada Encerrada (Histórico)' : '🟢 Em Andamento • G4 Playoffs'}
+                  {isPastTournament ? 'Temporada Encerrada' : 'Temporada Ativa • G4 Playoffs'}
                 </span>
               </div>
               <h1 className="text-xl sm:text-3xl font-display font-black tracking-tight text-white">
-                {tournament?.name || '🇦🇷 Liga Argentina de Clubs — 5x5 LPF'}
+                {tournament?.name || 'DraftClub — Liga Oficial EA FC 26'}
               </h1>
-              <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                Classificação em tempo real, chaveamento dinâmico das semifinais G4 e líderes oficiais de estatísticas.
+              <p className="text-xs text-zinc-400">
+                Classificação real atualizada por súmula, chaveamento G4 e líderes de estatísticas.
               </p>
             </div>
 
-            {/* Pílulas de Troca Rápida entre Campeonato Ativo e Campeonatos Passados */}
-            <div className="flex flex-wrap items-center gap-2">
-              {tournaments.map((t) => {
-                const active = tournament?.id === t.id;
-                const finished = t.status === 'finished';
-                return (
-                  <button
-                    key={t.id}
-                    type="button"
-                    onClick={() => selectTournament(t.id)}
-                    className={cn(
-                      'px-3.5 py-2 rounded-2xl text-xs font-extrabold transition-all flex items-center gap-2 border',
-                      active
-                        ? 'bg-gradient-to-r from-[#00E599] to-[#059669] text-white border-transparent shadow-lg shadow-[#00E599]/20'
-                        : 'bg-white/[0.03] text-zinc-700 dark:text-zinc-300 border-zinc-200/70 dark:border-white/10 hover:border-[#00E599]/50'
-                    )}
-                  >
-                    <Trophy className={cn('w-3.5 h-3.5', finished ? 'text-amber-400' : 'text-[#38C958]')} />
-                    <div className="text-left">
-                      <span className="block leading-tight">{t.season_label || t.name}</span>
-                      <span className="text-[9px] opacity-80 block">
-                        {finished ? `Campeão: ${t.champion_team_name || 'Furia del Plata'}` : 'Temporada Ativa'}
-                      </span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
+            {tournaments.length > 1 && (
+              <div className="flex flex-wrap items-center gap-2">
+                {tournaments.map((t) => {
+                  const active = tournament?.id === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      type="button"
+                      onClick={() => selectTournament(t.id)}
+                      className={cn(
+                        'px-3.5 py-2 rounded-full text-xs font-bold transition-all flex items-center gap-2 border',
+                        active
+                          ? 'bg-white text-black border-white'
+                          : 'bg-[#141414] text-zinc-300 border-white/10 hover:border-white/30'
+                      )}
+                    >
+                      <Trophy className="w-3.5 h-3.5" />
+                      <span>{t.season_label || t.name}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
           </div>
 
-          {/* 4 CARDS DE RESUMO RÁPIDO (STITCH KPI ROW) */}
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
-            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#141414] border border-white/[0.06] flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
-                  Rodada / Fase
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                  Clubes Inscritos
                 </span>
                 <span className="text-lg sm:text-xl font-mono font-black text-white">
-                  {isPastTournament ? 'FINALIZADA' : 'RODADA 06/14'}
+                  {teams.length} CLUBES
                 </span>
-                <span className="text-[10px] font-bold text-[#38C958] block">
-                  {isPastTournament ? '🏆 Furia del Plata Campeão' : 'Turno & Returno + G4'}
+                <span className="text-[10px] text-zinc-500 block">
+                  {players.length} atletas cadastrados
                 </span>
               </div>
-              <Calendar className="w-7 h-7 text-[#00E599] opacity-80" />
+              <Calendar className="w-6 h-6 text-zinc-400" />
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#141414] border border-white/[0.06] flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
                   Gols Marcados
                 </span>
                 <span className="text-lg sm:text-xl font-mono font-black text-white">
                   {totalGoals} GOLS
                 </span>
-                <span className="text-[10px] font-bold text-amber-400 block">
+                <span className="text-[10px] text-zinc-500 block">
                   Em {totalMatchesPlayed} partidas oficiais
                 </span>
               </div>
-              <img
-                src="/assets/events/goal.png"
-                alt="Gols"
-                className="w-9 h-9 object-contain drop-shadow-md"
-              />
+              <Trophy className="w-6 h-6 text-zinc-400" />
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#141414] border border-white/[0.06] flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
                   Média de Gols / Jogo
                 </span>
-                <span className="text-lg sm:text-xl font-mono font-black text-[#00E599]">
+                <span className="text-lg sm:text-xl font-mono font-black text-white">
                   {avgGoalsPerMatch} G/J
                 </span>
-                <span className="text-[10px] font-bold text-zinc-500 dark:text-zinc-400 block">
-                  Ritmo ofensivo 5x5 Pro
+                <span className="text-[10px] text-zinc-500 block">
+                  Estatística oficial
                 </span>
               </div>
-              <Flame className="w-7 h-7 text-amber-400" />
+              <Flame className="w-6 h-6 text-zinc-400" />
             </div>
 
-            <div className="p-4 rounded-2xl bg-white/[0.03]/80 border border-zinc-200/60 dark:border-white/[0.06] flex items-center justify-between">
+            <div className="p-4 rounded-2xl bg-[#141414] border border-white/[0.06] flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 block">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
                   Prize Pool Oficial
                 </span>
-                <span className="text-lg sm:text-xl font-mono font-black text-[#38C958]">
-                  R$ 560,00
+                <span className="text-lg sm:text-xl font-mono font-black text-[#10B981]">
+                  R$ {prizePoolTotal.toFixed(2).replace('.', ',')}
                 </span>
-                <span className="text-[10px] font-extrabold text-[#38C958] block">
-                  100% Repasse (Taxa Zero)
+                <span className="text-[10px] text-zinc-500 block">
+                  100% Repasse aos Campeões
                 </span>
               </div>
-              <Wallet className="w-7 h-7 text-[#38C958]" />
+              <Wallet className="w-6 h-6 text-[#10B981]" />
             </div>
           </div>
         </section>
 
-        {/* ================================================================= */}
-        {/* 2. GRID PRINCIPAL STITCH: TABELA DE CLASSIFICAÇÃO PRO + MATA-MATA */}
-        {/* ================================================================= */}
+        {/* 2. GRID PRINCIPAL: TABELA DE CLASSIFICAÇÃO + MATA-MATA */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-          {/* TABELA DE CLASSIFICAÇÃO OFICIAL (8 COLUNAS DESKTOP) */}
-          <section className="lg:col-span-8 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm overflow-hidden">
-            <div className="p-4 sm:p-5 border-b border-zinc-100 dark:border-white/[0.07] flex flex-wrap items-center justify-between gap-2">
+          <section className="lg:col-span-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] overflow-hidden">
+            <div className="p-4 sm:p-5 border-b border-white/[0.08] flex flex-wrap items-center justify-between gap-2">
               <div>
                 <h2 className="text-base sm:text-lg font-display font-black text-white">
                   Tabela de Classificação Oficial
                 </h2>
-                <p className="text-xs text-zinc-500 dark:text-zinc-400">
+                <p className="text-xs text-zinc-400">
                   Os 4 primeiros avançam às Semifinais (1º vs 4º e 2º vs 3º)
                 </p>
               </div>
               <div className="flex items-center gap-3 text-[11px] font-bold">
-                <span className="flex items-center gap-1.5 text-[#38C958]">
-                  <span className="w-2.5 h-2.5 rounded-full bg-[#38C958]" />
+                <span className="flex items-center gap-1.5 text-[#10B981]">
+                  <span className="w-2 h-2 rounded-full bg-[#10B981]" />
                   Zona G4 (Playoffs)
                 </span>
-                <span className="flex items-center gap-1.5 text-zinc-400">
-                  <span className="w-2.5 h-2.5 rounded-full bg-zinc-600" />
-                  Zona Eliminada
+                <span className="flex items-center gap-1.5 text-zinc-500">
+                  <span className="w-2 h-2 rounded-full bg-zinc-700" />
+                  Demais Colocações
                 </span>
               </div>
             </div>
 
-            <div className="overflow-x-auto">
-              <table className="w-full text-left border-collapse min-w-[680px]">
-                <thead>
-                  <tr className="border-b border-zinc-100 dark:border-white/[0.07] text-[10px] font-mono font-extrabold uppercase tracking-wider text-zinc-400 bg-[#F5F6FA]/60 dark:bg-[#1c2029]/50">
-                    <th className="py-3 pl-4 pr-2 w-12">POS</th>
-                    <th className="py-3 px-3">CLUBE & CAPITÃO</th>
-                    <th className="py-3 px-2.5 text-center text-[#00E599]">PTS</th>
-                    <th className="py-3 px-2 text-center">J</th>
-                    <th className="py-3 px-2 text-center">V</th>
-                    <th className="py-3 px-2 text-center">E</th>
-                    <th className="py-3 px-2 text-center">D</th>
-                    <th className="py-3 px-2 text-center">GP</th>
-                    <th className="py-3 px-2 text-center">GC</th>
-                    <th className="py-3 px-2 text-center">SG</th>
-                    <th className="py-3 pl-2 pr-4 text-center">ÚLT. 5 JOGOS</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-zinc-100 dark:divide-white/[0.05] text-xs">
-                  {sortedStandings.map((team, idx) => {
-                    const pos = idx + 1;
-                    const isG4 = pos <= 4;
-                    const sg = (team.goals_for || 0) - (team.goals_against || 0);
+            {sortedStandings.length === 0 ? (
+              <div className="p-10 text-center space-y-3">
+                <div className="w-12 h-12 rounded-2xl bg-[#141414] border border-white/10 flex items-center justify-center mx-auto">
+                  <Shield className="w-5 h-5 text-zinc-400" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="text-sm font-bold text-white">
+                    Nenhum clube inscrito na tabela ainda
+                  </h3>
+                  <p className="text-xs text-zinc-400 max-w-md mx-auto">
+                    Assim que os capitães cadastrarem suas equipes na liga, a tabela de classificação aparecerá aqui iniciando com pontuação zerada.
+                  </p>
+                </div>
+                <Link
+                  href="/onboarding"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white text-black text-xs font-bold hover:bg-zinc-200 transition-colors"
+                >
+                  Criar Clube ou Conta
+                </Link>
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <table className="w-full text-left border-collapse min-w-[680px]">
+                  <thead>
+                    <tr className="border-b border-white/[0.08] text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 bg-[#141414]">
+                      <th className="py-3 pl-4 pr-2 w-12">POS</th>
+                      <th className="py-3 px-3">CLUBE & CAPITÃO</th>
+                      <th className="py-3 px-2.5 text-center text-white">PTS</th>
+                      <th className="py-3 px-2 text-center">J</th>
+                      <th className="py-3 px-2 text-center">V</th>
+                      <th className="py-3 px-2 text-center">E</th>
+                      <th className="py-3 px-2 text-center">D</th>
+                      <th className="py-3 px-2 text-center">GP</th>
+                      <th className="py-3 px-2 text-center">GC</th>
+                      <th className="py-3 px-2 text-center">SG</th>
+                      <th className="py-3 pl-2 pr-4 text-center">FORMA</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-white/[0.06] text-xs">
+                    {sortedStandings.map((team, idx) => {
+                      const pos = idx + 1;
+                      const isG4 = pos <= 4;
+                      const sg = (team.goals_for || 0) - (team.goals_against || 0);
 
-                    return (
-                      <tr
-                        key={team.id}
-                        className={cn(
-                          'transition-colors hover:bg-zinc-50/80 dark:hover:bg-[#1c2029]/60',
-                          isG4 && 'bg-[#38C958]/[0.02] dark:bg-[#38C958]/[0.03]'
-                        )}
-                      >
-                        <td className="py-3.5 pl-4 pr-2 relative font-mono font-black">
-                          {/* Indicador lateral verde G4 */}
-                          <span
-                            className={cn(
-                              'absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full',
-                              isG4 ? 'bg-[#38C958]' : 'bg-transparent'
-                            )}
-                          />
-                          <span
-                            className={cn(
-                              'inline-flex w-6 h-6 rounded-lg items-center justify-center text-xs',
-                              pos === 1
-                                ? 'bg-amber-500/20 text-amber-400 font-black'
-                                : isG4
-                                ? 'bg-[#38C958]/15 text-[#38C958]'
-                                : 'text-zinc-500'
-                            )}
-                          >
-                            {pos}º
-                          </span>
-                        </td>
-
-                        <td className="py-3.5 px-3">
-                          <div className="flex items-center gap-3">
-                            {/* Escudo limpo sem caixa quadrada pesada */}
-                            <img
-                              src={team.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                              alt={team.name}
-                              className="w-9 h-9 object-contain drop-shadow-md shrink-0"
-                              onError={(e) => {
-                                e.currentTarget.src = TEMPLATE_ASSETS.crestPlaceholder;
-                              }}
+                      return (
+                        <tr
+                          key={team.id}
+                          className="transition-colors hover:bg-[#141414]/70"
+                        >
+                          <td className="py-3.5 pl-4 pr-2 relative font-mono font-black">
+                            <span
+                              className={cn(
+                                'absolute left-0 top-1.5 bottom-1.5 w-1 rounded-r-full',
+                                isG4 ? 'bg-[#10B981]' : 'bg-transparent'
+                              )}
                             />
-                            <div className="min-w-0">
-                              <div className="flex items-center gap-1.5">
-                                <span className="font-display font-extrabold text-white truncate">
+                            <span
+                              className={cn(
+                                'inline-flex w-6 h-6 rounded-lg items-center justify-center text-xs',
+                                isG4
+                                  ? 'bg-white/10 text-white font-black'
+                                  : 'text-zinc-500'
+                              )}
+                            >
+                              {pos}º
+                            </span>
+                          </td>
+
+                          <td className="py-3.5 px-3">
+                            <div className="flex items-center gap-3">
+                              <img
+                                src={team.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
+                                alt={team.name}
+                                className="w-8 h-8 object-contain shrink-0"
+                                onError={(e) => {
+                                  e.currentTarget.src = TEMPLATE_ASSETS.crestPlaceholder;
+                                }}
+                              />
+                              <div className="min-w-0">
+                                <span className="font-display font-bold text-white truncate block">
                                   {team.name}
                                 </span>
-                                {pos === 1 && isPastTournament && (
-                                  <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-400 text-[9px] font-black">
-                                    🏆 CAMPEÃO
-                                  </span>
-                                )}
+                                <span className="text-[10px] font-mono text-zinc-500 block">
+                                  {getCaptainTag(team.id)}
+                                </span>
                               </div>
-                              <span className="text-[10px] font-mono text-zinc-400 block">
-                                Cap: {getCaptainTag(team.id, idx)}
-                              </span>
                             </div>
-                          </div>
-                        </td>
+                          </td>
 
-                        <td className="py-3.5 px-2.5 text-center font-mono font-black text-sm text-[#00E599] dark:text-[#38C958] tabular-nums">
-                          {team.points}
-                        </td>
-                        <td className="py-3.5 px-2 text-center font-mono font-semibold text-zinc-600 dark:text-zinc-300 tabular-nums">
-                          {team.matches_played}
-                        </td>
-                        <td className="py-3.5 px-2 text-center font-mono font-bold text-[#38C958] tabular-nums">
-                          {team.wins}
-                        </td>
-                        <td className="py-3.5 px-2 text-center font-mono text-zinc-400 tabular-nums">
-                          {team.draws}
-                        </td>
-                        <td className="py-3.5 px-2 text-center font-mono text-rose-400 tabular-nums">
-                          {team.losses}
-                        </td>
-                        <td className="py-3.5 px-2 text-center font-mono text-zinc-600 dark:text-zinc-300 tabular-nums">
-                          {team.goals_for}
-                        </td>
-                        <td className="py-3.5 px-2 text-center font-mono text-zinc-600 dark:text-zinc-300 tabular-nums">
-                          {team.goals_against}
-                        </td>
-                        <td
-                          className={cn(
-                            'py-3.5 px-2 text-center font-mono font-extrabold tabular-nums',
-                            sg > 0 ? 'text-[#38C958]' : sg < 0 ? 'text-rose-400' : 'text-zinc-400'
-                          )}
-                        >
-                          {sg > 0 ? `+${sg}` : sg}
-                        </td>
+                          <td className="py-3.5 px-2.5 text-center font-mono font-black text-sm text-white tabular-nums">
+                            {team.points}
+                          </td>
+                          <td className="py-3.5 px-2 text-center font-mono text-zinc-300 tabular-nums">
+                            {team.matches_played}
+                          </td>
+                          <td className="py-3.5 px-2 text-center font-mono font-bold text-[#10B981] tabular-nums">
+                            {team.wins}
+                          </td>
+                          <td className="py-3.5 px-2 text-center font-mono text-zinc-400 tabular-nums">
+                            {team.draws}
+                          </td>
+                          <td className="py-3.5 px-2 text-center font-mono text-zinc-500 tabular-nums">
+                            {team.losses}
+                          </td>
+                          <td className="py-3.5 px-2 text-center font-mono text-zinc-300 tabular-nums">
+                            {team.goals_for}
+                          </td>
+                          <td className="py-3.5 px-2 text-center font-mono text-zinc-300 tabular-nums">
+                            {team.goals_against}
+                          </td>
+                          <td
+                            className={cn(
+                              'py-3.5 px-2 text-center font-mono font-bold tabular-nums',
+                              sg > 0 ? 'text-[#10B981]' : sg < 0 ? 'text-zinc-500' : 'text-zinc-400'
+                            )}
+                          >
+                            {sg > 0 ? `+${sg}` : sg}
+                          </td>
 
-                        <td className="py-3.5 pl-2 pr-4">
-                          <div className="flex items-center justify-center gap-1">
-                            {(team.form || ['V', 'V', 'E', 'D', 'V']).map((res, fIdx) => (
-                              <span
-                                key={fIdx}
-                                className={cn(
-                                  'w-5 h-5 rounded-full font-mono text-[9px] font-black flex items-center justify-center text-white',
-                                  res === 'V'
-                                    ? 'bg-[#38C958]'
-                                    : res === 'E'
-                                    ? 'bg-zinc-500'
-                                    : 'bg-rose-500'
-                                )}
-                              >
-                                {res}
-                              </span>
-                            ))}
-                          </div>
-                        </td>
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
+                          <td className="py-3.5 pl-2 pr-4">
+                            <div className="flex items-center justify-center gap-1">
+                              {(team.form && team.form.length > 0 ? team.form : ['-']).map((res, fIdx) => (
+                                <span
+                                  key={fIdx}
+                                  className={cn(
+                                    'w-5 h-5 rounded-full font-mono text-[9px] font-bold flex items-center justify-center',
+                                    res === 'V'
+                                      ? 'bg-[#10B981]/20 text-[#10B981]'
+                                      : res === 'E'
+                                      ? 'bg-white/10 text-zinc-300'
+                                      : res === 'D'
+                                      ? 'bg-white/5 text-zinc-500'
+                                      : 'bg-white/5 text-zinc-600'
+                                  )}
+                                >
+                                  {res}
+                                </span>
+                              ))}
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            )}
           </section>
 
-          {/* VISUALIZADOR DE CHAVEAMENTO MATA-MATA DINÂMICO G4 (4 COLUNAS DESKTOP) */}
-          <aside className="lg:col-span-4 p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
+          {/* VISUALIZADOR DE CHAVEAMENTO MATA-MATA G4 */}
+          <aside className="lg:col-span-4 p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
                   Playoffs Oficial G4
                 </span>
                 <h2 className="text-base font-display font-black text-white">
                   Chaveamento Mata-Mata
                 </h2>
               </div>
-              <img
-                src="/assets/awards/1st-place.png"
-                alt="Troféu"
-                className="w-10 h-10 object-contain drop-shadow-md"
-              />
+              <Crown className="w-5 h-5 text-zinc-300" />
             </div>
 
-            {/* SEMIFINAL 1: 1º vs 4º */}
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/[0.07] space-y-2">
-              <div className="flex items-center justify-between text-[10px] font-mono font-extrabold uppercase text-[#38C958]">
+            <div className="p-3.5 rounded-2xl bg-[#141414] border border-white/[0.06] space-y-2">
+              <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase text-zinc-400">
                 <span>Semifinal A (1º vs 4º)</span>
                 <span>Ida & Volta</span>
               </div>
 
               <div className="space-y-1.5">
-                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-black border border-white/[0.06] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-mono font-black text-[#38C958]">1º</span>
-                    <img
-                      src={g1?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                      alt={g1?.name}
-                      className="w-6 h-6 object-contain drop-shadow-sm"
-                    />
-                    <span className="text-xs font-extrabold truncate">{g1?.name}</span>
+                    <span className="text-[10px] font-mono font-bold text-[#10B981]">1º</span>
+                    <span className="text-xs font-bold text-white truncate">
+                      {g1?.name || 'A definir (1º G4)'}
+                    </span>
                   </div>
-                  <span className="font-mono font-black text-xs text-[#00E599]">
-                    {isPastTournament ? '4' : '-'}
-                  </span>
+                  <span className="font-mono font-bold text-xs text-zinc-400">-</span>
                 </div>
 
-                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-black border border-white/[0.06] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-mono font-black text-zinc-400">4º</span>
-                    <img
-                      src={g4?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                      alt={g4?.name}
-                      className="w-6 h-6 object-contain drop-shadow-sm"
-                    />
-                    <span className="text-xs font-extrabold truncate">{g4?.name}</span>
+                    <span className="text-[10px] font-mono font-bold text-zinc-400">4º</span>
+                    <span className="text-xs font-bold text-white truncate">
+                      {g4?.name || 'A definir (4º G4)'}
+                    </span>
                   </div>
-                  <span className="font-mono font-black text-xs text-zinc-400">
-                    {isPastTournament ? '1' : '-'}
-                  </span>
+                  <span className="font-mono font-bold text-xs text-zinc-400">-</span>
                 </div>
               </div>
             </div>
 
-            {/* SEMIFINAL 2: 2º vs 3º */}
-            <div className="p-3.5 rounded-2xl bg-white/[0.03] border border-zinc-200/70 dark:border-white/[0.07] space-y-2">
-              <div className="flex items-center justify-between text-[10px] font-mono font-extrabold uppercase text-[#00E599]">
+            <div className="p-3.5 rounded-2xl bg-[#141414] border border-white/[0.06] space-y-2">
+              <div className="flex items-center justify-between text-[10px] font-mono font-bold uppercase text-zinc-400">
                 <span>Semifinal B (2º vs 3º)</span>
                 <span>Ida & Volta</span>
               </div>
 
               <div className="space-y-1.5">
-                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-black border border-white/[0.06] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-mono font-black text-[#38C958]">2º</span>
-                    <img
-                      src={g2?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                      alt={g2?.name}
-                      className="w-6 h-6 object-contain drop-shadow-sm"
-                    />
-                    <span className="text-xs font-extrabold truncate">{g2?.name}</span>
+                    <span className="text-[10px] font-mono font-bold text-[#10B981]">2º</span>
+                    <span className="text-xs font-bold text-white truncate">
+                      {g2?.name || 'A definir (2º G4)'}
+                    </span>
                   </div>
-                  <span className="font-mono font-black text-xs text-[#00E599]">
-                    {isPastTournament ? '3' : '-'}
-                  </span>
+                  <span className="font-mono font-bold text-xs text-zinc-400">-</span>
                 </div>
 
-                <div className="p-2 rounded-xl bg-[#0D0F17] flex items-center justify-between">
+                <div className="p-2.5 rounded-xl bg-black border border-white/[0.06] flex items-center justify-between">
                   <div className="flex items-center gap-2 min-w-0">
-                    <span className="text-[10px] font-mono font-black text-zinc-400">3º</span>
-                    <img
-                      src={g3?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                      alt={g3?.name}
-                      className="w-6 h-6 object-contain drop-shadow-sm"
-                    />
-                    <span className="text-xs font-extrabold truncate">{g3?.name}</span>
+                    <span className="text-[10px] font-mono font-bold text-zinc-400">3º</span>
+                    <span className="text-xs font-bold text-white truncate">
+                      {g3?.name || 'A definir (3º G4)'}
+                    </span>
                   </div>
-                  <span className="font-mono font-black text-xs text-zinc-400">
-                    {isPastTournament ? '2' : '-'}
-                  </span>
+                  <span className="font-mono font-bold text-xs text-zinc-400">-</span>
                 </div>
               </div>
             </div>
 
-            {/* GRANDE FINAL */}
-            <div className="p-4 rounded-2xl bg-gradient-to-br from-[#00E599]/20 via-[#1c2029] to-amber-500/15 border border-amber-400/40 space-y-2.5 text-center">
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/20 text-amber-300 text-[10px] font-black uppercase">
+            <div className="p-4 rounded-2xl bg-[#141414] border border-white/15 space-y-2.5 text-center">
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-white/10 text-white text-[10px] font-bold uppercase">
                 <Crown className="w-3.5 h-3.5" />
-                Grande Final LPF • R$ 560,00
+                Grande Final Oficial
               </div>
 
               <div className="flex items-center justify-around py-2">
-                <div className="flex flex-col items-center gap-1">
-                  <img
-                    src={g1?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                    alt={g1?.name}
-                    className="w-11 h-11 object-contain drop-shadow-lg"
-                  />
-                  <span className="text-[11px] font-extrabold text-white truncate max-w-[100px]">
-                    {isPastTournament ? g1?.name : `Venc. Semi A`}
-                  </span>
-                </div>
-
-                <span className="font-mono font-black text-lg text-amber-400">VS</span>
-
-                <div className="flex flex-col items-center gap-1">
-                  <img
-                    src={g2?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                    alt={g2?.name}
-                    className="w-11 h-11 object-contain drop-shadow-lg"
-                  />
-                  <span className="text-[11px] font-extrabold text-white truncate max-w-[100px]">
-                    {isPastTournament ? g2?.name : `Venc. Semi B`}
-                  </span>
-                </div>
+                <span className="text-xs font-bold text-white truncate max-w-[110px]">
+                  Vencedor Semi A
+                </span>
+                <span className="font-mono font-black text-sm text-zinc-400">VS</span>
+                <span className="text-xs font-bold text-white truncate max-w-[110px]">
+                  Vencedor Semi B
+                </span>
               </div>
-
-              <p className="text-[11px] text-zinc-300">
-                Campeão leva <strong className="text-[#38C958]">R$ 364,00 (65%)</strong> + Vice leva{' '}
-                <strong className="text-amber-300">R$ 196,00 (35%)</strong>
-              </p>
             </div>
           </aside>
         </div>
 
-        {/* ================================================================= */}
-        {/* 3. LÍDERES DE ESTATÍSTICAS DA TEMPORADA (ARTILHEIROS, GARÇONS, MVP)*/}
-        {/* ================================================================= */}
+        {/* 3. LÍDERES DE ESTATÍSTICAS DA TEMPORADA */}
         <section className="space-y-4">
           <div className="flex items-center justify-between flex-wrap gap-2">
             <div>
-              <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
-                Rankings Individuais • Clique em qualquer atleta para ver a Carta FC 26
+              <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                Rankings Individuais • Toque em qualquer atleta para inspecionar a Carta FC 26
               </span>
               <h2 className="text-lg sm:text-xl font-display font-black text-white">
-                Pódio de Líderes da Temporada (Artilharia, Assistências & MVPs)
+                Líderes da Temporada (Artilharia, Assistências & MVPs)
               </h2>
             </div>
             <Link
               href="/player"
-              className="text-xs font-extrabold text-[#00E599] hover:underline flex items-center gap-1"
+              className="text-xs font-bold text-white hover:underline flex items-center gap-1"
             >
               Ver Minha Carta FC 26 <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* COLUNA 1: CHUTEIRA DE OURO (ARTILHEIROS) */}
-            <div className="p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
+          {players.length === 0 ? (
+            <div className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] text-center space-y-2">
+              <Users className="w-6 h-6 text-zinc-400 mx-auto" />
+              <h3 className="text-sm font-bold text-white">
+                Nenhum atleta registrado no ranking ainda
+              </h3>
+              <p className="text-xs text-zinc-400 max-w-md mx-auto">
+                Os rankings de Artilharia, Assistências e MVPs serão preenchidos automaticamente conforme os jogadores criarem suas contas e disputarem partidas oficiais.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+              {/* ARTILHEIROS */}
+              <div className="p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-amber-400 block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
                     Chuteira de Ouro
                   </span>
                   <h3 className="text-base font-display font-black text-white">
                     Artilheiros da Liga
                   </h3>
                 </div>
-                {/* Ícone transparente sem caixa */}
-                <img
-                  src="/assets/awards/golden-boot.png"
-                  alt="Chuteira de Ouro"
-                  className="w-12 h-12 object-contain drop-shadow-lg"
-                />
-              </div>
 
-              <div className="space-y-2.5">
-                {topScorers.map((p, idx) => {
-                  const pTeam = teams.find((t) => t.id === p.team_id);
-                  const goals = p.career_stats?.goals ?? p.career_stats?.official_goals ?? 0;
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => setSelectedPlayerForCardId(p.id)}
-                      className="w-full p-2.5 rounded-2xl bg-white/[0.03]/80 hover:border-[#00E599] border border-transparent transition-all flex items-center justify-between text-left"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span
-                          className={cn(
-                            'w-6 h-6 rounded-lg font-mono text-xs font-black flex items-center justify-center shrink-0',
-                            idx === 0
-                              ? 'bg-amber-400 text-zinc-950'
-                              : 'bg-zinc-200 dark:bg-[#161920] text-zinc-500'
-                          )}
-                        >
-                          {idx + 1}
-                        </span>
-                        <img
-                          src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
-                          alt={p.character_name}
-                          className="w-9 h-9 rounded-full object-cover border border-white/10 shrink-0"
-                          onError={(e) => {
-                            e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
-                          }}
-                        />
-                        <div className="min-w-0">
-                          <span className="text-xs font-display font-black text-white uppercase block truncate">
-                            {p.character_name}
+                <div className="space-y-2">
+                  {topScorers.map((p, idx) => {
+                    const pTeam = teams.find((t) => t.id === p.team_id);
+                    const goals = p.career_stats?.goals ?? p.career_stats?.official_goals ?? 0;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setSelectedPlayerForCardId(p.id)}
+                        className="w-full p-2.5 rounded-2xl bg-[#141414] hover:border-white/30 border border-white/[0.06] transition-all flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={cn(
+                              'w-6 h-6 rounded-lg font-mono text-xs font-black flex items-center justify-center shrink-0',
+                              idx === 0
+                                ? 'bg-white text-black'
+                                : 'bg-black text-zinc-400'
+                            )}
+                          >
+                            {idx + 1}
                           </span>
-                          <div className="flex items-center gap-1">
-                            <img
-                              src={pTeam?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                              alt=""
-                              className="w-3.5 h-3.5 object-contain"
-                            />
-                            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
-                              {pTeam?.name || 'Furia del Plata'}
+                          <img
+                            src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
+                            alt={p.character_name}
+                            className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
+                            }}
+                          />
+                          <div className="min-w-0">
+                            <span className="text-xs font-display font-bold text-white uppercase block truncate">
+                              {p.character_name}
+                            </span>
+                            <span className="text-[10px] text-zinc-400 truncate block">
+                              {pTeam?.name || 'Free Agent'}
                             </span>
                           </div>
                         </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-sm font-mono font-black text-[#38C958] block tabular-nums">
-                          {goals} ⚽
-                        </span>
-                        <span className="text-[9px] text-zinc-400">Ver Carta</span>
-                      </div>
-                    </button>
-                  );
-                })}
+                        <div className="text-right shrink-0">
+                          <span className="text-sm font-mono font-black text-white block tabular-nums">
+                            {goals} G
+                          </span>
+                          <span className="text-[9px] text-zinc-500">Ver Carta</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* COLUNA 2: GARÇOM DA TEMPORADA (ASSISTÊNCIAS) */}
-            <div className="p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
+              {/* ASSISTÊNCIAS */}
+              <div className="p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#00E599] block">
-                    Maestro / Playmaker
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
+                    Playmaker
                   </span>
                   <h3 className="text-base font-display font-black text-white">
                     Líderes de Assistências
                   </h3>
                 </div>
-                <img
-                  src="/assets/awards/playmaker.png"
-                  alt="Playmaker"
-                  className="w-12 h-12 object-contain drop-shadow-lg"
-                />
-              </div>
 
-              <div className="space-y-2.5">
-                {topPlaymakers.map((p, idx) => {
-                  const pTeam = teams.find((t) => t.id === p.team_id);
-                  const assists =
-                    p.career_stats?.assists ?? p.career_stats?.official_assists ?? 0;
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => setSelectedPlayerForCardId(p.id)}
-                      className="w-full p-2.5 rounded-2xl bg-white/[0.03]/80 hover:border-[#00E599] border border-transparent transition-all flex items-center justify-between text-left"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span
-                          className={cn(
-                            'w-6 h-6 rounded-lg font-mono text-xs font-black flex items-center justify-center shrink-0',
-                            idx === 0
-                              ? 'bg-[#00E599] text-[#090A0F] text-white'
-                              : 'bg-zinc-200 dark:bg-[#161920] text-zinc-500'
-                          )}
-                        >
-                          {idx + 1}
-                        </span>
-                        <img
-                          src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
-                          alt={p.character_name}
-                          className="w-9 h-9 rounded-full object-cover border border-white/10 shrink-0"
-                          onError={(e) => {
-                            e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
-                          }}
-                        />
-                        <div className="min-w-0">
-                          <span className="text-xs font-display font-black text-white uppercase block truncate">
-                            {p.character_name}
+                <div className="space-y-2">
+                  {topPlaymakers.map((p, idx) => {
+                    const pTeam = teams.find((t) => t.id === p.team_id);
+                    const assists =
+                      p.career_stats?.assists ?? p.career_stats?.official_assists ?? 0;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setSelectedPlayerForCardId(p.id)}
+                        className="w-full p-2.5 rounded-2xl bg-[#141414] hover:border-white/30 border border-white/[0.06] transition-all flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={cn(
+                              'w-6 h-6 rounded-lg font-mono text-xs font-black flex items-center justify-center shrink-0',
+                              idx === 0
+                                ? 'bg-white text-black'
+                                : 'bg-black text-zinc-400'
+                            )}
+                          >
+                            {idx + 1}
                           </span>
-                          <div className="flex items-center gap-1">
-                            <img
-                              src={pTeam?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                              alt=""
-                              className="w-3.5 h-3.5 object-contain"
-                            />
-                            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
-                              {pTeam?.name || 'Furia del Plata'}
+                          <img
+                            src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
+                            alt={p.character_name}
+                            className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
+                            }}
+                          />
+                          <div className="min-w-0">
+                            <span className="text-xs font-display font-bold text-white uppercase block truncate">
+                              {p.character_name}
+                            </span>
+                            <span className="text-[10px] text-zinc-400 truncate block">
+                              {pTeam?.name || 'Free Agent'}
                             </span>
                           </div>
                         </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-sm font-mono font-black text-[#00E599] block tabular-nums">
-                          {assists} 👟
-                        </span>
-                        <span className="text-[9px] text-zinc-400">Ver Carta</span>
-                      </div>
-                    </button>
-                  );
-                })}
+                        <div className="text-right shrink-0">
+                          <span className="text-sm font-mono font-black text-white block tabular-nums">
+                            {assists} A
+                          </span>
+                          <span className="text-[9px] text-zinc-500">Ver Carta</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
 
-            {/* COLUNA 3: CRAQUE DA GALERA (MVPs / MOTM) */}
-            <div className="p-5 rounded-3xl bg-[#0D0F17] border border-zinc-200/80 dark:border-white/[0.07] shadow-sm space-y-4">
-              <div className="flex items-center justify-between">
+              {/* MVPs */}
+              <div className="p-5 rounded-3xl bg-[#0A0A0A] border border-white/[0.08] space-y-4">
                 <div>
-                  <span className="text-[10px] font-extrabold uppercase tracking-wider text-[#38C958] block">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">
                     Man of the Match
                   </span>
                   <h3 className="text-base font-display font-black text-white">
-                    Ranking de MVPs (Craque)
+                    Ranking de MVPs
                   </h3>
                 </div>
-                <img
-                  src="/assets/awards/mvp-trophy.png"
-                  alt="MVP"
-                  className="w-12 h-12 object-contain drop-shadow-lg"
-                />
-              </div>
 
-              <div className="space-y-2.5">
-                {topMvps.map((p, idx) => {
-                  const pTeam = teams.find((t) => t.id === p.team_id);
-                  const mvps = p.career_stats?.mvps ?? p.career_stats?.official_motm ?? 0;
-                  return (
-                    <button
-                      key={p.id}
-                      type="button"
-                      onClick={() => setSelectedPlayerForCardId(p.id)}
-                      className="w-full p-2.5 rounded-2xl bg-white/[0.03]/80 hover:border-[#00E599] border border-transparent transition-all flex items-center justify-between text-left"
-                    >
-                      <div className="flex items-center gap-2.5 min-w-0">
-                        <span
-                          className={cn(
-                            'w-6 h-6 rounded-lg font-mono text-xs font-black flex items-center justify-center shrink-0',
-                            idx === 0
-                              ? 'bg-[#38C958] text-white'
-                              : 'bg-zinc-200 dark:bg-[#161920] text-zinc-500'
-                          )}
-                        >
-                          {idx + 1}
-                        </span>
-                        <img
-                          src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
-                          alt={p.character_name}
-                          className="w-9 h-9 rounded-full object-cover border border-white/10 shrink-0"
-                          onError={(e) => {
-                            e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
-                          }}
-                        />
-                        <div className="min-w-0">
-                          <span className="text-xs font-display font-black text-white uppercase block truncate">
-                            {p.character_name}
+                <div className="space-y-2">
+                  {topMvps.map((p, idx) => {
+                    const pTeam = teams.find((t) => t.id === p.team_id);
+                    const mvps = p.career_stats?.mvps ?? p.career_stats?.official_motm ?? 0;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => setSelectedPlayerForCardId(p.id)}
+                        className="w-full p-2.5 rounded-2xl bg-[#141414] hover:border-white/30 border border-white/[0.06] transition-all flex items-center justify-between text-left"
+                      >
+                        <div className="flex items-center gap-2.5 min-w-0">
+                          <span
+                            className={cn(
+                              'w-6 h-6 rounded-lg font-mono text-xs font-black flex items-center justify-center shrink-0',
+                              idx === 0
+                                ? 'bg-white text-black'
+                                : 'bg-black text-zinc-400'
+                            )}
+                          >
+                            {idx + 1}
                           </span>
-                          <div className="flex items-center gap-1">
-                            <img
-                              src={pTeam?.logo_url || TEMPLATE_ASSETS.crestPlaceholder}
-                              alt=""
-                              className="w-3.5 h-3.5 object-contain"
-                            />
-                            <span className="text-[10px] text-zinc-500 dark:text-zinc-400 truncate">
-                              {pTeam?.name || 'Furia del Plata'}
+                          <img
+                            src={p.avatar_face_url || TEMPLATE_ASSETS.avatarPlaceholder}
+                            alt={p.character_name}
+                            className="w-8 h-8 rounded-full object-cover border border-white/10 shrink-0"
+                            onError={(e) => {
+                              e.currentTarget.src = TEMPLATE_ASSETS.avatarPlaceholder;
+                            }}
+                          />
+                          <div className="min-w-0">
+                            <span className="text-xs font-display font-bold text-white uppercase block truncate">
+                              {p.character_name}
+                            </span>
+                            <span className="text-[10px] text-zinc-400 truncate block">
+                              {pTeam?.name || 'Free Agent'}
                             </span>
                           </div>
                         </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <span className="text-sm font-mono font-black text-amber-400 block tabular-nums">
-                          {mvps} ⭐
-                        </span>
-                        <span className="text-[9px] text-zinc-400">Ver Carta</span>
-                      </div>
-                    </button>
-                  );
-                })}
+                        <div className="text-right shrink-0">
+                          <span className="text-sm font-mono font-black text-white block tabular-nums">
+                            {mvps} MVP
+                          </span>
+                          <span className="text-[9px] text-zinc-500">Ver Carta</span>
+                        </div>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </section>
 
-        {/* MODAL DE INSPEÇÃO DA CARTA FC 26 DO ATLETA SELECIONADO NO RANKING */}
+        {/* MODAL DE INSPEÇÃO DA CARTA FC 26 DO ATLETA */}
         {inspectedPlayer && (
           <div
-            className="fixed inset-0 z-50 bg-black/75 backdrop-blur-md flex items-center justify-center p-4"
+            className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex items-center justify-center p-4"
             onClick={() => setSelectedPlayerForCardId(null)}
           >
             <div
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-md rounded-3xl bg-[#0D0F17] border border-zinc-200 dark:border-white/15 p-6 text-center space-y-4 shadow-2xl"
+              className="relative w-full max-w-md rounded-3xl bg-[#0A0A0A] border border-white/15 p-6 text-center space-y-4 shadow-2xl"
             >
               <button
                 type="button"
                 onClick={() => setSelectedPlayerForCardId(null)}
-                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-zinc-100 dark:bg-[#1c2029] flex items-center justify-center text-zinc-500"
+                className="absolute top-4 right-4 w-9 h-9 rounded-full bg-[#141414] flex items-center justify-center text-zinc-400 hover:text-white"
               >
                 <X className="w-4 h-4" />
               </button>
 
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#00E599]/15 border border-[#00E599]/30 text-[#00E599] text-xs font-extrabold uppercase">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/[0.06] border border-white/10 text-white text-xs font-bold uppercase">
                 <Sparkles className="w-3.5 h-3.5" />
-                Carta Oficial EA FC 26 Ultimate Team
+                Carta Oficial EA FC 26
               </div>
 
-              <div className="flex justify-center">
-                <HoloCard className="p-3 bg-black/80 border-[#00E599]/30">
-                  <FC26PlayerCard
-                    player={inspectedPlayer}
-                    team={teams.find((t) => t.id === inspectedPlayer.team_id)}
-                    size="md"
-                    showActions={true}
-                  />
-                </HoloCard>
-              </div>
+              <FC26PlayerCard
+                player={inspectedPlayer}
+                team={teams.find((t) => t.id === inspectedPlayer.team_id)}
+                size="md"
+                showActions={true}
+              />
             </div>
           </div>
         )}

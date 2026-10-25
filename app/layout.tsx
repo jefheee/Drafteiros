@@ -1,63 +1,81 @@
 import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans, Inter, JetBrains_Mono } from 'next/font/google';
+import { Plus_Jakarta_Sans, JetBrains_Mono, Inter } from 'next/font/google';
 import './globals.css';
+import { AuthProvider } from '@/components/auth/auth-context';
+import { LeagueDataProvider } from '@/lib/data-store';
 import { Header } from '@/components/layout/header';
 import { BottomNav } from '@/components/layout/bottom-nav';
-import { AuthProvider } from '@/components/auth/auth-context';
+import { PwaRegisterAndGatekeeper } from '@/components/pwa-register';
 
 const jakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['700', '800'],
+  weight: ['500', '600', '700', '800'],
   variable: '--font-jakarta',
+  display: 'swap',
 });
 
 const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-inter',
+  display: 'swap',
 });
 
 const jetbrainsMono = JetBrains_Mono({
   subsets: ['latin'],
-  weight: ['500', '700', '800'],
-  variable: '--font-jetbrains',
+  weight: ['500', '700'],
+  variable: '--font-mono',
+  display: 'swap',
 });
 
-export const metadata: Metadata = {
-  title: 'DraftClub PRO • Plataforma Oficial de EA FC 26 Pro Clubs',
-  description:
-    'Sua liga de Pro Clubs sem discussão no WhatsApp. Súmula com IA Vision por foto, Estúdio de Banners 4:5 pro Instagram, Sala de Draft estilo NBA e Gestão Financeira transparente.',
-  manifest: '/manifest.json',
-  icons: {
-    icon: '/assets/awards/1st-place.png',
-    apple: '/assets/awards/1st-place.png',
-  },
-};
-
 export const viewport: Viewport = {
-  themeColor: '#00E599',
+  themeColor: '#000000',
   width: 'device-width',
   initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
+export const metadata: Metadata = {
+  title: 'DraftClub — Ligas EA Sports FC 26, Draft & Cartas Pro',
+  description:
+    'Crie sua Carta FC 26, cadastre seu clube ou entre como Free Agent. Gestão de ligas, Draft estilo NBA, súmula por IA e estúdio de banners.',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: 'DraftClub',
+  },
+  icons: {
+    icon: [
+      { url: '/icons/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icons/icon-512.png', sizes: '512x512', type: 'image/png' },
+    ],
+    apple: [
+      { url: '/icons/apple-touch-icon.png', sizes: '180x180', type: 'image/png' },
+    ],
+  },
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
     <html
       lang="pt-BR"
-      className={`dark overflow-x-hidden max-w-[100vw] ${jakarta.variable} ${inter.variable} ${jetbrainsMono.variable}`}
+      className={`${jakarta.variable} ${inter.variable} ${jetbrainsMono.variable} dark`}
       suppressHydrationWarning
     >
-      <body className="bg-[#0c0e12] text-[#f1f3f9] antialiased min-h-screen flex flex-col overflow-x-hidden max-w-[100vw] selection:bg-[#00E599] selection:text-zinc-950">
+      <body className="font-sans antialiased bg-black text-white min-h-screen flex flex-col selection:bg-white/20 selection:text-white">
         <AuthProvider>
-          <Header />
-          <div className="flex-1 w-full max-w-[100vw] overflow-x-hidden">
-            {children}
-          </div>
-          <BottomNav />
+          <LeagueDataProvider>
+            <PwaRegisterAndGatekeeper>
+              <Header />
+              <div className="flex-1 flex flex-col">{children}</div>
+              <BottomNav />
+            </PwaRegisterAndGatekeeper>
+          </LeagueDataProvider>
         </AuthProvider>
       </body>
     </html>

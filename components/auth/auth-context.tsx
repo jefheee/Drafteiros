@@ -1,369 +1,240 @@
 'use client';
 
-import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { useRouter } from 'next/navigation';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/lib/supabase';
 import {
-  AuthSession,
-  DEMO_USERS,
+  AppSession,
+  AppUserRole,
   getStoredSession,
-  setStoredSession,
-  clearStoredSession,
+  saveStoredSession,
+  buildAppSessionForUser,
+  clearSession,
 } from '@/lib/auth';
-import { ParticipantRole } from '@/types/database';
 
-export interface RegisterAccountInput {
-  email: string;
-  password: string;
-  fullName: string;
-  characterName: string;
-  primaryPosition: string;
-  isCaptain?: boolean;
-  teamName?: string;
-}
-
-interface AuthContextType {
-  session: AuthSession | null;
+interface AuthContextValue {
+  session: AppSession | null;
   loading: boolean;
-  loginAsDemo: (demoKey: keyof typeof DEMO_USERS, redirectTo?: string) => void;
-  loginWithSupabase: (
+  loginWithEmail: (
     email: string,
-    pass: string,
-    redirectTo?: string
-  ) => Promise<{ error?: string }>;
-  registerWithSupabase: (
-    input: RegisterAccountInput,
-    redirectTo?: string
-  ) => Promise<{ error?: string }>;
-  switchProfileRole: (role: ParticipantRole, navigate?: boolean) => void;
-  updateSessionIdentity: (partial: Partial<AuthSession>) => void;
-  logout: () => void;
-  isAdmin: boolean;
-  isCaptain: boolean;
+    password: string
+  ) => Promise<{ ok: boolean; error?: string; session?: AppSession }>;
+  signUpWithEmail: (
+    email: string,
+    password: string,
+    fullName: string
+  ) => Promise<{ ok: boolean; error?: string; session?: AppSession }>;
+  switchRole: (role: AppUserRole) => Promise<void>;
+  updateSessionIdentity: (updates: Partial<AppSession>) => void;
+  refreshSession: () => Promise<AppSession | null>;
+  logout: () => Promise<void>;
 }
 
-const AuthContext = createContext<AuthContextType>({
-  session: null,
-  loading: true,
-  loginAsDemo: () => {},
-  loginWithSupabase: async () => ({}),
-  registerWithSupabase: async () => ({}),
-  switchProfileRole: () => {},
-  updateSessionIdentity: () => {},
-  logout: () => {},
-  isAdmin: false,
-  isCaptain: false,
-});
+const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [session, setSession] = useState<AuthSession | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  const [session, setSession] = useState<AppSession | null>(null);
+  const [loading, setLoading] = useState<boolean>(true);
 
-  useEffect(() => {
-    const local = getStoredSession();
-    if (local) {
-      setStoredSession(local);
-      setSession(local);
-      setLoading(false);
-      return;
-    }
+  const refreshSession = useCallback(async (): Promise<AppSession | null> => {
+    try {
+      const {
+        data: { session: supaSession },
+      } = await supabase.auth.getSession();
 
-    async function checkSupabaseSession() {
-      try {
-        const {
-          data: { session: sbSession },
-        } = await supabase.auth.getSession();
-        if (sbSession?.user) {
-          const email = sbSession.user.email || '';
-          const { data: prof } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', sbSession.user.id)
-            .maybeSingle();
-
-          const roles: ParticipantRole[] = ['player', 'captain', 'admin'];
-          const activeRole: ParticipantRole =
-            prof?.active_role_view ||
-            (email.includes('admin')
-              ? 'admin'
-              : email.includes('atleta')
-              ? 'player'
-              : 'captain');
-
-          const charName =
-            prof?.character_name ||
-            sbSession.user.user_metadata?.character_name ||
-            sbSession.user.user_metadata?.name ||
-            email.split('@')[0];
-
-          const fullName =
-            prof?.full_name ||
-            sbSession.user.user_metadata?.full_name ||
-            charName;
-
-          const newSession: AuthSession = {
-            userId: sbSession.user.id,
-            email,
-            name: charName,
-            fullName,
-            characterName: charName,
-            role: activeRole,
-            roles,
-            playerId: 'p1111111-1111-1111-1111-111111111111',
-            teamId: 'b3333333-3333-3333-3333-333333333333',
-            teamName: 'Furia del Plata',
-            tournamentId: '11111111-1111-1111-1111-111111111111',
-          };
-          setStoredSession(newSession);
-          setSession(newSession);
-        } else {
-          const defaultSession = DEMO_USERS.captain;
-          setStoredSession(defaultSession);
-          setSession(defaultSession);
-        }
-      } catch {
-        const defaultSession = DEMO_USERS.captain;
-        setStoredSession(defaultSession);
-        setSession(defaultSession);
-      } finally {
-        setLoading(false);
+      if (supaSession?.user) {
+        const built = await buildAppSessionForUser(
+          supaSession.user.id,
+          supaSession.user.email || '',
+          supaSession.user.user_metadata
+        );
+        setSession(built);
+        return built;
       }
-    }
 
-    checkSupabaseSession();
+      const cached = getStoredSession();
+      if (cached) {
+        setSession(cached);
+        return cached;
+      }
+
+      setSession(null);
+      return null;
+    } catch {
+      setSession(null);
+      return null;
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const navigateByRole = (role: ParticipantRole, redirectTo?: string) => {
-    if (redirectTo) {
-      router.push(redirectTo);
-      return;
+  useEffect(() => {
+    const cached = getStoredSession();
+    if (cached) {
+      setSession(cached);
     }
-    if (role === 'admin') {
-      router.push('/admin');
-    } else if (role === 'player') {
-      router.push('/player');
-    } else {
-      router.push('/captain');
-    }
-  };
+    refreshSession();
 
-  const loginAsDemo = (demoKey: keyof typeof DEMO_USERS, redirectTo?: string) => {
-    const user = DEMO_USERS[demoKey] || DEMO_USERS.captain;
-    setStoredSession(user);
-    setSession(user);
-    navigateByRole(user.role, redirectTo);
-  };
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(async (event, supaSession) => {
+      if (event === 'SIGNED_OUT') {
+        clearSession();
+        setSession(null);
+        setLoading(false);
+        return;
+      }
+      if (supaSession?.user) {
+        const built = await buildAppSessionForUser(
+          supaSession.user.id,
+          supaSession.user.email || '',
+          supaSession.user.user_metadata
+        );
+        setSession(built);
+        setLoading(false);
+      }
+    });
 
-  // Alterna a visão ativa na mesma conta sem deslogar (Estilo Jogueiros)
-  const switchProfileRole = (targetRole: ParticipantRole, navigate = false) => {
-    const current = session || getStoredSession() || DEMO_USERS.captain;
-    const ensuredRoles: ParticipantRole[] = ['player', 'captain', 'admin'];
-
-    const updated: AuthSession = {
-      ...current,
-      role: targetRole,
-      roles: ensuredRoles,
+    return () => {
+      subscription.unsubscribe();
     };
+  }, [refreshSession]);
 
-    if (typeof document !== 'undefined') {
-      document.cookie = "draftclub-demo-role=" + targetRole + "; path=/; max-age=604800; SameSite=Lax";
-      document.cookie = "draftclub_role=" + targetRole + "; path=/; max-age=604800; SameSite=Lax";
-    }
-
-    setStoredSession(updated);
-    setSession(updated);
-
-    Promise.resolve(
-      supabase
-        .from('profiles')
-        .update({ active_role_view: targetRole, roles: ensuredRoles })
-        .eq('id', updated.userId)
-    ).catch(() => {});
-
-    if (navigate) {
-      navigateByRole(targetRole);
-    }
-  };
-
-  const updateSessionIdentity = (partial: Partial<AuthSession>) => {
-    const current = session || getStoredSession() || DEMO_USERS.captain;
-    const updated: AuthSession = {
-      ...current,
-      ...partial,
-      name: partial.characterName || partial.name || current.characterName,
-      roles: ['player', 'captain', 'admin'],
-    };
-    setStoredSession(updated);
-    setSession(updated);
-  };
-
-  const loginWithSupabase = async (
-    email: string,
-    pass: string,
-    redirectTo?: string
-  ): Promise<{ error?: string }> => {
-    const cleanEmail = email.trim().toLowerCase();
-
-    if (
-      cleanEmail === 'capitao@draftclub.pro' ||
-      cleanEmail === 'buzz@bocajuniors.gg' ||
-      cleanEmail === 'andrei@racingclub.gg'
-    ) {
-      const user = DEMO_USERS.captain;
-      setStoredSession(user);
-      setSession(user);
-      navigateByRole(user.role, redirectTo);
-      return {};
-    }
-
-    if (cleanEmail === 'admin@draftclub.pro' || cleanEmail === 'admin@draftclub.gg') {
-      const user = DEMO_USERS.admin;
-      setStoredSession(user);
-      setSession(user);
-      navigateByRole(user.role, redirectTo);
-      return {};
-    }
-
-    if (cleanEmail === 'atleta@draftclub.pro') {
-      const user = DEMO_USERS.player;
-      setStoredSession(user);
-      setSession(user);
-      navigateByRole(user.role, redirectTo);
-      return {};
-    }
-
+  const loginWithEmail = async (email: string, password: string) => {
     try {
+      const cleanEmail = email.trim().toLowerCase();
       const { data, error } = await supabase.auth.signInWithPassword({
         email: cleanEmail,
-        password: pass,
+        password,
       });
 
-      if (error) {
-        if (pass === '123456') {
-          const fallbackRole: ParticipantRole = cleanEmail.includes('admin')
-            ? 'admin'
-            : cleanEmail.includes('atleta')
-            ? 'player'
-            : 'captain';
-          const fallbackUser = DEMO_USERS[fallbackRole];
-          setStoredSession(fallbackUser);
-          setSession(fallbackUser);
-          navigateByRole(fallbackUser.role, redirectTo);
-          return {};
-        }
-        return { error: error.message };
-      }
-
-      if (data?.user) {
-        const meta = data.user.user_metadata || {};
-        const charName = meta.character_name || meta.name || cleanEmail.split('@')[0];
-        const fullName = meta.full_name || charName;
-        const role: ParticipantRole = cleanEmail.includes('admin')
-          ? 'admin'
-          : meta.active_role_view || 'player';
-
-        const newSession: AuthSession = {
-          userId: data.user.id,
-          email: data.user.email || cleanEmail,
-          name: charName,
-          fullName,
-          characterName: charName,
-          role,
-          roles: ['player', 'captain', 'admin'],
-          playerId: data.user.id,
-          teamId: 'b3333333-3333-3333-3333-333333333333',
-          teamName: meta.team_name || 'Furia del Plata',
-          tournamentId: '11111111-1111-1111-1111-111111111111',
+      if (error || !data.user) {
+        return {
+          ok: false,
+          error:
+            error?.message === 'Invalid login credentials'
+              ? 'E-mail ou senha incorretos. Verifique seus dados ou crie uma conta.'
+              : error?.message || 'Não foi possível entrar.',
         };
-        setStoredSession(newSession);
-        setSession(newSession);
-        navigateByRole(role, redirectTo);
       }
-      return {};
-    } catch (err: any) {
-      return { error: err?.message || 'Falha na autenticação.' };
+
+      const built = await buildAppSessionForUser(
+        data.user.id,
+        data.user.email || cleanEmail,
+        data.user.user_metadata
+      );
+      setSession(built);
+      return { ok: true, session: built };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : 'Erro inesperado ao entrar.',
+      };
     }
   };
 
-  const registerWithSupabase = async (
-    input: RegisterAccountInput,
-    redirectTo?: string
-  ): Promise<{ error?: string }> => {
-    const cleanEmail = input.email.trim().toLowerCase();
-    const charName = input.characterName.trim() || 'Atleta_Pro';
-    const fullName = input.fullName.trim() || charName;
-    const initialRole: ParticipantRole = input.isCaptain ? 'captain' : 'player';
-    const roles: ParticipantRole[] = ['player', 'captain', 'admin'];
-
-    let newUserId = `u-${Date.now()}`;
-
+  const signUpWithEmail = async (
+    email: string,
+    password: string,
+    fullName: string
+  ) => {
     try {
-      const { data } = await supabase.auth.signUp({
+      const cleanEmail = email.trim().toLowerCase();
+      const cleanName = fullName.trim() || cleanEmail.split('@')[0];
+
+      const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
-        password: input.password,
+        password,
         options: {
           data: {
-            full_name: fullName,
-            character_name: charName,
-            primary_position: input.primaryPosition,
-            active_role_view: initialRole,
-            team_name: input.teamName || 'Furia del Plata',
+            full_name: cleanName,
           },
         },
       });
-      if (data?.user?.id) {
-        newUserId = data.user.id;
+
+      if (error || !data.user) {
+        return {
+          ok: false,
+          error: error?.message || 'Não foi possível criar sua conta.',
+        };
       }
 
-      await supabase.from('profiles').upsert({
-        id: newUserId,
-        email: cleanEmail,
-        full_name: fullName,
-        character_name: charName,
-        roles,
-        active_role_view: initialRole,
-      });
+      // Garante sessão ativa imediata (graças ao trigger de auto-confirmação no banco)
+      if (!data.session) {
+        await supabase.auth.signInWithPassword({
+          email: cleanEmail,
+          password,
+        });
+      }
 
-      await supabase.from('player_profiles').upsert({
-        id: newUserId,
-        user_id: newUserId,
-        name: charName,
-        character_name: charName,
-        full_name: fullName,
-        primary_position: input.primaryPosition || 'MEI',
-        positions_declared: [input.primaryPosition || 'MEI'],
-        archetype: 'Maestro',
-      });
-    } catch {
-      // Continua registrando localmente para funcionamento imediato
+      // Cria registro inicial em profiles no Supabase
+      await supabase.from('profiles').upsert(
+        {
+          id: data.user.id,
+          email: cleanEmail,
+          full_name: cleanName,
+          character_name: cleanName.toUpperCase(),
+          roles: ['player'],
+          active_role_view: 'player',
+          onboarding_completed: false,
+        },
+        { onConflict: 'id' }
+      );
+
+      const built = await buildAppSessionForUser(
+        data.user.id,
+        cleanEmail,
+        { full_name: cleanName }
+      );
+      setSession(built);
+      return { ok: true, session: built };
+    } catch (err) {
+      return {
+        ok: false,
+        error: err instanceof Error ? err.message : 'Erro ao criar conta.',
+      };
     }
-
-    const createdSession: AuthSession = {
-      userId: newUserId,
-      email: cleanEmail,
-      name: charName,
-      fullName,
-      characterName: charName,
-      role: initialRole,
-      roles,
-      playerId: 'p1111111-1111-1111-1111-111111111111',
-      teamId: 'b3333333-3333-3333-3333-333333333333',
-      teamName: input.teamName?.trim() || 'Furia del Plata',
-      tournamentId: '11111111-1111-1111-1111-111111111111',
-    };
-
-    setStoredSession(createdSession);
-    setSession(createdSession);
-    navigateByRole(initialRole, redirectTo);
-    return {};
   };
 
-  const logout = () => {
-    clearStoredSession();
-    supabase.auth.signOut().catch(() => {});
+  const switchRole = async (role: AppUserRole) => {
+    if (!session) return;
+    const next: AppSession = {
+      ...session,
+      role,
+      roles: Array.from(new Set([...(session.roles || []), role])),
+    };
+    setSession(next);
+    saveStoredSession(next);
+
+    try {
+      await supabase
+        .from('profiles')
+        .update({
+          active_role_view: role,
+          roles: next.roles,
+        })
+        .eq('id', session.userId);
+    } catch {
+      // ignora falha de rede
+    }
+  };
+
+  const updateSessionIdentity = (updates: Partial<AppSession>) => {
+    setSession((prev) => {
+      if (!prev) return prev;
+      const updated = { ...prev, ...updates };
+      saveStoredSession(updated);
+      return updated;
+    });
+  };
+
+  const logout = async () => {
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // ignora erro
+    }
+    clearSession();
     setSession(null);
-    router.push('/login');
   };
 
   return (
@@ -371,14 +242,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       value={{
         session,
         loading,
-        loginAsDemo,
-        loginWithSupabase,
-        registerWithSupabase,
-        switchProfileRole,
+        loginWithEmail,
+        signUpWithEmail,
+        switchRole,
         updateSessionIdentity,
+        refreshSession,
         logout,
-        isAdmin: session?.role === 'admin',
-        isCaptain: session?.role === 'captain' || session?.role === 'admin',
       }}
     >
       {children}
@@ -387,5 +256,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 }
 
 export function useAuth() {
-  return useContext(AuthContext);
+  const ctx = useContext(AuthContext);
+  if (!ctx) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return ctx;
 }

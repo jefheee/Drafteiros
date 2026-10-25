@@ -3,146 +3,79 @@
 import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from '@/components/auth/auth-context';
+import { cn } from '@/lib/utils';
 import {
   Home,
-  Trophy,
-  CircleDot,
-  Images,
+  Search,
+  Calendar,
+  IdCard,
   User,
 } from 'lucide-react';
-import { useAuth } from '@/components/auth/auth-context';
-import { useLeagueStore } from '@/lib/data-store';
-import { cn } from '@/lib/utils';
 
 export function BottomNav() {
   const pathname = usePathname();
+  const { session } = useAuth();
 
-  // Não renderiza barra in-app na Landing Page
-  if (pathname === '/' || pathname === '/landing') {
+  if (
+    pathname === '/' ||
+    pathname?.startsWith('/landing') ||
+    pathname?.startsWith('/login') ||
+    pathname?.startsWith('/onboarding')
+  ) {
     return null;
   }
 
-  const { session } = useAuth();
-  const { players, teams } = useLeagueStore();
-
-  const activePlayer = players.find(
-    (p) =>
-      p.id === session?.playerId ||
-      p.character_name?.toLowerCase() === (session?.characterName || '').toLowerCase()
-  );
-  const activeTeam = teams.find(
-    (t) =>
-      t.id === session?.teamId ||
-      t.name?.toLowerCase() === (session?.teamName || '').toLowerCase()
-  );
-
-  const profileAvatarSrc =
-    session?.role === 'player'
-      ? activePlayer?.avatar_face_url || session?.avatarUrl || '/assets/templates/avatar-placeholder.jpg'
-      : session?.role === 'captain'
-      ? activeTeam?.logo_url || '/assets/templates/crest-placeholder.png'
-      : '/assets/awards/1st-place.png';
-
   const profileHref =
-    session?.role === 'player'
-      ? '/player'
+    session?.role === 'captain'
+      ? '/captain'
       : session?.role === 'admin'
       ? '/admin'
-      : '/captain';
+      : '/player';
 
-  // 5 Pilares Oficiais (Mobile Bottom Nav)
-  const tabs = [
-    {
-      id: 'home',
-      label: 'Painel',
-      href: '/dashboard',
-      icon: Home,
-      isActive: pathname === '/dashboard',
-      isAvatar: false,
-    },
-    {
-      id: 'rankings',
-      label: 'Tabela',
-      href: '/rankings',
-      icon: Trophy,
-      isActive: pathname.startsWith('/rankings') || pathname.startsWith('/tournaments'),
-      isAvatar: false,
-    },
-    {
-      id: 'matches',
-      label: 'Jogos',
-      href: '/matches',
-      icon: CircleDot,
-      isActive: pathname.startsWith('/matches'),
-      isAvatar: false,
-    },
-    {
-      id: 'studio',
-      label: 'Estúdio',
-      href: '/studio',
-      icon: Images,
-      isActive: pathname.startsWith('/studio'),
-      isAvatar: false,
-    },
-    {
-      id: 'workspace',
-      label: 'Espaço',
-      href: profileHref,
-      icon: User,
-      isActive:
-        pathname.startsWith('/captain') ||
-        pathname.startsWith('/player') ||
-        pathname.startsWith('/players') ||
-        pathname.startsWith('/draft-board') ||
-        pathname.startsWith('/admin'),
-      isAvatar: true,
-    },
+  const items = [
+    { href: '/dashboard', label: 'Início', icon: Home },
+    { href: '/players', label: 'Buscar', icon: Search },
+    { href: '/matches', label: 'Partidas', icon: Calendar },
+    { href: '/player', label: 'Carta FC 26', icon: IdCard },
+    { href: profileHref, label: 'Perfil', icon: User },
   ];
 
   return (
     <nav
-      aria-label="Navegação Principal Mobile"
-      className="fixed bottom-3 left-1/2 -translate-x-1/2 z-50 w-[calc(100vw-20px)] max-w-[430px] h-14 bg-[#0d0f17]/95 backdrop-blur-2xl rounded-full px-2.5 flex items-center justify-between shadow-2xl shadow-black/80 border border-white/10 select-none lg:hidden"
+      aria-label="Navegação inferior móvel"
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 bg-black/95 backdrop-blur-xl border-t border-white/[0.08] px-2 pb-safe"
     >
-      {tabs.map((tab) => {
-        const Icon = tab.icon;
-        const active = tab.isActive;
+      <div className="max-w-md mx-auto h-16 grid grid-cols-5 items-center">
+        {items.map((item) => {
+          const Icon = item.icon;
+          const isActive =
+            pathname === item.href ||
+            (item.href === '/players' && pathname === '/search');
 
-        return (
-          <Link
-            key={tab.id}
-            href={tab.href}
-            className={cn(
-              active
-                ? 'px-3 py-1.5 rounded-full bg-[#00E599] text-[#090A0F] font-black text-xs flex items-center gap-1.5 shrink-0 shadow-sm shadow-[#00E599]/30 transition-all'
-                : 'w-9 h-9 flex items-center justify-center text-zinc-400 hover:text-white shrink-0 rounded-full transition-all'
-            )}
-          >
-            {tab.isAvatar ? (
-              <span
-                suppressHydrationWarning
+          return (
+            <Link
+              key={`${item.href}-${item.label}`}
+              href={item.href}
+              className={cn(
+                'flex flex-col items-center justify-center gap-1 h-full transition-colors',
+                isActive ? 'text-white' : 'text-[#A1A1AA] hover:text-zinc-300'
+              )}
+            >
+              <Icon
                 className={cn(
-                  'w-6 h-6 rounded-full overflow-hidden flex items-center justify-center border transition-all shrink-0 bg-white/10',
-                  active ? 'border-[#090A0F] ring-1 ring-[#00E599]' : 'border-white/30'
+                  'w-5 h-5 transition-transform',
+                  isActive ? 'stroke-[2.25] scale-105' : 'stroke-[1.6]'
                 )}
-              >
-                <img
-                  src={profileAvatarSrc}
-                  alt="Meu Espaço"
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    e.currentTarget.src = '/assets/templates/avatar-placeholder.jpg';
-                  }}
-                />
+              />
+              <span className="text-[10px] font-medium tracking-tight">
+                {item.label}
               </span>
-            ) : (
-              <Icon className="w-4 h-4 shrink-0" />
-            )}
-
-            {active && <span className="truncate">{tab.label}</span>}
-          </Link>
-        );
-      })}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
+export default BottomNav;

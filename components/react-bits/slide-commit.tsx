@@ -23,7 +23,7 @@ export function SlideCommit({
   const handlePointerDown = (e: React.PointerEvent) => {
     if (isCommitted || !trackRef.current) return;
     const track = trackRef.current;
-    const trackWidth = track.clientWidth - 48; // width minus thumb
+    const trackWidth = track.clientWidth - 48;
     const startX = e.clientX;
 
     const handlePointerMove = (moveEvent: PointerEvent) => {
@@ -58,18 +58,18 @@ export function SlideCommit({
   return (
     <div
       ref={trackRef}
-      className={`relative h-14 rounded-2xl bg-[#14171f] border border-white/10 p-1 flex items-center select-none overflow-hidden ${className}`}
+      className={`relative h-14 rounded-2xl bg-[#141414] border border-white/10 p-1 flex items-center select-none overflow-hidden ${className}`}
     >
       {/* Background progress fill */}
       <div
-        className="absolute left-0 top-0 bottom-0 bg-gradient-to-r from-emerald-500/20 to-[#00E599]/30 transition-all pointer-events-none"
+        className="absolute left-0 top-0 bottom-0 bg-white/10 transition-all pointer-events-none"
         style={{ width: `${dragProgress * 100}%` }}
       />
 
       {/* Label */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none text-xs sm:text-sm font-bold text-zinc-300">
         {isCommitted ? (
-          <span className="text-[#00E599] flex items-center gap-1.5 font-black">
+          <span className="text-[#10B981] flex items-center gap-1.5 font-black">
             <Check className="w-4 h-4" /> {completedLabel}
           </span>
         ) : (
@@ -82,8 +82,8 @@ export function SlideCommit({
         onPointerDown={handlePointerDown}
         className={`relative z-10 w-12 h-12 rounded-xl flex items-center justify-center cursor-grab active:cursor-grabbing transition-transform touch-none shadow-lg ${
           isCommitted
-            ? 'bg-emerald-500 text-zinc-950'
-            : 'bg-[#00E599] text-zinc-950 hover:bg-[#00c985]'
+            ? 'bg-[#10B981] text-black'
+            : 'bg-white text-black hover:bg-zinc-200'
         }`}
         style={{
           transform: `translateX(${dragProgress * ((trackRef.current?.clientWidth || 250) - 56)}px)`,
